@@ -1,0 +1,17 @@
+10.12.22
+1 Pomodorro:
+added logger
+Added three buttons in Home Screen
+Implemented Vanilla navigation with Screen Manager
+
+
+2 Pomodorro:
+додав addDataScreen і addDataCard
+реалізував передачу input feature key-val from addDataScreenView -> addDataScreenController -> addDataScreenModel
+
+reference for MVC patern in kivy
+https://github.com/AlesyaRabushka/MVC_Kivy_Python
+
+3 Pomo:
+додав кнопку confirm в addDataScreen
+додав запис в Json через модель

@@ -1,0 +1,24 @@
+<HomeScreenView>:
+
+    MDGridLayout:
+        cols: 1
+
+        NavigationButton:
+            text: "Start new session"
+            on_release:
+                app.manager_screens.current = "session screen"
+                app.manager_screens.transition.direction = "left"
+
+        NavigationButton:
+
+            text: "Incomplete sessions"
+            on_release: self.background_color =  [1, 0, 0, 1]
+        NavigationButton:
+            text: "Recorded sessions"
+    MDBoxLayout:
+
+<NavigationButton@Button>:
+    size_hint: None, None
+
+
+

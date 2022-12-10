@@ -1,0 +1,10 @@
+<SessionScreenView>:
+    MDGridLayout:
+        cols: 1
+        Button:
+            text: "New Record"
+            on_release: app.manager_screens.current = "add data screen"
+
+        Button:
+            text: "Back to Home Screen"
+            on_release: app.manager_screens.current = "home screen"

@@ -1,0 +1,70 @@
+<addDataCard>:
+    id: card_id
+    size_hint: .95, .7
+    pos_hint: {"center_x": .5, "center_y": .5}
+    #pos: 0, root.height - 30
+    radius: 20
+    elevation: 24
+    MDStackLayout:
+        #orientation: "vertical"
+        orientation: 'lr-tb'
+        padding: 10
+
+        MDTextField:
+            id: input_field_id
+            #par: root
+            #focus: True
+            #size_hint: None, None
+            #pos_hint: {"center_x": .5, "center_y": .95}
+            #pos: 0, 100
+            hint_text: "Chose feature to input"
+            helper_text: "This will disappear when you click off"
+            helper_text_mode: "on_focus"
+            on_text_validate: root.parent.get_input_feature_value(root.chosen_feature, self.text)
+
+        MDStackLayout:
+
+            padding: 2
+            spacing: 3
+            #pos_hint: {"center_x": .5, "center_y": .5}
+            FeatureButton:
+                id: tree_number_btn
+                on_press: root.callback(self)
+                text: "Tree Number"
+            FeatureButton:
+                id: tree_specie_btn
+                on_press: root.callback(self)
+                text: "Tree specie"
+            FeatureButton:
+                id: stem_number_btn
+                on_press: root.callback(self)
+                text: "Stem number"
+            FeatureButton:
+                id: tree_diameter_btn
+                on_press: root.callback(self)
+                text: "Tree diameter"
+            FeatureButton:
+                id: crown_diameter_btn
+                on_press: root.callback(self)
+                text: "Crown diameter"
+            FeatureButton:
+                id: height_btn
+                on_press: root.callback(self)
+                text: "Height"
+
+
+
+<FeatureButton@MDFillRoundFlatButton>:
+    size_hint_x: 0.33
+    #on_press: print(self.root)
+
+
+
+
+
+
+
+
+
+
+
