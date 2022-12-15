@@ -24,3 +24,8 @@ class SessionScreenController:
 
     def get_view(self) -> View.SessionScreen.session_screen:
         return self.view
+
+    def upload_session(self, session_path):
+        self.model.upload_session(session_path)
+
+

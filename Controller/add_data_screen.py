@@ -27,15 +27,11 @@ class AddDataScreenController:
         }
 
     def get_input_feature_value(self, feature_key, feature_value):
-        # todo: виконати в контроллері перевірку і відправити далі моделі
-        print(f"controller recieved from View: {feature_key}, {feature_value}")
-        self.model.get_input_feature_value(feature_key, feature_value)
         self.new_record_dict[feature_key] = feature_value
-        print('now dict contains: ', self.new_record_dict)
 
-
-    def write_record_to_json(self, event):
+    def write_record_to_json(self):
         self.model.write_record_to_json(self, self.new_record_dict)
+        self.new_record_dict.clear()
 
     def get_view(self) -> View.AddDataScreen.add_data_screen:
         return self.view

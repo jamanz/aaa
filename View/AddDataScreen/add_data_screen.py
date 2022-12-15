@@ -1,27 +1,24 @@
 from View.base_screen import BaseScreenView
 from View.AddDataScreen.components.addDataCard import addDataCard
 # from main import logger
-import logging
+from kivy.logger import Logger
 from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 
-logger = logging.getLogger()
 
 class AddDataScreenView(BaseScreenView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
-        # self.model = model
-        # self.controller = controller
-        #
-        logger.info("AddDataScreenView inited")
-        # card =
+        Logger.info("w: AddDataScreenView inited")
+        ### add widgets
         self.add_widget(addDataCard())
-        confirm_btn = Button(text="Confirm", size_hint=(.3, .1), on_press=self.controller.write_record_to_json)
+        confirm_btn = Button(text="Confirm", size_hint=(.3, .1), on_press=self.save_record_and_back_to_session_screen)
         self.add_widget(confirm_btn)
-        # self.add_widget(BoxLayout().add_widget(Button(text="Preview")))
 
+    def save_record_and_back_to_session_screen(self, event):
+        self.controller.write_record_to_json()
+        self.app.manager_screens.current = "session screen"
 
     def get_input_feature_value(self, feature_key, feature_value):
         # print(instance.text)

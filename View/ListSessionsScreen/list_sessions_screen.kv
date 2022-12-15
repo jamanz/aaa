@@ -1,1 +1,35 @@
-<ListSessionsScreenView>
+#:import ScrollEffect kivy.effects.scroll.ScrollEffect
+#:import utils kivy.utils
+
+<ListSessionsScreenView>:
+    MDBoxLayout:
+        orientation: 'vertical'
+        size_hint: 1, 1
+        md_bg_color: utils.get_color_from_hex('#c1c72f')
+
+        MDAnchorLayout:
+            size_hint: 1, 0.1
+            anchor_y: 'top'
+            id: app_bar
+            md_bg_color: utils.get_color_from_hex('#75c72f')
+
+
+        MDStackLayout:
+            md_bg_color: utils.get_color_from_hex('#F05F40')
+            size_hint: 1, 0.9
+            #pos_hint: {"center_x": .5, "center_y": .5}
+            orientation: 'rl-tb'
+
+            MDScrollView:
+
+                do_scroll_x: False
+                do_scroll_y: True
+                MDGridLayout:
+                    height: self.minimum_height
+                    cols: 1
+                    size_hint: 1, None
+                    #orientation: 'rl-tb'
+                    id: session_list
+
+
+

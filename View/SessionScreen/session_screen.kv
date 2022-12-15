@@ -1,10 +1,37 @@
 <SessionScreenView>:
-    MDGridLayout:
-        cols: 1
-        Button:
-            text: "New Record"
-            on_release: app.manager_screens.current = "add data screen"
+    MDBoxLayout:
+        orientation: 'vertical'
+        size_hint: 1, 1
+        #md_bg_color: utils.get_color_from_hex('#c1c72f')
 
-        Button:
-            text: "Back to Home Screen"
-            on_release: app.manager_screens.current = "home screen"
+        MDAnchorLayout:
+            size_hint: 1, 0.1
+            anchor_y: 'top'
+            id: app_bar
+            #md_bg_color: utils.get_color_from_hex('#75c72f')
+
+        MDStackLayout:
+            size_hint: 1, 0.8
+            md_bg_color: utils.get_color_from_hex('#a82fc7')
+            pos_hint: {"center_x": .5, "center_y": .5}
+            id:box
+            orientation: 'rl-tb'
+
+            MDScrollView:
+                do_scroll_x: False
+                do_scroll_y: True
+                MDGridLayout:
+                    height: self.minimum_height
+                    size_hint: 1, None
+                    cols: 1
+                    id: item_grid
+
+        MDGridLayout:
+            md_bg_color: utils.get_color_from_hex('#975c0e')
+            cols:2
+            padding: 10
+            spacing: 10
+            #pos_hint: {"center_x": .5, "center_y": .5}
+            size_hint: 1, .08
+            id: buttons_grid
+

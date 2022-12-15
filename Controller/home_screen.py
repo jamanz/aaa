@@ -1,4 +1,6 @@
 import importlib
+from kivy.storage.jsonstore import JsonStore
+import secrets
 
 import View.HomeScreen.home_screen
 
@@ -19,8 +21,13 @@ class HomeScreenController:
     """
 
     def __init__(self, model):
+        print("HS Controller")
         self.model = model  # Model.home_screen.HomeScreenModel
         self.view = View.HomeScreen.home_screen.HomeScreenView(controller=self, model=self.model)
 
+
     def get_view(self) -> View.HomeScreen.home_screen:
         return self.view
+
+    def start_new_session(self, session_name, date):
+        self.model.start_new_session(session_name, date)

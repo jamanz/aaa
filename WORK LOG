@@ -15,3 +15,6 @@ https://github.com/AlesyaRabushka/MVC_Kivy_Python
 3 Pomo:
 додав кнопку confirm в addDataScreen
 додав запис в Json через модель
+
+4 Pomo
+Додав створення session_json при заході у SessionScreeView

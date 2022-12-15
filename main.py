@@ -70,6 +70,7 @@ class agroApp3MVC(MDApp):
             view.name = name_screen
             self.manager_screens.add_widget(view)
 
+
         logger.info(f"screen manager: {self.manager_screens.children}")
         return self.manager_screens
 
