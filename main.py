@@ -9,84 +9,85 @@ To run the application in hot boot mode, execute the command in the console:
 DEBUG=1 python main.py
 """
 
-import importlib
-import os
-
-from kivy import Config
-
-from PIL import ImageGrab
-import logging
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger()
-print(f"started new logger {logger} with scope level {logger.level}")
-print(f"logger handlers: {logger.handlers}")
-print("Connected loggers:", *logging.Logger.manager.loggerDict.keys(), sep=", ")
-
-# TODO: You may know an easier way to get the size of a computer display.
-resolution = ImageGrab.grab().size
-
-# Change the values of the application window size as you need.
-Config.set("graphics", "height", "700")
-Config.set("graphics", "width", "400")
-
-from kivy.core.window import Window
+# import importlib
+# import os
+#
+# from kivy import Config
+#
+# from PIL import ImageGrab
+# import logging
+# from kivy import Logger
+#
+# logging.basicConfig(level=logging.INFO)
+# logger = logging.getLogger()
+# print(f"started new logger {logger} with scope level {logger.level}")
+# print(f"logger handlers: {logger.handlers}")
+# print("Connected loggers:", *logging.Logger.manager.loggerDict.keys(), sep=", ")
+#
+# # TODO: You may know an easier way to get the size of a computer display.
+# resolution = ImageGrab.grab().size
+#
+# # Change the values of the application window size as you need.
+# Config.set("graphics", "height", "700")
+# Config.set("graphics", "width", "400")
+#
+# from kivy.core.window import Window
 
 # Place the application window on the right side of the computer screen.
 # Window.top = 0
 # Window.left = resolution[0] - Window.width
 
-from kivymd.tools.hotreload.app import MDApp
-from kivymd.uix.screenmanager import MDScreenManager
+# from kivymd.tools.hotreload.app import MDApp
+# from kivymd.uix.screenmanager import MDScreenManager
 
 
-class agroApp3MVC(MDApp):
-    KV_DIRS = [os.path.join(os.getcwd(), "View")]
-    var_str = "zalupa"
-    def build_app(self) -> MDScreenManager:
-        """
-        In this method, you don't need to change anything other than the
-        application theme.
-        """
-
-        import View.screens
-        logger.info(f"{__name__} build app called")
-        self.manager_screens = MDScreenManager()
-        Window.bind(on_key_down=self.on_keyboard_down)
-
-        # inportlib used
-        #It allows you to import modules which you do not know the name at coding time.
-        #For instance when my application starts,
-        # I walk through a directory structure and load the modules as I discover them.
-
-        importlib.reload(View.screens)
-        screens = View.screens.screens
-
-        for i, name_screen in enumerate(screens.keys()):
-            model = screens[name_screen]["model"]()
-            controller = screens[name_screen]["controller"](model)
-            view = controller.get_view()
-            view.manager_screens = self.manager_screens
-            view.name = name_screen
-            self.manager_screens.add_widget(view)
-
-
-        logger.info(f"screen manager: {self.manager_screens.children}")
-        return self.manager_screens
-
-    def on_keyboard_down(self, window, keyboard, keycode, text, modifiers) -> None:
-        """
-        The method handles keyboard events.
-
-        By default, a forced restart of an application is tied to the
-        `CTRL+R` key on Windows OS and `COMMAND+R` on Mac OS.
-        """
-
-        if "meta" in modifiers or "ctrl" in modifiers and text == "r":
-            self.rebuild()
-
-
-agroApp3MVC().run()
+# class agroApp3MVC(MDApp):
+#     KV_DIRS = [os.path.join(os.getcwd(), "View")]
+#
+#     def build_app(self) -> MDScreenManager:
+#         """
+#         In this method, you don't need to change anything other than the
+#         application theme.
+#         """
+#
+#         import View.screens
+#         logger.info(f"{__name__} build app called")
+#         self.manager_screens = MDScreenManager()
+#         Window.bind(on_key_down=self.on_keyboard_down)
+#
+#         # inportlib used
+#         #It allows you to import modules which you do not know the name at coding time.
+#         #For instance when my application starts,
+#         # I walk through a directory structure and load the modules as I discover them.
+#
+#         importlib.reload(View.screens)
+#         screens = View.screens.screens
+#
+#         for i, name_screen in enumerate(screens.keys()):
+#             model = screens[name_screen]["model"]()
+#             controller = screens[name_screen]["controller"](model)
+#             view = controller.get_view()
+#             view.manager_screens = self.manager_screens
+#             view.name = name_screen
+#             self.manager_screens.add_widget(view)
+#
+#
+#         logger.info(f"screen manager: {self.manager_screens.children}")
+#         return self.manager_screens
+#
+#     def on_keyboard_down(self, window, keyboard, keycode, text, modifiers) -> None:
+#         """
+#         The method handles keyboard events.
+#
+#         By default, a forced restart of an application is tied to the
+#         `CTRL+R` key on Windows OS and `COMMAND+R` on Mac OS.
+#         """
+#
+#         if "meta" in modifiers or "ctrl" in modifiers and text == "r":
+#             self.rebuild()
+#
+#
+# agroApp3MVC().run()
 
 # After you finish the project, remove the above code and uncomment the below
 # code to test the application normally without hot reloading.
@@ -103,42 +104,47 @@ agroApp3MVC().run()
 # https://github.com/HeaTTheatR/LoginAppMVC
 # https://en.wikip  edia.org/wiki/Model–view–controller
 # """
-# 
-# from kivymd.app import MDApp
-# from kivymd.uix.screenmanager import MDScreenManager
-# 
-# from View.screens import screens
-# 
-# 
-# class agroApp3MVC(MDApp):
-#     def __init__(self, **kwargs):
-#         super().__init__(**kwargs)
-#         self.load_all_kv_files(self.directory)
-#         # This is the screen manager that will contain all the screens of your
-#         # application.
-#         self.manager_screens = MDScreenManager()
-#         
-#     def build(self) -> MDScreenManager:
-#         self.generate_application_screens()
-#         return self.manager_screens
-# 
-#     def generate_application_screens(self) -> None:
-#         """
-#         Creating and adding screens to the screen manager.
-#         You should not change this cycle unnecessarily. He is self-sufficient.
-# 
-#         If you need to add any screen, open the `View.screens.py` module and
-#         see how new screens are added according to the given application
-#         architecture.
-#         """
-# 
-#         for i, name_screen in enumerate(screens.keys()):
-#             model = screens[name_screen]["model"]()
-#             controller = screens[name_screen]["controller"](model)
-#             view = controller.get_view()
-#             view.manager_screens = self.manager_screens
-#             view.name = name_screen
-#             self.manager_screens.add_widget(view)
-# 
-# 
-# agroApp3MVC().run()
+#
+from kivy import Logger
+from kivymd.app import MDApp
+from kivymd.uix.screenmanager import MDScreenManager
+
+from View.screens import screens
+
+
+class agroApp3MVC(MDApp):
+
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        Logger.info(f"{__name__}, root directory - {self.directory}")
+        self.load_all_kv_files(self.directory)
+
+        # This is the screen manager that will contain all the screens of your
+        # application.
+        self.manager_screens = MDScreenManager()
+
+    def build(self) -> MDScreenManager:
+        self.generate_application_screens()
+        return self.manager_screens
+
+    def generate_application_screens(self) -> None:
+        """
+        Creating and adding screens to the screen manager.
+        You should not change this cycle unnecessarily. He is self-sufficient.
+
+        If you need to add any screen, open the `View.screens.py` module and
+        see how new screens are added according to the given application
+        architecture.
+        """
+
+        for i, name_screen in enumerate(screens.keys()):
+            model = screens[name_screen]["model"]()
+            controller = screens[name_screen]["controller"](model)
+            view = controller.get_view()
+            view.manager_screens = self.manager_screens
+            view.name = name_screen
+            self.manager_screens.add_widget(view)
+
+
+agroApp3MVC().run()
