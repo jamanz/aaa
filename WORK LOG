@@ -23,3 +23,24 @@ https://github.com/AlesyaRabushka/MVC_Kivy_Python
 10 Pomo
 https://github.com/Kulothungan16/kivy-lazy-loading-template/blob/main/libs/uix/root.py
 lazy loading with function for screens .goback()
+
+
+11 Pomo
+Start debuging with my androind
+1. Plug pphone with enabled debuuggin
+2. On windows console check devices: adb devices 
+set up adb tcpip 5555 
+3. in linux 
+	adb -s 7369ca370504 install myapp-0.1-arm64-v8a_armeabi-v7a-debug.apk
+	adb -s 7369ca370504 logcat *:S python:D
+4. find 
+	warning:  [WARNING] [Config      ] Older configuration version detected (0 instead of 24)
+	error: Exception: The version of Kivy installed on this system is too old. (You have 2.1.0, but the application requires 2.2.0)
+
+
+
+12 pomo 
+There are several potential risks and problems that can occur if you run the Buildozer tool as the root user:
+
+Compatibility issues: Running Buildozer as root may cause compatibility issues with other software or tools, as the root user has full access to the system and may be able to make changes that could affect the behavior of other programs.
+Maintenance issues: If you run Buildozer as root, you may encounter maintenance issues in the future, as it can be difficult to track and manage the changes that have been made to the system. This can make it more difficult to troubleshoot problems and perform system updates

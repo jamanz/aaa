@@ -111,21 +111,22 @@ from kivymd.uix.screenmanager import MDScreenManager
 
 from View.screens import screens
 
+# todo: after upload new session view on incomplete session screen. Bug if no incomplete are present
+
 
 class agroApp3MVC(MDApp):
-
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        Logger.info(f"{__name__}, root directory - {self.directory}")
         self.load_all_kv_files(self.directory)
-
+        Logger.debug(f"{__name__}: all kv files loaded")
         # This is the screen manager that will contain all the screens of your
         # application.
         self.manager_screens = MDScreenManager()
+        Logger.debug(f"{__name__}: screen manager inited")
 
     def build(self) -> MDScreenManager:
         self.generate_application_screens()
+        Logger.debug(f"{__name__}: application screens loaded, SM: {self.manager_screens.screens}")
         return self.manager_screens
 
     def generate_application_screens(self) -> None:

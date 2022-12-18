@@ -28,11 +28,10 @@ class ListSessionsScreenView(BaseScreenView):
 
 
     def on_enter(self, *args):
-        Logger.info(f"{__name__}: on_enter fired, args: {args}")
+        Logger.info(f"{__name__}: on_enter fired")
         self.ids.session_list.clear_widgets()
 
         def add_session_item(session, *args):
-            print("args are: ", args)
             self.ids.session_list.add_widget(
                 OneLineListItem(
                     text=str(session.name),
@@ -40,17 +39,24 @@ class ListSessionsScreenView(BaseScreenView):
                 )
             )
 
+
+        Logger.info(f"{__name__}: items gonna be added to list")
+        sessions_num = 0
+
         if self.current_sessions_list_type == "incomplete":
             incomplete_sessions = self.incomplete_path.glob("*.json")
             for i, session in enumerate(incomplete_sessions):
+                sessions_num += 1
                 Clock.schedule_once(partial(add_session_item, session), i*0.03)
 
         elif self.current_sessions_list_type == "completed":
             completed_sessions = self.completed_path.glob("*.json")
             for i, session in enumerate(completed_sessions):
+                sessions_num += 1
                 Clock.schedule_once(partial(add_session_item, session), i*0.03)
 
-
+        Logger.info(f"{__name__}: Clock scheduled, {sessions_num} items added to list")
+        sessions_num = 0
 
     def __init__(self, **kwargs):
         super(ListSessionsScreenView, self).__init__(**kwargs)
@@ -68,6 +74,7 @@ class ListSessionsScreenView(BaseScreenView):
                         [["arrow-left", lambda x: self.back_to_screen(back_screen)]]
                         )
         )
+        Logger.info(f"{__name__}: toolbar added successfully")
 
     def start_incomplete_sessions(self):
         Logger.info(f"{__name__}: started incomplete sessions")

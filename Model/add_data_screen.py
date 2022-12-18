@@ -60,7 +60,7 @@ class AddDataScreenModel(BaseScreenModel):
     def receive_session_json_path(self, session_path: Path):
         self.session_json_path = session_path
 
-        print(f"{__name__} recieved json path: {self.session_json_path} ")
+        Logger.info(f"{__name__}: recieved json path: {self.session_json_path} ")
 
         # self.send_session_json_path_to_view(session_path, "add data screen")
 

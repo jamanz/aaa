@@ -13,8 +13,10 @@ class AddDataScreenView(BaseScreenView):
         Logger.info("w: AddDataScreenView inited")
         ### add widgets
         self.add_widget(addDataCard())
+
         confirm_btn = Button(text="Confirm", size_hint=(.3, .1), on_press=self.save_record_and_back_to_session_screen)
         self.add_widget(confirm_btn)
+        Logger.info(f"{__name__}: AddDataCard and buttons added")
 
     def save_record_and_back_to_session_screen(self, event):
         self.controller.write_record_to_json()

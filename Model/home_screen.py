@@ -5,7 +5,7 @@ from kivy.storage.jsonstore import JsonStore
 import secrets
 import pathlib
 from pathlib import Path
-
+from kivy.logger import Logger
 
 class HomeScreenModel(BaseScreenModel):
     """
@@ -19,9 +19,10 @@ class HomeScreenModel(BaseScreenModel):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        print(f"HS MODEL")
+        Logger.info(f"{__name__}: Initializing")
 
     def start_list_sessions(self, state):
+        Logger.info(f"{__name__}: Started listing sessions, state={state}")
         for observer in self._observers:
             if observer.name == "list sessions screen":
                 if state == "completed":
@@ -30,11 +31,12 @@ class HomeScreenModel(BaseScreenModel):
                     observer.model.start_incomplete_sessions()
 
     def start_new_session(self, session_name, date):
-        print(f"New session started in {__name__}:")
+
 
         self.unique_id = secrets.token_urlsafe(2)
         self.session_name = f"{session_name}_{self.unique_id}"
 
+        Logger.info(f"{__name__}: started new session: {self.session_name}")
         self.create_new_session_json(session_name=self.session_name,
                                      sid=self.unique_id,
                                      date=date)
