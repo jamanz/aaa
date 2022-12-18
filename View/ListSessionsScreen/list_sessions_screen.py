@@ -18,6 +18,9 @@ class ListSessionsScreenView(BaseScreenView):
     incomplete_path = Path("assets", "data")
     completed_path = Path("assets", "data", "completed")
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
     def callback(self, item):
         print("item pressed: ", item.text)
         if self.current_sessions_list_type == 'incomplete':
@@ -78,10 +81,12 @@ class ListSessionsScreenView(BaseScreenView):
 
     def start_incomplete_sessions(self):
         Logger.info(f"{__name__}: started incomplete sessions")
+        self.on_enter()
         self.add_app_toolbar("Incomplete sessions", "home screen")
 
     def start_completed_sessions(self):
         Logger.info(f"{__name__}: started completed sessions")
+        self.on_enter()
         self.add_app_toolbar("Completed sessions", "home screen")
 
 

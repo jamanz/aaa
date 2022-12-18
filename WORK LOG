@@ -44,3 +44,14 @@ There are several potential risks and problems that can occur if you run the Bui
 
 Compatibility issues: Running Buildozer as root may cause compatibility issues with other software or tools, as the root user has full access to the system and may be able to make changes that could affect the behavior of other programs.
 Maintenance issues: If you run Buildozer as root, you may encounter maintenance issues in the future, as it can be difficult to track and manage the changes that have been made to the system. This can make it more difficult to troubleshoot problems and perform system updates
+
+Not critical as me
+
+13 pomo
+[WARNING] [Config      ] Older configuration version detected (0 instead of 24)
+[Window      ] virtual keyboard not allowed, single mode, not docked
+may be cues
+
+
+
+
