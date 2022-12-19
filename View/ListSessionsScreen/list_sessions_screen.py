@@ -15,11 +15,14 @@ class ListSessionsScreenView(BaseScreenView):
     app_bar_title = StringProperty()
     current_sessions_list_type = StringProperty()
 
-    incomplete_path = Path("assets", "data")
-    completed_path = Path("assets", "data", "completed")
+    incomplete_path = Path("assets", "data").resolve()
+    completed_path = Path("assets", "data", "completed").resolve()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        Logger.info(f"{__name__}: Inited completed path: {self.completed_path}")
+        Logger.info(f"{__name__}: Inited incomplete path: {self.incomplete_path}")
+
 
     def callback(self, item):
         print("item pressed: ", item.text)
@@ -60,9 +63,6 @@ class ListSessionsScreenView(BaseScreenView):
 
         Logger.info(f"{__name__}: Clock scheduled, {sessions_num} items added to list")
         sessions_num = 0
-
-    def __init__(self, **kwargs):
-        super(ListSessionsScreenView, self).__init__(**kwargs)
 
     def back_to_screen(self, screen):
         self.ids.session_list.clear_widgets()

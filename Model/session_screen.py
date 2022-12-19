@@ -1,7 +1,5 @@
 from Model.base_model import BaseScreenModel
 from kivy.storage.jsonstore import JsonStore
-import json
-import secrets
 from kivy.properties import ObjectProperty, StringProperty
 from pathlib import Path
 import os
@@ -29,9 +27,9 @@ class SessionScreenModel(BaseScreenModel):
         return self.session_json['info']['state']
 
     def receive_session_json_path_from_screen_model(self, session_path: Path, from_screen: str):
+        Logger.info(f"{__name__}: recieved from {from_screen} json path: {self.session_json_path} ")
         self.session_json_path = session_path
         self.session_json = JsonStore(session_path)
-        print(f"{__name__}: recieved from {from_screen} json path: {self.session_json_path} ")
         self.send_session_json_path_to_session_screen_view(session_path, from_screen, "session screen")
         self.send_session_json_path_to_models(session_path, "add data screen")
 

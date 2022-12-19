@@ -108,25 +108,33 @@ DEBUG=1 python main.py
 from kivy import Logger
 from kivymd.app import MDApp
 from kivymd.uix.screenmanager import MDScreenManager
-
+import os
+from os.path import abspath, dirname
+from pathlib import Path
 from View.screens import screens
 
 # todo: after upload new session view on incomplete session screen. Bug if no incomplete are present
 
 
 class agroApp3MVC(MDApp):
+    app_abs_path = Path(abspath(dirname(__file__)))
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.load_all_kv_files(self.directory)
-        Logger.info(f"{__name__}: all kv files loaded")
+        # script_path = os.path.dirname(os.path.realpath(__file__))
+
+        # Logger.info(f"{__name__}: script path: {script_path}")
+        Logger.info(f"{__name__}: abs path for app: {self.app_abs_path}")
+        # Logger.info(f"{__name__}: all kv files loaded")
         # This is the screen manager that will contain all the screens of your
         # application.
         self.manager_screens = MDScreenManager()
-        Logger.info(f"{__name__}: screen manager inited")
+        # Logger.info(f"{__name__}: screen manager inited")
 
     def build(self) -> MDScreenManager:
         self.generate_application_screens()
-        Logger.info(f"{__name__}: application screens loaded, SM: {self.manager_screens.screens}")
+        # Logger.info(f"{__name__}: application screens loaded, SM: {self.manager_screens.screens}")
         return self.manager_screens
 
     def generate_application_screens(self) -> None:

@@ -1,12 +1,14 @@
 from Model.base_model import BaseScreenModel
 from pathlib import Path
 from kivy import Logger
-
+from pathlib import Path
 class ListSessionsScreenModel(BaseScreenModel):
     """
     Implements the logic of the
     :class:`~View.list_sessions_screen.ListSessionsScreen.ListSessionsScreenView` class.
     """
+
+    json_storage_path = Path("assets", "data").resolve()
 
     def start_incomplete_sessions(self):
         Logger.info(f"{__name__}: start incomplete sessions")

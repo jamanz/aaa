@@ -6,6 +6,8 @@ import secrets
 import pathlib
 from pathlib import Path
 from kivy.logger import Logger
+from os.path import dirname, abspath
+
 
 class HomeScreenModel(BaseScreenModel):
     """
@@ -14,12 +16,14 @@ class HomeScreenModel(BaseScreenModel):
     """
 
     # new_session_json = ObjectProperty()
-    json_path = pathlib.Path("assets", "data")
 
+    # todo: must be not empty, add error handling,
+    # link: https://stackoverflow.com/questions/42513056/how-to-get-absolute-path-of-a-pathlib-path-object
+    json_storage_path = pathlib.Path("assets", "data").resolve()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        Logger.info(f"{__name__}: Initializing")
+        Logger.info(f"{__name__}: Initializing, app abs data path: {self.json_storage_path}")
 
     def start_list_sessions(self, state):
         Logger.info(f"{__name__}: Started listing sessions, state={state}")
@@ -41,13 +45,13 @@ class HomeScreenModel(BaseScreenModel):
                                      sid=self.unique_id,
                                      date=date)
 
-        path_to_json = self.json_path.joinpath(self.session_name+'.json')
+        path_to_json = self.json_storage_path.joinpath(self.session_name + '.json')
         self.send_session_json_path_to_models(path_to_json, "session screen")
         # self.send_session_json_path_to_models(path_to_json, "add data screen")
 
     def create_new_session_json(self, session_name, sid, date):
-        print("PATH: ", self.json_path.joinpath(session_name+'.json'))
-        self.new_session_json = JsonStore(self.json_path.joinpath(session_name+'.json'))
+        # print("PATH: ", self.json_storage_path.joinpath(session_name + '.json'))
+        self.new_session_json = JsonStore(self.json_storage_path.joinpath(session_name + '.json'))
         session_json_keys = {
             'session_name': session_name,
             'date': date,
@@ -61,7 +65,6 @@ class HomeScreenModel(BaseScreenModel):
     def send_session_json_path_to_models(self, session_path: Path, name_screen: str) -> None:
         for observer in self._observers:
             if observer.name == name_screen:
-                print('path to json: ', session_path)
                 observer.model.receive_session_json_path_from_screen_model(session_path, "home screen")
 
 
