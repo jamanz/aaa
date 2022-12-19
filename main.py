@@ -112,20 +112,36 @@ import os
 from os.path import abspath, dirname
 from pathlib import Path
 from View.screens import screens
+from kivy import user_home_dir, kivy_home_dir, kivy_base_dir, dirname
+
+from kivy.utils import platform
 
 # todo: after upload new session view on incomplete session screen. Bug if no incomplete are present
 
 
+if platform == 'android':
+    from android.permissions import request_permissions, Permission
+    request_permissions([Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE])
+
+    # PATH = "/storage/emulated/0/DCIM"
+
+
 class agroApp3MVC(MDApp):
-    app_abs_path = Path(abspath(dirname(__file__)))
+    app_folder = os.path.dirname(os.path.abspath(__file__))
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        # self.user_data_dir
         self.load_all_kv_files(self.directory)
         # script_path = os.path.dirname(os.path.realpath(__file__))
 
         # Logger.info(f"{__name__}: script path: {script_path}")
-        Logger.info(f"{__name__}: abs path for app: {self.app_abs_path}")
+        Logger.info(f"""{__name__}: APP INITED on platform: {platform} 
+                    abs path for app: {self.app_folder}
+                    kivy userhomedir: {user_home_dir}
+                    kivy_home_dir: {kivy_home_dir}
+                    kivy_base_dir: {kivy_base_dir} 
+                    dirname: {dirname}""")
         # Logger.info(f"{__name__}: all kv files loaded")
         # This is the screen manager that will contain all the screens of your
         # application.
@@ -134,7 +150,7 @@ class agroApp3MVC(MDApp):
 
     def build(self) -> MDScreenManager:
         self.generate_application_screens()
-        # Logger.info(f"{__name__}: application screens loaded, SM: {self.manager_screens.screens}")
+        Logger.info(f"{__name__}: application screens loaded, SM: {self.manager_screens.screens}")
         return self.manager_screens
 
     def generate_application_screens(self) -> None:

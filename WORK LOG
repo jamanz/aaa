@@ -52,6 +52,37 @@ Not critical as me
 [Window      ] virtual keyboard not allowed, single mode, not docked
 may be cues
 
+14-16 pomo
+
+added android permitions in 2 methods via 
+1*.spec
+
+2.in runtime 
+indicated error with absolute path for json files to interact 
+
+
+
+We can save json to
+1.App private storage: app.user_data_dir
+
+2.External storage: from kivy.storage.abstract_path import external_storage_dir
+Note that you may need to request the
+READ_EXTERNAL_STORAGE and WRITE_EXTERNAL_STORAGE
+permissions in your app's manifest file to access the external storage directory.
+
+
+
+from kivy.storage.abstract_path import external_storage_dir
+
+# Write to external storage
+with open(f"{external_storage_dir}/my_data.json", "w") as f:
+    f.write(json_data)
+
+# Read from external storage
+with open(f"{external_storage_dir}/my_data.json", "r") as f:
+    data = f.read()
+
+
 
 
 

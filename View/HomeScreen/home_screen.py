@@ -13,12 +13,22 @@ class HomeScreenView(BaseScreenView):
 
     def start_new_session(self, session_name='session_name', date='11.12.2022'):
         self.controller.start_new_session(session_name, date)
+        Logger.info(f"{__name__}: Started transition to session screen")
+        self.app.manager_screens.transition.direction = "right"
+        self.app.manager_screens.current = "session screen"
+
 
     def start_recorded_sessions(self):
         self.model.start_list_sessions("completed")
+        Logger.info(f"{__name__}: Started transition to completed list sessions screen")
+        self.app.manager_screens.transition.direction = "right"
+        self.app.manager_screens.current = "list sessions screen"
 
     def start_incomplete_sessions(self):
         self.model.start_list_sessions("incomplete")
+        Logger.info(f"{__name__}: Started transition to icomplete list sessions screen")
+        self.app.manager_screens.transition.direction = "right"
+        self.app.manager_screens.current = "list sessions screen"
 
     def model_is_changed(self) -> None:
         """

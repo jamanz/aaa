@@ -6,21 +6,18 @@
         NavigationButton:
             id: new_ses_btn
             text: "Start new session"
-            on_release:
-                app.manager_screens.current = "session screen"
-                app.manager_screens.transition.direction = "left"
+            on_press:
                 root.start_new_session()
 
         NavigationButton:
             text: "Incomplete sessions"
             on_release:
                 self.background_color =  [1, 0, 0, 1]
-                app.manager_screens.current = "list sessions screen"
                 root.start_incomplete_sessions()
+
         NavigationButton:
             text: "Recorded sessions"
             on_release:
-                app.manager_screens.current = "list sessions screen"
                 root.start_recorded_sessions()
 
 
