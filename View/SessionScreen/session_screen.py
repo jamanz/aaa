@@ -20,8 +20,8 @@ class SessionScreenView(BaseScreenView):
         Logger.info(f"{__name__}: Initializing, kv ids: {self.ids}")
 
     def upload_session(self, event):
-        self.app.manager_screens.current = "list sessions screen"
         self.controller.upload_session(self.path_to_json)
+        self.app.manager_screens.current = "list sessions screen"
 
     def add_completed_sessions_widgets(self):
         Logger.info(f"{__name__}: starting to add widget for completed session")
@@ -63,8 +63,8 @@ class SessionScreenView(BaseScreenView):
         Logger.info(f"{__name__}: created JsonStore")
 
     def back_to_screen(self, screen):
-        self.app.manager_screens.current = screen
         self.ids.app_bar.clear_widgets()
+        self.app.manager_screens.current = screen
         Logger.info(f"{__name__}: user backed to {screen}")
 
     def add_app_toolbar(self, back_screen: str):

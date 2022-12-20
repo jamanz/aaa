@@ -81,14 +81,19 @@ class ListSessionsScreenView(BaseScreenView):
 
     def start_incomplete_sessions(self):
         Logger.info(f"{__name__}: started incomplete sessions")
-        self.on_enter()
         self.add_app_toolbar("Incomplete sessions", "home screen")
+        try:
+            self.on_enter()
+        except:
+            Logger.info(f"{__name__}: ERROR catch in start_incomplete_sessions")
 
     def start_completed_sessions(self):
         Logger.info(f"{__name__}: started completed sessions")
-        self.on_enter()
         self.add_app_toolbar("Completed sessions", "home screen")
-
+        try:
+            self.on_enter()
+        except:
+            Logger.info(f"{__name__}: ERROR catch in start_incomplete_sessions")
 
     def send_path_to_session_screen(self, path):
         self.model.send_path_to_session_screen(path)

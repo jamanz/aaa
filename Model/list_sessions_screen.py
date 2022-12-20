@@ -29,4 +29,3 @@ class ListSessionsScreenModel(BaseScreenModel):
         for observer in self._observers:
             if observer.name == "session screen":
                 observer.model.receive_session_json_path_from_screen_model(path, "list sessions screen")
-                # observer.add_completed_session_widgets()

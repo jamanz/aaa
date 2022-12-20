@@ -62,25 +62,61 @@ indicated error with absolute path for json files to interact
 
 
 
-We can save json to
-1.App private storage: app.user_data_dir
+12-19 23:22:14.246 30455 30475 I python  : [INFO   ] [KivyMD      ] 1.1.1, git-Unknown, 2022-12-19 (installed at "/data/user/0/org.aappdomain.aapp/files/app/_python_bundle/site-packages/kivymd/__init__.pyc")
+12-19 23:22:14.254 30455 30475 I python  : [INFO   ] [Factory     ] 189 symbols loaded
 
-2.External storage: from kivy.storage.abstract_path import external_storage_dir
-Note that you may need to request the
-READ_EXTERNAL_STORAGE and WRITE_EXTERNAL_STORAGE
-permissions in your app's manifest file to access the external storage directory.
+12-19 23:22:20.727 30493 30493 F DEBUG   : Build fingerprint: 'xiaomi/tissot/tissot_sprout:9/PKQ1.180917.001/V10.0.24.0.PDHMIXM:user/release-keys'
+12-19 23:22:20.727 30493 30493 F DEBUG   : Revision: '0'
+12-19 23:22:20.727 30493 30493 F DEBUG   : ABI: 'arm64'
+12-19 23:22:20.727 30493 30493 F DEBUG   : pid: 30455, tid: 30475, name: SDLThread  >>> org.aappdomain.aapp <<<
+12-19 23:22:20.727 30493 30493 F DEBUG   : signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x38
+12-19 23:22:20.727 30493 30493 F DEBUG   : Cause: null pointer dereference
+12-19 23:22:20.727 30493 30493 F DEBUG   :     x0  000000794bdca800  x1  0000000000000003  x2  0000000000000000  x3  0000000000000000
+12-19 23:22:20.727 30493 30493 F DEBUG   :     x4  0000000000008cd5  x5  000000794bcad180  x6  0000000000008cd5  x7  000000794e47c6c0
+12-19 23:22:20.727 30493 30493 F DEBUG   :     x8  0000000000000040  x9  0000000000000001  x10 0000000000000001  x11 0000000000000000
+12-19 23:22:20.727 30493 30493 F DEBUG   :     x12 0000000000000001  x13 000000794bcad210  x14 00000000000000ff  x15 0000000000000000
+12-19 23:22:20.727 30493 30493 F DEBUG   :     x16 0000000000000000  x17 0000000000000001  x18 0000000000000002  x19 000000794e47c6c0
+12-19 23:22:20.727 30493 30493 F DEBUG   :     x20 0000000000000000  x21 0000000000008be7  x22 0000000000000001  x23 0000000000000000
+12-19 23:22:20.727 30493 30493 F DEBUG   :     x24 000000794bcad210  x25 000000000000003c  x26 000000794e47ca50  x27 0000000000000058
+12-19 23:22:20.727 30493 30493 F DEBUG   :     x28 0000000000000000  x29 000000794f3fc0a0
+12-19 23:22:20.727 30493 30493 F DEBUG   :     sp  000000794f3fc040  lr  000000795f223630  pc  000000795f223bd8
 
 
 
-from kivy.storage.abstract_path import external_storage_dir
+12-19 23:22:20.540 30455 30475 F libc    : Fatal signal 11 (SIGSEGV), code 1 (SEGV_MAPERR), fault addr 0x38 in tid 30475 (SDLThread), pid 30455 (aappdomain.aapp)
 
-# Write to external storage
-with open(f"{external_storage_dir}/my_data.json", "w") as f:
-    f.write(json_data)
+DIRECTORY                                                    DESCRIPTION / API
+=====================================================================================
+APP CODE
+========
+/data/app/<pkg>*                                             (user apps installation directory)
+/data/app/<pkg>*/base.apk                                    (original `.apk` file)
+/data/app/<pkg>*/lib/<arch>/*.so                             (shared libraries)
+/data/app/<pkg>*/oat/<arch>/base.[art|odex|vdex]             (compiled executable code)
+/data/dalvik-cache/<arch>/*.[art|dex|oat|vdex]               (compiled executable code, only for system apps)
+/data/misc/profiles/cur/<user_id>/<pkg>/primary.prof         (ART profile)
+/data/misc/profiles/ref/<pkg>/primary.prof                   (ART profile)
 
-# Read from external storage
-with open(f"{external_storage_dir}/my_data.json", "r") as f:
-    data = f.read()
+INTERNAL STORAGE
+================
+/data/user[_de]/<user_id>/<pkg>                              getDataDir
+/data/user[_de]/<user_id>/<pkg>/files                        getFilesDir
+/data/user[_de]/<user_id>/<pkg>/[code_]cache                 getCacheDir or getCodeCacheDir
+/data/user[_de]/<user_id>/<pkg>/databases                    getDatabasePath
+/data/user[_de]/<user_id>/<pkg>/no_backup                    getNoBackupFilesDir
+/data/user[_de]/<user_id>/<pkg>/shared_prefs                 getSharedPreferences
+
+EXTERNAL STORAGE
+================
+/storage/emulated/obb/<pkg>/*.obb                            (shared by multi-users, exposed in following view)
+/storage/emulated/<user_id>/Android/obb/<pkg>/*.<pkg>.obb    getObbDirs
+/storage/emulated/<user_id>/Android/media/<pkg>              getExternalMediaDirs
+/storage/emulated/<user_id>/Android/data/<pkg>/             
+/storage/emulated/<user_id>/Android/data/<pkg>/files         getExternalFilesDirs
+/storage/emulated/<user_id>/Android/data/<pkg>/[code_]cache  getExternalCacheDirs
+
+
+
 
 
 

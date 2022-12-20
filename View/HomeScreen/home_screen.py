@@ -16,6 +16,7 @@ class HomeScreenView(BaseScreenView):
         Logger.info(f"{__name__}: Started transition to session screen")
         self.app.manager_screens.transition.direction = "right"
         self.app.manager_screens.current = "session screen"
+        Logger.info(f"{__name__}: Ended transition to session screen")
 
 
     def start_recorded_sessions(self):
@@ -23,12 +24,14 @@ class HomeScreenView(BaseScreenView):
         Logger.info(f"{__name__}: Started transition to completed list sessions screen")
         self.app.manager_screens.transition.direction = "right"
         self.app.manager_screens.current = "list sessions screen"
+        Logger.info(f"{__name__}: Ended transition to completed list sessions screen")
 
     def start_incomplete_sessions(self):
         self.model.start_list_sessions("incomplete")
         Logger.info(f"{__name__}: Started transition to icomplete list sessions screen")
         self.app.manager_screens.transition.direction = "right"
         self.app.manager_screens.current = "list sessions screen"
+        Logger.info(f"{__name__}: Ended transition to icomplete list sessions screen")
 
     def model_is_changed(self) -> None:
         """

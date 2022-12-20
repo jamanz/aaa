@@ -119,9 +119,7 @@ from kivy.utils import platform
 # todo: after upload new session view on incomplete session screen. Bug if no incomplete are present
 
 
-if platform == 'android':
-    from android.permissions import request_permissions, Permission
-    request_permissions([Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE])
+
 
     # PATH = "/storage/emulated/0/DCIM"
 
@@ -152,6 +150,21 @@ class agroApp3MVC(MDApp):
         self.generate_application_screens()
         Logger.info(f"{__name__}: application screens loaded, SM: {self.manager_screens.screens}")
         return self.manager_screens
+
+    def on_start(self):
+        Logger.info(f"{__name__}: on_start fired")
+        if platform == 'android':
+            from android.permissions import request_permissions, Permission
+            request_permissions([Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE])
+
+    def on_pause(self):
+        Logger.info(f"{__name__}: on_pause fired")
+        return True
+
+    def on_resume(self):
+        Logger.info(f"{__name__}: resume fired")
+
+
 
     def generate_application_screens(self) -> None:
         """
