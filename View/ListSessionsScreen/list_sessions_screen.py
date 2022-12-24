@@ -20,9 +20,8 @@ class ListSessionsScreenView(BaseScreenView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        Logger.info(f"{__name__}: Inited completed path: {self.completed_path}")
-        Logger.info(f"{__name__}: Inited incomplete path: {self.incomplete_path}")
-
+        # Logger.info(f"{__name__}: Inited completed path: {self.completed_path}")
+        # Logger.info(f"{__name__}: Inited incomplete path: {self.incomplete_path}")
 
     def callback(self, item):
         print("item pressed: ", item.text)
@@ -32,9 +31,8 @@ class ListSessionsScreenView(BaseScreenView):
             self.send_path_to_session_screen(Path(self.completed_path, item.text))
         self.app.manager_screens.current = "session screen"
 
-
-    def on_enter(self, *args):
-        Logger.info(f"{__name__}: on_enter fired")
+    def on_pre_enter(self, *args):
+        Logger.info(f"{__name__}: on_pre_enter fired")
         self.ids.session_list.clear_widgets()
 
         def add_session_item(session, *args):
@@ -44,7 +42,6 @@ class ListSessionsScreenView(BaseScreenView):
                     on_press=self.callback
                 )
             )
-
 
         Logger.info(f"{__name__}: items gonna be added to list")
         sessions_num = 0
@@ -82,18 +79,18 @@ class ListSessionsScreenView(BaseScreenView):
     def start_incomplete_sessions(self):
         Logger.info(f"{__name__}: started incomplete sessions")
         self.add_app_toolbar("Incomplete sessions", "home screen")
-        try:
-            self.on_enter()
-        except:
-            Logger.info(f"{__name__}: ERROR catch in start_incomplete_sessions")
+        # try:
+        #     self.on_enter()
+        # except:
+        #     Logger.info(f"{__name__}: ERROR catch in start_incomplete_sessions")
 
     def start_completed_sessions(self):
         Logger.info(f"{__name__}: started completed sessions")
         self.add_app_toolbar("Completed sessions", "home screen")
-        try:
-            self.on_enter()
-        except:
-            Logger.info(f"{__name__}: ERROR catch in start_incomplete_sessions")
+        # try:
+        #     self.on_enter()
+        # except:
+        #     Logger.info(f"{__name__}: ERROR catch in start_incomplete_sessions")
 
     def send_path_to_session_screen(self, path):
         self.model.send_path_to_session_screen(path)

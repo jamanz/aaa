@@ -15,13 +15,11 @@ class HomeScreenModel(BaseScreenModel):
     Implements the logic of the
     :class:`~View.home_screen.HomeScreen.HomeScreenView` class.
     """
-
-    # new_session_json = ObjectProperty()
     json_storage_path = pathlib.Path("assets", "data").resolve()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        Logger.info(f"{__name__}: Initializing, app abs data path: {self.json_storage_path}")
+        Logger.info(f"{__name__}: Inited, app abs data path: {self.json_storage_path}")
 
     def start_list_sessions(self, state):
         Logger.info(f"{__name__}: Started listing sessions, state={state}")
@@ -61,12 +59,7 @@ class HomeScreenModel(BaseScreenModel):
             if observer.name == name_screen:
                 observer.model.receive_session_json_path_from_screen_model(session_path, "home screen")
 
-    def send_g_sheet_to_models(self, g_sheet, name_screen):
-        print(f"!!!!!!!!!! {self._observers}")
-        for observer in self._observers:
-            if observer.name == name_screen:
-                observer.model.receive_g_sheet(g_sheet)
-                Logger.info(f"{__name__}: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
 
 
 
