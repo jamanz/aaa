@@ -17,7 +17,7 @@ class SessionScreenView(BaseScreenView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        Logger.info(f"{__name__}: Initializing, kv ids: {self.ids}")
+        # Logger.info(f"{__name__}: Initializing, kv ids: {self.ids}")
 
     def upload_session(self, event):
         self.controller.upload_session(self.path_to_json)

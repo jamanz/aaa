@@ -116,22 +116,23 @@ from kivy import user_home_dir, kivy_home_dir, kivy_base_dir, dirname
 
 from kivy.utils import platform
 
+
 # todo: after upload new session view on incomplete session screen. Bug if no incomplete are present
 
 
 
 
-    # PATH = "/storage/emulated/0/DCIM"
+    # tree_sheet = client.open_by_key(SAMPLE_SPREADSHEET_ID).sheet1
 
 
 class agroApp3MVC(MDApp):
     app_folder = os.path.dirname(os.path.abspath(__file__))
+    g_sheet = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         # self.user_data_dir
         self.load_all_kv_files(self.directory)
-        # script_path = os.path.dirname(os.path.realpath(__file__))
 
         # Logger.info(f"{__name__}: script path: {script_path}")
         Logger.info(f"""{__name__}: APP INITED on platform: {platform} 
@@ -140,15 +141,14 @@ class agroApp3MVC(MDApp):
                     kivy_home_dir: {kivy_home_dir}
                     kivy_base_dir: {kivy_base_dir} 
                     dirname: {dirname}""")
-        # Logger.info(f"{__name__}: all kv files loaded")
-        # This is the screen manager that will contain all the screens of your
-        # application.
+        # This is the screen manager that will contain all the screens of application.
         self.manager_screens = MDScreenManager()
-        # Logger.info(f"{__name__}: screen manager inited")
+
+
 
     def build(self) -> MDScreenManager:
         self.generate_application_screens()
-        Logger.info(f"{__name__}: application screens loaded, SM: {self.manager_screens.screens}")
+        # Logger.info(f"{__name__}: application screens loaded, SM: {self.manager_screens.screens}")
         return self.manager_screens
 
     def on_start(self):
