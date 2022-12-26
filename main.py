@@ -113,7 +113,7 @@ from os.path import abspath, dirname
 from pathlib import Path
 from View.screens import screens
 from kivy import user_home_dir, kivy_home_dir, kivy_base_dir, dirname
-
+from kivy.core.window import Window
 from kivy.utils import platform
 
 
@@ -128,12 +128,13 @@ from kivy.utils import platform
 class agroApp3MVC(MDApp):
     app_folder = os.path.dirname(os.path.abspath(__file__))
     g_sheet = None
+    list_of_prev_screens = []
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         # self.user_data_dir
         self.load_all_kv_files(self.directory)
-
+        Window.bind(on_keyboard=self._key_handler)
         # Logger.info(f"{__name__}: script path: {script_path}")
         Logger.info(f"""{__name__}: APP INITED on platform: {platform} 
                     abs path for app: {self.app_folder}
@@ -144,7 +145,22 @@ class agroApp3MVC(MDApp):
         # This is the screen manager that will contain all the screens of application.
         self.manager_screens = MDScreenManager()
 
+    def go_next_screen(self, current_screen_name, next_screen_name):
+        self.list_of_prev_screens.append(current_screen_name)
+        self.manager_screens.transition.direction = 'left'
+        self.manager_screens.current = next_screen_name
 
+    def go_prev_screen(self):
+        if self.list_of_prev_screens:
+            self.manager_screens.transition.direction = 'right'
+            self.manager_screens.current = self.list_of_prev_screens.pop()
+            return True
+        return False
+
+    def _key_handler(self, instance, key, *args):
+        if key is 27:
+            return self.go_prev_screen()
+        return False
 
     def build(self) -> MDScreenManager:
         self.generate_application_screens()
@@ -163,8 +179,6 @@ class agroApp3MVC(MDApp):
 
     def on_resume(self):
         Logger.info(f"{__name__}: resume fired")
-
-
 
     def generate_application_screens(self) -> None:
         """

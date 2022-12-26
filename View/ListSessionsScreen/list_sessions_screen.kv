@@ -1,35 +1,35 @@
 #:import utils kivy.utils
 
+<SessionItem>:
+    on_press: root.callback(self)
+
+<SessionsPage>:
+    viewclass: "SessionItem"
+    RecycleBoxLayout:
+        padding: 10
+        spacing: 5
+        default_size: None, 50
+        default_size_hint: 1, None
+        size_hint_y: None
+        height: self.minimum_height
+        orientation: "vertical"
+        background_color: utils.get_color_from_hex('#c1c72f')
+
 <ListSessionsScreenView>:
     MDBoxLayout:
         orientation: 'vertical'
         size_hint: 1, 1
-        md_bg_color: utils.get_color_from_hex('#c1c72f')
+        #md_bg_color: utils.get_color_from_hex('#c1c72f')
+        MDTopAppBar:
+            title: root.app_bar_title
+            type_height: "medium"
+            headline_text: "Headline"
+            left_action_items: [["arrow-left", lambda x: root.app.go_prev_screen()]]
 
-        MDAnchorLayout:
-            size_hint: 1, 0.1
-            anchor_y: 'top'
-            id: app_bar
-            md_bg_color: utils.get_color_from_hex('#75c72f')
+        SessionsPage:
+            id: sessions_page
 
 
-        MDStackLayout:
-            #md_bg_color: utils.get_color_from_hex('#F05F40')
-            size_hint: 1, 0.9
-            #pos_hint: {"center_x": .5, "center_y": .5}
-            orientation: 'rl-tb'
-
-            MDScrollView:
-
-                do_scroll_x: False
-                do_scroll_y: True
-                #MDGridLayout:
-                MDList:
-                    id: session_list
-                    height: self.minimum_height
-                    #cols: 1
-                    size_hint: 1, None
-                    #orientation: 'rl-tb'
 
 
 

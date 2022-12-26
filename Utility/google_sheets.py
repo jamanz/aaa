@@ -2,9 +2,20 @@ import gspread
 from google.oauth2.service_account import Credentials
 import os
 from kivy import Logger
+from collections import OrderedDict
 
 SAMPLE_SPREADSHEET_ID = '1D6D-jEE5cBvrPABljLZla5d1NtjOhmCR76ymPgNN3r0'
 TOKEN_FILE = 'gsheets_key.json'
+
+features_name_to_sheets_columns_map = OrderedDict({
+    'Tree Number': 'A',
+    'Tree specie': 'B',
+    'Stem number': 'C',
+    'Tree diameter': 'D',
+    'Crown diameter': 'E',
+    'Height': 'F'
+})
+
 
 
 def authorize_gsheets():

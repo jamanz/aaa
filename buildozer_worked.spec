@@ -1,7 +1,7 @@
 [app]
 
 # (str) Title of your application
-title = AAPP23
+title = AAPP27
 
 # (str) Package name
 package.name = aApp
@@ -37,7 +37,7 @@ version = 0.1
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3,pillow,android,sdl2_ttf==2.0.15,kivy==2.1.0,kivymd==1.0.2,gspread,google-auth-oauthlib,google-auth-httplib2,google-api-python-client
+requirements = python3,pillow,android,kivy==2.1.0,kivymd==1.0.2,google-auth-oauthlib,oauthlib,requests_oauthlib,httplib2,pyasn1,pyasn1-modules,requests,rsa,oauth2client,urllib3,chardet,gspread,google-auth,cachetools,idna
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes

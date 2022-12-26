@@ -19,8 +19,7 @@ class addDataCard(MDCard):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        print("addDataCard initialization")
-        # logger.info("addDataCard inited")
+
 
     def callback(self, instance):
         print("MyCard pressed ", instance)

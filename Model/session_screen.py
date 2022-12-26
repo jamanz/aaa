@@ -4,19 +4,9 @@ from kivy.properties import ObjectProperty, StringProperty
 from pathlib import Path
 import os
 from kivy.logger import Logger
-from Utility.google_sheets import next_available_row, get_g_sheet
-from collections import OrderedDict
+from Utility.google_sheets import next_available_row, get_g_sheet, features_name_to_sheets_columns_map
 
-
-features_name_to_sheets_columns_map = OrderedDict({
-    'Tree Number': 'A',
-    'Tree specie': 'B',
-    'Stem number': 'C',
-    'Tree diameter': 'D',
-    'Crown diameter': 'E',
-    'Height': 'F'
-})
-
+from kivy.clock import Clock
 
 
 
@@ -28,8 +18,16 @@ class SessionScreenModel(BaseScreenModel):
 
     #_session_json_path = ObjectProperty()
 
+    session_json = None
+    session_json_path = None
+    g_sheet = None
+
     def __init__(self):
-        self.session_json_path = None
+        #schedule connection to Google Sheets
+        Clock.schedule_once(self.init_g_sheet, 10)
+
+    def init_g_sheet(self, dt):
+        Logger.info(f"{__name__}: async Google sheets inited")
         self.g_sheet = get_g_sheet()
 
     def upload_records_to_sheet(self, records):
@@ -58,7 +56,6 @@ class SessionScreenModel(BaseScreenModel):
         self.g_sheet.batch_update(batch)
         Logger.info(f"{__name__}: Batch sent to Google Sheet")
 
-
     def upload_session(self, session_path: Path):
         self.session_json = JsonStore(session_path)
         self.session_json.put("info", state="completed")
@@ -72,34 +69,21 @@ class SessionScreenModel(BaseScreenModel):
         os.rename(session_path, new_path)
         Logger.info(f"{__name__}: session {session_path.name} uploaded ")
 
-    def get_session_state(self, session_path):
-        return self.session_json['info']['state']
+    def receive_session_json_path_from_screen(self, session_path: Path, from_screen: str):
+        Logger.info(f"{__name__}: json path: {self.session_json_path}, received from {from_screen}")
 
-    def receive_session_json_path_from_screen_model(self, session_path: Path, from_screen: str):
-        Logger.info(f"{__name__}: recieved from {from_screen} json path: {self.session_json_path} ")
         self.session_json_path = session_path
         self.session_json = JsonStore(session_path)
-        self.send_session_json_path_to_session_screen_view(session_path, from_screen, "session screen")
-        self.send_session_json_path_to_models(session_path, "add data screen")
 
-    def send_session_json_path_to_session_screen_view(self, session_path, back_screen, name_screen):
+        self.send_session_json_path_to_session_screen_view(session_path)
+        self.send_session_json_path_to_add_data_screen_model(session_path)
+
+    def send_session_json_path_to_session_screen_view(self, session_path):
         for observer in self._observers:
-            if observer.name == name_screen:
+            if observer.name == "session screen":
                 observer.receive_session_json_path(session_path)
-                state = self.get_session_state(session_path)
-                if state == "completed":
-                    observer.add_completed_sessions_widgets()
-                elif state == "incomplete":
-                    observer.add_incomplete_sessions_widgets(back_screen)
-        Logger.info(f"{__name__}: passed signal to session screen view successfully")
 
-    def send_session_json_path_to_models(self, session_path: Path, name_screen: str) -> None:
+    def send_session_json_path_to_add_data_screen_model(self, session_path):
         for observer in self._observers:
-            if observer.name == name_screen:
-                print('path to json: ', session_path)
+            if observer.name == "add data screen":
                 observer.model.receive_session_json_path(session_path)
-        Logger.info(f'{__name__}: sent json path to {name_screen} model')
-
-
-
-

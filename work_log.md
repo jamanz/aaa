@@ -132,6 +132,16 @@ resolves critical signal 11 and SDLThread ISSUE#1
 that occurs when I was trying to navigate forward to other screens, after android build 
 
 
+## 20-25 Pomo:
+add vanilla uploading to Google Sheets
+bruteforce requirements for gspread lib in buildozer.spec:
+
+```
+requirements = python3,pillow,android,kivy==2.1.0,kivymd==1.0.2,google-auth-oauthlib,oauthlib,requests_oauthlib,httplib2,pyasn1,pyasn1-modules,requests,rsa,oauth2client,urllib3,chardet,gspread,google-auth,cachetools,idna
+```
+
+Done some refactoring
+
 
 
 

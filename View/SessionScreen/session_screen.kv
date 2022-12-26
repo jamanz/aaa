@@ -1,30 +1,34 @@
+#:import utils kivy.utils
+
+<TreeItem>:
+    on_press: root.callback(self)
+
+<TreeItemsPage>:
+    viewclass: "TreeItem"
+    RecycleBoxLayout:
+        padding: 10
+        spacing: 5
+        default_size: None, 50
+        default_size_hint: 1, None
+        size_hint_y: None
+        height: self.minimum_height
+        orientation: "vertical"
+        background_color: utils.get_color_from_hex('#c1c72f')
+
 <SessionScreenView>:
     MDBoxLayout:
         orientation: 'vertical'
         size_hint: 1, 1
         #md_bg_color: utils.get_color_from_hex('#c1c72f')
 
-        MDAnchorLayout:
-            size_hint: 1, 0.1
-            anchor_y: 'top'
-            id: app_bar
-            #md_bg_color: utils.get_color_from_hex('#75c72f')
+        MDTopAppBar:
+            title: root.app_bar_title
+            type_height: "medium"
+            headline_text: "Headline"
+            left_action_items: [["arrow-left", lambda x: root.app.go_prev_screen()]]
 
-        MDStackLayout:
-            size_hint: 1, 0.8
-            md_bg_color: utils.get_color_from_hex('#a82fc7')
-            pos_hint: {"center_x": .5, "center_y": .5}
-            id:box
-            orientation: 'rl-tb'
-
-            MDScrollView:
-                do_scroll_x: False
-                do_scroll_y: True
-                MDGridLayout:
-                    height: self.minimum_height
-                    size_hint: 1, None
-                    cols: 1
-                    id: item_grid
+        TreeItemsPage:
+            id: tree_items_page
 
         MDGridLayout:
             md_bg_color: utils.get_color_from_hex('#975c0e')
@@ -32,6 +36,19 @@
             padding: 10
             spacing: 10
             #pos_hint: {"center_x": .5, "center_y": .5}
-            size_hint: 1, .08
+            size_hint: 1, .1
             id: buttons_grid
+            opacity: 1 if root.show_buttons else 0
+
+            MDFillRoundFlatButton:
+                text: "New Record"
+                size_hint: .4, .5
+                on_release: root.go_to_add_data_screen()
+
+            MDFillRoundFlatButton:
+                text: "Upload Session"
+                size_hint: .4, .5
+                on_release: root.upload_session()
+
+
 
