@@ -56,6 +56,7 @@ class ListSessionsScreenView(BaseScreenView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        Logger.info(f"{__name__}: Inited")
 
     def on_pre_enter(self, *args):
         self.ids.sessions_page.update_sessions(self.current_sessions_list_type)

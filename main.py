@@ -134,6 +134,7 @@ class agroApp3MVC(MDApp):
         super().__init__(**kwargs)
         # self.user_data_dir
         self.load_all_kv_files(self.directory)
+        Logger.info(f"{__name__}: all KV files loaded in directory: {self.directory}")
         Window.bind(on_keyboard=self._key_handler)
         # Logger.info(f"{__name__}: script path: {script_path}")
         Logger.info(f"""{__name__}: APP INITED on platform: {platform} 

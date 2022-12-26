@@ -40,6 +40,7 @@ class SessionScreenView(BaseScreenView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        Logger.info(f"{__name__}: Inited")
 
     def receive_session_json_path(self, session_path: Path):
         Logger.info(f"{__name__}: retrieved json path")

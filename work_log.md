@@ -141,7 +141,15 @@ requirements = python3,pillow,android,kivy==2.1.0,kivymd==1.0.2,google-auth-oaut
 ```
 
 Done some refactoring
+Add empty txt filler to avoid OS not existing data folder (vanilla bone)
 
+
+
+
+## References:
+1. [updating recycle view](https://medium.com/nerd-for-tech/how-to-refresh-kivy-recycleview-72244883d075)
+
+2. [app Optimization Methods](https://gist.github.com/Guhan-SenSam/9dfb11b7bfd8fd24561f4fcd9ff0d5de)
 
 
 

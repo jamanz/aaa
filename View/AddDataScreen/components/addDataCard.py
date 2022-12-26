@@ -1,28 +1,17 @@
-# todo: implement logging to understand order of widget initialization
-# TODO:
-
-
-
 from kivymd.uix.card import MDCard
 from kivy.properties import StringProperty, ObjectProperty
-from kivymd.uix.list import OneLineListItem
-from kivymd.uix.button import MDFillRoundFlatButton
-from kivy.app import App
-# from main import logger
-
-from pprint import pprint
+from kivy import Logger
 
 
-## todo: add block for input label when button is not pressed
 class addDataCard(MDCard):
     chosen_feature = StringProperty()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
+        Logger.info(f"{__name__}: Inited")
 
     def callback(self, instance):
-        print("MyCard pressed ", instance)
+        Logger.info(f"{__name__}: pressed - {instance.text}")
         self.ids.input_field_id.hint_text = instance.text
         self.chosen_feature = instance.text
 

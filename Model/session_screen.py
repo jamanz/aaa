@@ -5,26 +5,18 @@ from pathlib import Path
 import os
 from kivy.logger import Logger
 from Utility.google_sheets import next_available_row, get_g_sheet, features_name_to_sheets_columns_map
-
 from kivy.clock import Clock
 
 
-
 class SessionScreenModel(BaseScreenModel):
-    """
-    Implements the logic of the
-    :class:`~View.session_screen.SessionScreen.SessionScreenView` class.
-    """
-
-    #_session_json_path = ObjectProperty()
-
     session_json = None
     session_json_path = None
     g_sheet = None
 
     def __init__(self):
         #schedule connection to Google Sheets
-        Clock.schedule_once(self.init_g_sheet, 10)
+        Clock.schedule_once(self.init_g_sheet, 20)
+        Logger.info(f"{__name__}: Inited")
 
     def init_g_sheet(self, dt):
         Logger.info(f"{__name__}: async Google sheets inited")

@@ -11,6 +11,7 @@ class HomeScreenView(BaseScreenView):
 
     def __init__(self, **kwargs):
         super(HomeScreenView, self).__init__(**kwargs)
+        Logger.info(f"{__name__}: Inited")
 
     def start_new_session(self, session_name='session_name', date='11.12.2022'):
         self.controller.start_new_session(session_name, date)
