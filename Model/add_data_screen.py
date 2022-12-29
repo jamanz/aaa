@@ -13,9 +13,8 @@ class AddDataScreenModel(BaseScreenModel):
 
     def write_record_to_json(self, event, recod_dict: dict):
         self.session_json = JsonStore(self.session_json_path)
-        session_name = self.session_json_path.stem
-        updated_recs = [recod_dict] + self.session_json.get(session_name)['records']
-        self.session_json.put(session_name, records=updated_recs)
+        updated_recs = [recod_dict] + self.session_json.get('data')['records']
+        self.session_json.put('data', records=updated_recs)
 
         self.update_records_in_session_screen_view()
 

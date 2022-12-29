@@ -1,14 +1,15 @@
 #:import utils kivy.utils
 
 <SessionItem>:
+    text: root.session_name
     on_press: root.callback(self)
 
 <SessionsPage>:
     viewclass: "SessionItem"
     RecycleBoxLayout:
         padding: 10
-        spacing: 5
-        default_size: None, 50
+        spacing: 10
+        default_size: None, 75
         default_size_hint: 1, None
         size_hint_y: None
         height: self.minimum_height
@@ -22,6 +23,7 @@
         #md_bg_color: utils.get_color_from_hex('#c1c72f')
         MDTopAppBar:
             title: root.app_bar_title
+            elevation: 3
             type_height: "medium"
             headline_text: "Headline"
             left_action_items: [["arrow-left", lambda x: root.app.go_prev_screen()]]

@@ -8,6 +8,8 @@ from pathlib import Path
 from kivy.logger import Logger
 from os.path import dirname, abspath
 from Utility.google_sheets import authorize_gsheets, get_g_sheet
+import time
+import calendar
 
 
 class HomeScreenModel(BaseScreenModel):
@@ -31,19 +33,21 @@ class HomeScreenModel(BaseScreenModel):
                     observer.start_incomplete_sessions()
 
     def start_new_session(self, session_name, date):
-        unique_id = secrets.token_urlsafe(2)
-        new_session_name = f"{session_name}_{unique_id}"
-        path_to_new_session_json = self.json_storage_path.joinpath(new_session_name + '.json')
-        Logger.info(f"{__name__}: started new session: {new_session_name}")
+        current_gmt = time.gmtime()
+        ts = calendar.timegm(current_gmt)
+        unique_id = str(ts)  # before it was secrets.token_urlsafe(2)
+        new_session_json_name = f"{session_name}_{unique_id}"
+        path_to_new_session_json = self.json_storage_path.joinpath(new_session_json_name + '.json')
+        Logger.info(f"{__name__}: started new session: {path_to_new_session_json}")
 
-        self.create_new_session_json(session_name=new_session_name,
+        self.create_new_session_json(session_name=session_name,
                                      sid=unique_id,
                                      date=date)
 
         self.send_session_json_path_to_session_screen(path_to_new_session_json)
 
     def create_new_session_json(self, session_name, sid, date):
-        new_session_json = JsonStore(self.json_storage_path.joinpath(session_name + '.json'))
+        new_session_json = JsonStore(self.json_storage_path.joinpath(f"{session_name}_{sid}" + '.json'), indent=4)
         session_json_keys = {
             'session_name': session_name,
             'date': date,
@@ -52,7 +56,7 @@ class HomeScreenModel(BaseScreenModel):
         }
 
         new_session_json.put("info", **session_json_keys)
-        new_session_json.put(session_name, records=[])
+        new_session_json.put("data", records=[])
 
     def send_session_json_path_to_session_screen(self, session_path: Path) -> None:
         for observer in self._observers:

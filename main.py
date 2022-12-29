@@ -115,9 +115,8 @@ from View.screens import screens
 from kivy import user_home_dir, kivy_home_dir, kivy_base_dir, dirname
 from kivy.core.window import Window
 from kivy.utils import platform
+from kivy.utils import get_color_from_hex
 
-
-# todo: after upload new session view on incomplete session screen. Bug if no incomplete are present
 
 
 
@@ -132,6 +131,10 @@ class agroApp3MVC(MDApp):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+        self.theme_cls.theme_style = "Dark"#"#53565A"
+        self.theme_cls.primary_palette = 'Green'#get_color_from_hex("#628038")#"Orange"
+        #self.theme_cls.
         # self.user_data_dir
         self.load_all_kv_files(self.directory)
         Logger.info(f"{__name__}: all KV files loaded in directory: {self.directory}")

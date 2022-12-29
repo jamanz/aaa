@@ -1,65 +1,147 @@
+<FeatureButton>:
+    size_hint: 0.33, 0.2
+    elevation: 10
+
 <addDataCard>:
     id: card_id
-    size_hint: .95, .7
-    pos_hint: {"center_x": .5, "center_y": .5}
-    #pos: 0, root.height - 30
+    size_hint: .95, .75
+    pos_hint: {"center_x": .5, "center_y": .48}
     radius: 20
-    elevation: 24
-    MDStackLayout:
-        #orientation: "vertical"
-        orientation: 'lr-tb'
-        padding: 10
+
+    MDBoxLayout:
+
+        orientation: 'vertical'
+        #padding: 10
+        spacing: 14
+        #md_bg_color: utils.get_color_from_hex('#c1c72f')
 
         MDTextField:
+            size_hint_x: .95
+            pos_hint: {"center_x": 0.5}
             id: input_field_id
-            #par: root
-            #focus: True
-            #size_hint: None, None
-            #pos_hint: {"center_x": .5, "center_y": .95}
-            #pos: 0, 100
+            multiline: False
             hint_text: "Chose feature to input"
-            helper_text: "This will disappear when you click off"
-            helper_text_mode: "on_focus"
+            #helper_text: "This will disappear when you click off"
+            #helper_text_mode: "on_focus"
             on_text_validate: root.parent.get_input_feature_value(root.chosen_feature, self.text)
 
-        MDStackLayout:
+        MDSeparator:
 
-            padding: 2
-            spacing: 3
-            #pos_hint: {"center_x": .5, "center_y": .5}
+        MDStackLayout:
+            size_hint: 1, None
+            #padding: 2
+            spacing: 7
+            #md_bg_color: utils.get_color_from_hex('#975c0e')
+
             FeatureButton:
                 id: tree_number_btn
-                on_press: root.callback(self)
+                on_press: root.choose_feature(self)
+                #on_release: root.release_but(self)
                 text: "Tree Number"
             FeatureButton:
                 id: tree_specie_btn
-                on_press: root.callback(self)
+                on_press: root.choose_feature(self)
+                #on_release: root.release_but(self)
                 text: "Tree specie"
             FeatureButton:
                 id: stem_number_btn
-                on_press: root.callback(self)
+                on_press: root.choose_feature(self)
+                #on_release: root.release_but(self)
                 text: "Stem number"
             FeatureButton:
                 id: tree_diameter_btn
-                on_press: root.callback(self)
+                on_press: root.choose_feature(self)
                 text: "Tree diameter"
             FeatureButton:
                 id: crown_diameter_btn
-                on_press: root.callback(self)
+                on_press: root.choose_feature(self)
                 text: "Crown diameter"
             FeatureButton:
                 id: height_btn
-                on_press: root.callback(self)
+                on_press: root.choose_feature(self)
                 text: "Height"
 
+        MDSeparator:
 
+        MDStackLayout:
+            size_hint: 1, 0.1
+            spacing: 7
+            #md_bg_color: utils.get_color_from_hex('#923c0e')
+            #pos_hint: {"center_x": .5, "center_y": .3}
 
-<FeatureButton@MDFillRoundFlatButton>:
-    size_hint_x: 0.33
-    #on_press: print(self.root)
+            MDBoxLayout:
+                orientation: "vertical"
+                spacing: 7
+                #md_bg_color: utils.get_color_from_hex('#725c0e')
+                size_hint: 1, 0.25
+                pos_hint: {"center_x": .5, "center_y": .3}
+                MDLabel:
+                    size_hint: 1, 0.1
+                    text: "Health Condition"
+                    halign: "center"
+                MDSegmentedControl:
+                    size_hint: None, None
+                    pos_hint: {"center_x": .5}
+                    MDSegmentedControlItem:
+                        text: "0"
+                    MDSegmentedControlItem:
+                        text: "1"
+                    MDSegmentedControlItem:
+                        text: "2"
+                    MDSegmentedControlItem:
+                        text: "3"
+                    MDSegmentedControlItem:
+                        text: "4"
+                    MDSegmentedControlItem:
+                        text: "5"
 
+            MDSeparator:
 
+            MDBoxLayout:
+                orientation: "vertical"
+                spacing: 7
+                #md_bg_color: utils.get_color_from_hex('#725c0e')
+                size_hint: 1, 0.25
+                pos_hint: {"center_x": .5, "center_y": .3}
+                MDLabel:
+                    size_hint: 1, 0.1
+                    text: "Tree Location"
+                    halign: "center"
+                MDSegmentedControl:
+                    size_hint: None, None
+                    pos_hint: {"center_x": .5}
+                    MDSegmentedControlItem:
+                        text: "0"
+                    MDSegmentedControlItem:
+                        text: "1"
+                    MDSegmentedControlItem:
+                        text: "2"
+                    MDSegmentedControlItem:
+                        text: "3"
+                    MDSegmentedControlItem:
+                        text: "4"
+                    MDSegmentedControlItem:
+                        text: "5"
 
+            MDSeparator:
+
+            MDBoxLayout:
+                orientation: "vertical"
+                spacing: 7
+                #md_bg_color: utils.get_color_from_hex('#725c0e')
+                size_hint: 1, 0.25
+                pos_hint: {"center_x": .5, "center_y": .3}
+                MDLabel:
+                    size_hint: 1, 0.1
+                    text: "Crown is Cone"
+                    halign: "center"
+                MDSegmentedControl:
+                    size_hint: None, None
+                    pos_hint: {"center_x": .5}
+                    MDSegmentedControlItem:
+                        text: "Yes"
+                    MDSegmentedControlItem:
+                        text: "No"
 
 
 

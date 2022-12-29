@@ -15,12 +15,13 @@ class SessionScreenModel(BaseScreenModel):
 
     def __init__(self):
         #schedule connection to Google Sheets
-        Clock.schedule_once(self.init_g_sheet, 20)
+        Clock.schedule_once(self.init_g_sheet, 10)
         Logger.info(f"{__name__}: Inited")
 
     def init_g_sheet(self, dt):
-        Logger.info(f"{__name__}: async Google sheets inited")
         self.g_sheet = get_g_sheet()
+        Logger.info(f"{__name__}: async Google sheets inited")
+        #return True
 
     def upload_records_to_sheet(self, records):
         Logger.info(f"{__name__}: current worksheet: {self.g_sheet}")
@@ -48,12 +49,21 @@ class SessionScreenModel(BaseScreenModel):
         self.g_sheet.batch_update(batch)
         Logger.info(f"{__name__}: Batch sent to Google Sheet")
 
+    def delete_record_in_tree_items(self, index):
+        self.session_json = JsonStore(self.session_json_path)
+        records = self.session_json.get('data')['records']
+        removed = records.pop(index)
+        Logger.info(f"{__name__}: item {removed} with index {index} was deleted from JsonStore")
+        self.session_json.put('data', records=records)
+
     def upload_session(self, session_path: Path):
-        self.session_json = JsonStore(session_path)
-        self.session_json.put("info", state="completed")
+        self.session_json = JsonStore(session_path, indent=4)
+        info = self.session_json.get("info")
+        info['state'] = "completed"
+        self.session_json.put("info", **info)
 
         session_name = session_path.stem
-        session_records = self.session_json.get(session_name)['records']
+        session_records = self.session_json.get('data')['records']
         self.upload_records_to_sheet(session_records)
 
         # move to completed directory

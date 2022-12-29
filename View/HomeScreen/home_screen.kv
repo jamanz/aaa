@@ -1,7 +1,11 @@
 <HomeScreenView>:
     size_hint: 1, 1
 
+
     BoxLayout:
+        size_hint: .5, .33
+        spacing: 28
+        pos_hint: {"center_x": .5, "center_y": .3}
         id: buttons_layo
         orientation: "vertical"
 
@@ -9,7 +13,7 @@
             id: new_ses_btn
             text: "Start new session"
             on_press:
-                root.start_new_session()
+                root.start_new_session_dialog()
 
         NavigationButton:
             text: "Incomplete sessions"
@@ -26,4 +30,23 @@
     size_hint: 1, .3
 
 
+<DialogContent>
+    id: dialog
+    orientation: "vertical"
+    spacing: "10dp"
+    size_hint_y: None
+    height: "80dp"
+    width: "80dp"
+
+    MDTextField:
+        id: session_name
+        hint_text: "Session Name"
+        required: False
+
+    MDRaisedButton:
+        id: date_picker
+        text: root.date
+        size_hint_x: .7
+        pos_hint: {'center_x': .5, 'center_y': .5}
+        on_release: root.show_date_picker()
 

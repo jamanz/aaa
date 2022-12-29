@@ -2,8 +2,69 @@
 
 <AddDataScreenView>:
     MDBoxLayout:
+        id: screen_box_layout
         orientation: 'vertical'
         size_hint: 1, 1
-        id: box_layout
+        #md_bg_color: utils.get_color_from_hex('#c1c72f')
+
+        MDTopAppBar:
+            title: root.app_bar_title
+            elevation: 3
+            type_height: "medium"
+            headline_text: "Headline"
+            left_action_items: [["arrow-left", lambda x: root.cancel_record()]]
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            size_hint: 1, 1
+            id: box_layout
+
+        MDBoxLayout:
+            orientation: 'horizontal'
+            spacing: 20
+            padding: 20
+            size_hint_y: 0.2
+            MDFillRoundFlatIconButton:
+                text: "Preview"
+                icon: "account-eye"
+                size_hint: .4, None
+                on_release: root.show_preview()
+            MDFillRoundFlatIconButton:
+                text: "Confirm"
+                icon: "check-circle"
+                size_hint: .4, None
+                on_release: root.save_record_and_back_to_session_screen()
+
+
+
+<PreviewContent>
+    id: preview
+    orientation: "vertical"
+    spacing: "28dp"
+    size_hint_y: None
+    height: "160dp"
+    width: "80dp"
+
+    MDLabel:
+        id: tree_number
+        text: "Tree Number: " + root.tree_number
+
+    MDSeparator:
+
+    MDLabel:
+        id: tree_specie
+        text: "Tree Specie: " + root.tree_specie
+
+    MDSeparator:
+
+    MDLabel:
+        id: stem_number
+        text: "Stem Number: " + root.stem_number
+
+    MDSeparator:
+
+
+
+
 
 
