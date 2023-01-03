@@ -17,8 +17,8 @@ class SessionItem(OneLineListItem):
     session_name = StringProperty()
     session_sid = StringProperty()
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    # def __init__(self, **kwargs):
+    #     super().__init__(**kwargs)
 
     def callback(self, item):
         session_json_name = f"{self.session_name}_{self.session_sid}.json"
@@ -36,10 +36,10 @@ class SessionItem(OneLineListItem):
 class SessionsPage(MDRecycleView):
     incomplete_path = Path("assets", "data").resolve()
     completed_path = Path("assets", "data", "completed").resolve()
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.sessions_list = None
+    sessions_list = None
+    # def __init__(self, **kwargs):
+    #     super().__init__(**kwargs)
+        #self.sessions_list = None
 
     def update_sessions(self, session_type):
         if session_type == 'completed':

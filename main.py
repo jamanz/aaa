@@ -131,7 +131,7 @@ class agroApp3MVC(MDApp):
         super().__init__(**kwargs)
 
 
-        self.theme_cls.theme_style = "Dark"#"#53565A"
+        self.theme_cls.theme_style = "Light"#"#53565A"
         self.theme_cls.primary_palette = 'Green'#get_color_from_hex("#628038")#"Orange"
         #self.theme_cls.
         # self.user_data_dir

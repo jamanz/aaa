@@ -1,43 +1,68 @@
-from kivymd.app import MDApp
-from kivymd.uix.screen import MDScreen
-from kivymd.uix.segmentedcontrol import (
-    MDSegmentedControl, MDSegmentedControlItem
-)
+from kivy.app import App
+from kivy.lang import Builder
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.recycleview import RecycleView
+from kivy.uix.recycleview.views import RecycleDataViewBehavior
+from kivy.properties import BooleanProperty, StringProperty
 
-class MySegmentedControl(MDSegmentedControl):
+Builder.load_string('''
+<StatefulLabel>:
+    active: stored_state.active
+    CheckBox:
+        id: stored_state
+        active: root.active
+        on_release: root.store_checkbox_state()
+    Label:
+        text: root.text
+    Label:
+        id: generate_state
+        text: root.generated_state_text
 
+<RV>:
+    viewclass: 'StatefulLabel'
+    RecycleBoxLayout:
+        size_hint_y: None
+        height: self.minimum_height
+        orientation: 'vertical'
+''')
+
+class StatefulLabel(RecycleDataViewBehavior, BoxLayout):
+    text = StringProperty()
+    generated_state_text = StringProperty()
+    active = BooleanProperty()
+    index = 0
+
+    '''
+    To change a viewclass' state as the data assigned to it changes,
+    overload the refresh_view_attrs function (inherited from
+    RecycleDataViewBehavior)
+    '''
+    def refresh_view_attrs(self, rv, index, data):
+        self.index = index
+        if data['text'] == '0':
+            self.generated_state_text = "is zero"
+        elif int(data['text']) % 2 == 1:
+            self.generated_state_text = "is odd"
+        else:
+            self.generated_state_text = "is even"
+        super(StatefulLabel, self).refresh_view_attrs(rv, index, data)
+
+    '''
+    To keep state changes in the viewclass with associated data,
+    they can be explicitly stored in the RecycleView's data object
+    '''
+    def store_checkbox_state(self):
+        rv = App.get_running_app().rv
+        rv.data[self.index]['active'] = self.active
+
+class RV(RecycleView, App):
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.pos_hint = {"center_x": 0.5, "center_y": 0.5}
+        super(RV, self).__init__(**kwargs)
+        self.data = [{'text': str(x), 'active': False} for x in range(10)]
+        App.get_running_app().rv = self
 
-        items = []
-        print(f"panel width before {self.ids.segment_panel.width}")
-        for i in range(6):
-            items.append(MDSegmentedControlItem(text=f'{i}'))
-            print(f"before change for {i}: texture size: {items[i].texture_size}")
-            items[i].texture_update()
-            self.ids.segment_panel.width += (
-                    items[i].texture_size[0] + self.ids.segment_panel.spacing
-            )
-            print(f"after change for {i}: texture size:{items[i].texture_size}")
-            self.add_widget(items[i])
-        print(f"panel width after {self.ids.segment_panel.width}")
-        self.ids.segment_panel.width = "100dp"
-        print(f"panel width after manual change {self.ids.segment_panel.width}")
-        print(self.ids)
-
-
-
-class Example(MDApp):
     def build(self):
-        self.theme_cls.theme_style = "Dark"
-        self.theme_cls.primary_palette = "Orange"
-        return (
-            MDScreen(
-                    MySegmentedControl()
-                )
-            )
+        return self
 
-
-
-Example().run()
+if __name__ == '__main__':
+    RV().run()

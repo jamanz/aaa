@@ -3,33 +3,44 @@
 <SessionItem>:
     text: root.session_name
     on_press: root.callback(self)
+    size_hint: 1, .2
+
 
 <SessionsPage>:
     viewclass: "SessionItem"
     RecycleBoxLayout:
-        padding: "10dp"
-        spacing: "10dp"
-        default_size: None, "100dp"
+        padding: "5dp"
+        spacing: "5dp"
+        default_size: None, f"{56}dp"
         default_size_hint: 1, None
         size_hint_y: None
         height: f"{self.minimum_height}dp"
+        #height: f"{root.height}dp"
         orientation: "vertical"
-        #background_color: utils.get_color_from_hex('#c1c72f')
+
 
 <ListSessionsScreenView>:
     MDBoxLayout:
+        #md_bg_color: utils.get_color_from_hex('#c1c72f')
         orientation: 'vertical'
         size_hint: 1, 1
         #md_bg_color: utils.get_color_from_hex('#c1c72f')
+        #padding: '1dp'
+        spacing: '5dp'
+
         MDTopAppBar:
+            #size_hint: 1, .2
             title: root.app_bar_title
-            elevation: "3dp"
+            elevation: "5dp"
             type_height: "medium"
             headline_text: "Headline"
             left_action_items: [["arrow-left", lambda x: root.app.go_prev_screen()]]
 
+
         SessionsPage:
             id: sessions_page
+            size_hint: 1, 1
+
 
 
 

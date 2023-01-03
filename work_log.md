@@ -155,7 +155,7 @@ but with simulated screen it doing well:
 update kv files to use dp metrics for displaying widgets, and sp for text
 
 Resolved problem with fitting MDSegmentControl
-
+Fixed distance btw AppBar and Other view, also 
 
 ## References:
 1. [updating recycle view](https://medium.com/nerd-for-tech/how-to-refresh-kivy-recycleview-72244883d075)

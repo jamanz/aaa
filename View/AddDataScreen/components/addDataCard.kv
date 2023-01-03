@@ -4,12 +4,13 @@
     text_size: self.parent.width/3.1, self.parent.height/2.2
     size: self.text_size
 
-    #spacing: "3dp"
+    padding: "1dp"
     #elevation: "10dp"
     #minimum_width: "100dp"
 
 <HealthConditionControl@MySegmentedControl>:
     pos_hint: {'center_x': .5, 'bot': 1}
+    _segment_switch_x: "40dp"
     #segment_color: self.app.theme_cls.primary_palette
     MDSegmentedControlItem:
         text: '0'
@@ -32,6 +33,7 @@
 
 <LocationControl@MySegmentedControl>:
     pos_hint: {'center_x': .5, 'bot': 1}
+    _segment_switch_x: "20dp"
     #segment_color: self.app.theme_cls.primary_palette
     MDSegmentedControlItem:
         text: 'X'
@@ -55,6 +57,7 @@
 
 <CrownConeControl@MySegmentedControl>:
     pos_hint: {'center_x': .5, 'bot': 1}
+    _segment_switch_x: "10dp"
     #segment_color: self.app.theme_cls.primary_palette
     MDSegmentedControlItem:
         text: 'Yes'
@@ -70,12 +73,14 @@
     size_hint: 1, 1
     pos_hint: {"center_x": .5}
     radius: "20dp"
+    padding: "2dp"
+    elevation: 2
 
     MDBoxLayout:
 
         orientation: 'vertical'
-        padding: "10dp"
-        spacing: "7dp"
+        padding: "5dp"
+        spacing: "5dp"
         #md_bg_color: utils.get_color_from_hex('#c1c72f')
 
         MDTextField:
