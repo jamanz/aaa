@@ -13,11 +13,22 @@ class PreviewContent(MDBoxLayout):
     tree_number = StringProperty()
     tree_specie = StringProperty()
     stem_number = StringProperty()
+    tree_diameter = StringProperty()
+    crown_diameter = StringProperty()
+    tree_height = StringProperty()
+
+    health_condition = StringProperty()
+    tree_location = StringProperty('X')
+    crown_cone = StringProperty()
 
     def update_values(self, record):
         self.tree_number = str(record.get('Tree Number'))
-        self.tree_specie = str(record.get('Tree Specie'))
-        self.stem_number = str(record.get('Stem Number'))
+        self.tree_specie = str(record.get('Tree specie'))
+        self.stem_number = str(record.get('Stem number'))
+        self.tree_diameter = str(record.get('Tree diameter'))
+        self.crown_diameter = str(record.get('Crown diameter'))
+        self.tree_height = str(record.get('Tree height'))
+
 
 
 class AddDataScreenView(BaseScreenView):
@@ -49,7 +60,8 @@ class AddDataScreenView(BaseScreenView):
         super().__init__(**kwargs)
         Logger.info(f"{__name__}: Inited")
 
-        self.add_widget(addDataCard())
+        self.dataCard = addDataCard()
+        self.ids.box_layout.add_widget(self.dataCard)
 
         Logger.info(f"{__name__}: AddDataCard and buttons added")
 
@@ -66,3 +78,6 @@ class AddDataScreenView(BaseScreenView):
 
         # print("parent: ", self.parent.save_feature_from_input_to_json(self.chosen_feature, instance.text))
         self.controller.get_input_feature_value(feature_key, feature_value)
+
+    def on_enter(self, *args):
+        Logger.info(f"{__name__}: on_pre_enter fired ,ids: {self.ids.box_layout.ids}")

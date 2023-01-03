@@ -7,14 +7,14 @@
 <SessionsPage>:
     viewclass: "SessionItem"
     RecycleBoxLayout:
-        padding: 10
-        spacing: 10
-        default_size: None, 75
+        padding: "10dp"
+        spacing: "10dp"
+        default_size: None, "100dp"
         default_size_hint: 1, None
         size_hint_y: None
-        height: self.minimum_height
+        height: f"{self.minimum_height}dp"
         orientation: "vertical"
-        background_color: utils.get_color_from_hex('#c1c72f')
+        #background_color: utils.get_color_from_hex('#c1c72f')
 
 <ListSessionsScreenView>:
     MDBoxLayout:
@@ -23,7 +23,7 @@
         #md_bg_color: utils.get_color_from_hex('#c1c72f')
         MDTopAppBar:
             title: root.app_bar_title
-            elevation: 3
+            elevation: "3dp"
             type_height: "medium"
             headline_text: "Headline"
             left_action_items: [["arrow-left", lambda x: root.app.go_prev_screen()]]

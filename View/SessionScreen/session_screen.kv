@@ -14,14 +14,14 @@
 <TreeItemsPage>:
     viewclass: "TreeItem"
     RecycleBoxLayout:
-        padding: 10
-        spacing: 5
-        default_size: None, 50
+        padding: "10dp"
+        spacing: "5dp"
+        default_size: None, "70dp"
         default_size_hint: 1, None
         size_hint_y: None
-        height: self.minimum_height
+        height: f"{self.minimum_height}dp"
         orientation: "vertical"
-        background_color: utils.get_color_from_hex('#c1c72f')
+
 
 <SessionScreenView>:
     MDBoxLayout:
@@ -31,20 +31,22 @@
         #md_bg_color: utils.get_color_from_hex('#c1c72f')
 
         MDTopAppBar:
-            elevation: 3
+            elevation: "3dp"
             title: root.app_bar_title
             type_height: "medium"
             headline_text: "Headline"
             left_action_items: [["arrow-left", lambda x: root.app.go_prev_screen()]]
 
         TreeItemsPage:
+
             id: tree_items_page
+            size_hint: 1, 1
 
         MDGridLayout:
             #md_bg_color: utils.get_color_from_hex('#975c0e')
             cols:2
-            padding: 10
-            spacing: 10
+            padding: "10dp"
+            spacing: "10dp"
             #pos_hint: {"center_x": .5, "center_y": .5}
             size_hint: 1, .1
             id: buttons_grid

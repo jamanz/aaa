@@ -117,12 +117,10 @@ from kivy.core.window import Window
 from kivy.utils import platform
 from kivy.utils import get_color_from_hex
 
-
-
-
-
-    # tree_sheet = client.open_by_key(SAMPLE_SPREADSHEET_ID).sheet1
-
+from kivy.config import Config
+# Config.set('graphics', 'width', '360')
+# Config.set('graphics', 'height', '740')
+Config.set('modules', 'monitor', '')
 
 class agroApp3MVC(MDApp):
     app_folder = os.path.dirname(os.path.abspath(__file__))
@@ -131,6 +129,7 @@ class agroApp3MVC(MDApp):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
 
         self.theme_cls.theme_style = "Dark"#"#53565A"
         self.theme_cls.primary_palette = 'Green'#get_color_from_hex("#628038")#"Orange"

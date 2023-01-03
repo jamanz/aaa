@@ -144,6 +144,17 @@ Done some refactoring
 Add empty txt filler to avoid OS not existing data folder (vanilla bone)
 
 
+## 25-30 Pomo:
+use
+```py .\main.py -m screen:nexus7.2,portrait,scale=0.75```
+for testing on different screens
+```py main.py -m screen``` list all avaible screens
+
+Problem with displaying layouts on android screen occured, 
+but with simulated screen it doing well:
+update kv files to use dp metrics for displaying widgets, and sp for text
+
+Resolved problem with fitting MDSegmentControl
 
 
 ## References:
