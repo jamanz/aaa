@@ -4,10 +4,17 @@ from View.AddDataScreen.components.addDataCard import addDataCard
 from kivy.logger import Logger
 from kivy.uix.button import Button
 from kivymd.uix.boxlayout import MDBoxLayout
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty, BooleanProperty, NumericProperty
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
 import weakref
+from kivymd.uix.menu import MDDropdownMenu
+from kivy.metrics import dp
+from kivy.utils import get_color_from_hex
+from kivymd.uix.textfield import MDTextField
+
+
+
 
 class PreviewContent(MDBoxLayout):
     tree_number = StringProperty()
@@ -33,7 +40,8 @@ class PreviewContent(MDBoxLayout):
 
 class AddDataScreenView(BaseScreenView):
     app_bar_title = StringProperty('New Tree')
-
+    suggestion_is_selected = BooleanProperty(False)
+    feature_value_len = NumericProperty(0)
     def show_preview(self):
 
         def close_dialog(event):
@@ -63,7 +71,14 @@ class AddDataScreenView(BaseScreenView):
         self.dataCard = addDataCard()
         self.ids.box_layout.add_widget(self.dataCard)
 
-        Logger.info(f"{__name__}: AddDataCard and buttons added")
+        self.suggestion_menu = MDDropdownMenu(
+            caller=self.dataCard.ids.input_field_id,
+            position="bottom",
+            width_mult=4,
+        )
+
+
+
 
     def cancel_record(self):
         self.controller.clear_record()
@@ -73,11 +88,48 @@ class AddDataScreenView(BaseScreenView):
         self.controller.write_record_to_json()
         self.app.go_prev_screen()
 
-    def get_input_feature_value(self, feature_key, feature_value):
-        #print(feature_value, self.ids.box_layout.ids)
+    def show_suggestions(self, list_of_suggestions: list[str]):
+        self.suggestion_menu.items = []
+        menu_items = [
+            {
+                "text": f"{sugg}",
+                "viewclass": "OneLineListItem",
+                "height": dp(56),
+                "on_release": lambda x=f"{sugg}": self.suggestion_menu_callback(x),
+            } for sugg in list_of_suggestions
+        ]
+        self.suggestion_menu.items = menu_items
+        # if not self.suggestion_is_selected:
+        self.suggestion_menu.open()
 
-        # print("parent: ", self.parent.save_feature_from_input_to_json(self.chosen_feature, instance.text))
+    def suggestion_menu_callback(self, text_item):
+        self.dataCard.ids.input_field_id.text = text_item
+        print("text in field seted in menu callback")
+        # self.dataCard.ids.input_field_id.on_text_validate('Tree specie', text_item)
+        self.get_input_feature_value('Tree specie', text_item)
+        self.suggestion_is_selected = True
+        self.suggestion_menu.dismiss()
+        print('menu dissmised in callback')
+
+    def get_input_feature_value(self, feature_key, feature_value):
         self.controller.get_input_feature_value(feature_key, feature_value)
 
-    def on_enter(self, *args):
+    def initiate_suggestions(self, feature_key, feature_value):
+        self.suggestion_menu.dismiss()
+        if feature_key == 'Tree specie' and len(feature_value) > 2:
+            #if in Text field was inserted text
+            if len(feature_value) - self.feature_value_len > 1:
+                self.suggestion_menu.dismiss()
+            else:
+                suggests = self.controller.find_suggestions(feature_value)
+                if len(suggests) < 1:
+                    suggests.append(feature_value)
+                self.show_suggestions(suggests)
+
+        self.feature_value_len = len(feature_value)
+
+    def on_pre_enter(self, *args):
+        self.feature_value_len = 0
+        self.dataCard.ids.input_field_id.text = ''
+        self.dataCard.ids.input_field_id.hint_text = "Chose feature to input"
         Logger.info(f"{__name__}: on_pre_enter fired ,ids: {self.ids.box_layout.ids}")
