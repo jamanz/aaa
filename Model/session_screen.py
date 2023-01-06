@@ -4,28 +4,38 @@ from kivy.properties import ObjectProperty, StringProperty
 from pathlib import Path
 import os
 from kivy.logger import Logger
-from Utility.google_sheets import next_available_row, get_g_sheet, features_name_to_sheets_columns_map
+from Utility.google_sheets import (next_available_row, features_name_to_sheets_columns_map,
+                                   get_g_sheet_client, get_g_sheet_client_sheet_list)
 from kivy.clock import Clock
 
 
 class SessionScreenModel(BaseScreenModel):
     session_json = None
     session_json_path = None
-    g_sheet = None
+    g_sheet_client = None
+    chosen_worksheet = None
 
     def __init__(self):
         #schedule connection to Google Sheets
-        Clock.schedule_once(self.init_g_sheet, 10)
+        Clock.schedule_once(self.init_g_sheet_client, 3)
+        self.chosen_worksheet = StringProperty('worksheet1')
         Logger.info(f"{__name__}: Inited")
 
-    def init_g_sheet(self, dt):
-        self.g_sheet = get_g_sheet()
+    def init_g_sheet_client(self, dt):
+        self.g_sheet_client = get_g_sheet_client()
         Logger.info(f"{__name__}: async Google sheets inited")
         #return True
 
+    def list_available_worksheets(self):
+        return get_g_sheet_client_sheet_list(self.g_sheet_client)
+
+    def set_chosen_worksheet(self, worksheet_title):
+        print(f"getted: {worksheet_title}, with type: {type(worksheet_title)}")
+        self.chosen_worksheet = worksheet_title
+
     def upload_records_to_sheet(self, records):
-        Logger.info(f"{__name__}: current worksheet: {self.g_sheet}")
-        free_row_i = next_available_row(self.g_sheet)
+        Logger.info(f"{__name__}: current GSheet client: {self.g_sheet_client}")
+        free_row_i = next_available_row(self.g_sheet_client.worksheet(self.chosen_worksheet))
         Logger.info(f"{__name__}: first free row at index: {free_row_i}")
         batch = []
 
@@ -46,7 +56,7 @@ class SessionScreenModel(BaseScreenModel):
             )
             free_row_i += 1
 
-        self.g_sheet.batch_update(batch)
+        self.g_sheet_client.worksheet(self.chosen_worksheet).batch_update(batch)
         Logger.info(f"{__name__}: Batch sent to Google Sheet")
 
     def delete_record_in_tree_items(self, index):

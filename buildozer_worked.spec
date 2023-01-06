@@ -1,7 +1,7 @@
 [app]
 
 # (str) Title of your application
-title = AAPP27
+title = AAPP40
 
 # (str) Package name
 package.name = aApp
@@ -13,7 +13,7 @@ package.domain = org.test
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,atlas,json,pyc
+source.include_exts = py,png,jpg,kv,atlas,json,pyc,csv
 
 # (list) List of inclusions using pattern matching
 #source.include_patterns = assets/*,images/*.png
@@ -37,7 +37,10 @@ version = 0.1
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3,pillow,android,kivy==2.1.0,kivymd==1.0.2,google-auth-oauthlib,oauthlib,requests_oauthlib,httplib2,pyasn1,pyasn1-modules,requests,rsa,oauth2client,urllib3,chardet,gspread,google-auth,cachetools,idna,pandas
+requirements = python3,pillow,android,kivy==2.1.0,kivymd==1.0.2,google-auth-oauthlib,
+               oauthlib,requests_oauthlib,httplib2,pyasn1,pyasn1-modules,requests,rsa,
+               oauth2client,urllib3,chardet,gspread,google-auth,cachetools,idna,
+               numpy,pandas==1.0.3
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
@@ -45,7 +48,7 @@ requirements = python3,pillow,android,kivy==2.1.0,kivymd==1.0.2,google-auth-oaut
 
 # (str) Presplash of the application
 presplash.filename = %(source.dir)s/assets/Nofim_Logo_Final.png
-#presplash.color = 
+#presplash.color =
 
 # (str) Icon of the application
 icon.filename = %(source.dir)s/assets/Nofim_Logo_Final.png
@@ -194,7 +197,7 @@ android.private_storage = True
 # android.add_resources = my_icons/all-inclusive.png:drawable/all_inclusive.png
 # 2) A directory, here  'legal_icons' must contain resources of one kind
 # android.add_resources = legal_icons:drawable
-# 3) A directory, here 'legal_resources' must contain one or more directories, 
+# 3) A directory, here 'legal_resources' must contain one or more directories,
 # each of a resource kind:  drawable, xml, etc...
 # android.add_resources = legal_resources
 #android.add_resources =
@@ -213,14 +216,14 @@ android.private_storage = True
 # android.add_compile_options = "sourceCompatibility = 1.8", "targetCompatibility = 1.8"
 
 # (list) Gradle repositories to add {can be necessary for some android.gradle_dependencies}
-# please enclose in double quotes 
+# please enclose in double quotes
 # e.g. android.gradle_repositories = "maven { url 'https://kotlin.bintray.com/ktor' }"
 #android.add_gradle_repositories =
 
-# (list) packaging options to add 
+# (list) packaging options to add
 # see https://google.github.io/android-gradle-dsl/current/com.android.build.gradle.internal.dsl.PackagingOptions.html
 # can be necessary to solve conflicts in gradle_dependencies
-# please enclose in double quotes 
+# please enclose in double quotes
 # e.g. android.add_packaging_options = "exclude 'META-INF/common.kotlin_module'", "exclude 'META-INF/*.kotlin_module'"
 #android.add_packaging_options =
 
@@ -316,7 +319,7 @@ android.allow_backup = True
 #p4a.fork = kivy
 
 # (str) python-for-android branch to use, defaults to master
-#p4a.branch = master
+#p4a.branch = master#delevop
 
 # (str) python-for-android specific commit to use, defaults to HEAD, must be within p4a.branch
 #p4a.commit = HEAD

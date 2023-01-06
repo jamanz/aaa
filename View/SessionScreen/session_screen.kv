@@ -1,5 +1,32 @@
 #:import utils kivy.utils
 
+<CustomWorkSheetListItem>:
+    #id: root.item_id
+    size_hint: .9, .3
+    icon: 'arrow-left-bottom'
+    icon_color: 'white'
+
+<DialogForUploadContent>:
+    id: upload_dialog
+    orientation: "vertical"
+    spacing: "10dp"
+    size_hint_y: None
+    height: "200dp"
+    width: "80dp"
+    #size_hint: .5, .5
+    #pos_hint: {"center_x": .5, "center_y": .5}
+
+    MDBoxLayout:
+        id: ws_buttons_layout
+        size_hint: 1, .9
+        orientation: "vertical"
+        spacing: "5dp"
+        padding: "5dp"
+        #md_bg_color: utils.get_color_from_hex('#975c0e')
+
+
+
+
 <TreeItem>:
     size_hint: 1, .2
     on_press: root.callback(self)
@@ -66,7 +93,7 @@
             MDFillRoundFlatButton:
                 text: "Upload Session"
                 size_hint: .4, .5
-                on_release: root.upload_session()
+                on_release: root.start_upload_dialog()
 
 
 

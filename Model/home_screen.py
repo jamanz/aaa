@@ -7,7 +7,7 @@ import pathlib
 from pathlib import Path
 from kivy.logger import Logger
 from os.path import dirname, abspath
-from Utility.google_sheets import authorize_gsheets, get_g_sheet
+#from Utility.google_sheets import authorize_gsheets
 import time
 import calendar
 

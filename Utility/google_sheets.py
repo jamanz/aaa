@@ -3,9 +3,10 @@ from google.oauth2.service_account import Credentials
 import os
 from kivy import Logger
 from collections import OrderedDict
+import pathlib
 
 SAMPLE_SPREADSHEET_ID = '1D6D-jEE5cBvrPABljLZla5d1NtjOhmCR76ymPgNN3r0'
-TOKEN_FILE = 'gsheets_key.json'
+TOKEN_FILE = pathlib.Path('gsheets_key.json')
 
 features_name_to_sheets_columns_map = OrderedDict({
     'Tree Number': 'A',
@@ -36,10 +37,17 @@ def next_available_row(worksheet):
     str_list = list(filter(None, worksheet.col_values(1)))
     return int(len(str_list)+1)
 
-def get_g_sheet(client=None, sheet_key=SAMPLE_SPREADSHEET_ID):
+def get_g_sheet_client(client=None, sheet_key=SAMPLE_SPREADSHEET_ID):
     if client:
-        return client.open_by_key(sheet_key).sheet1
+        return client.open_by_key(sheet_key)
     else:
         client = authorize_gsheets()
-        return client.open_by_key(sheet_key).sheet1
+        return client.open_by_key(sheet_key)
+
+
+def get_g_sheet_client_sheet_list(client):
+    return client.worksheets()
+
+
+
 

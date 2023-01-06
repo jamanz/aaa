@@ -91,9 +91,9 @@ class addDataCard(MDCard):
         super().__init__(**kwargs)
         Logger.info(f"{__name__}: Inited, data card ids: {self.ids}")
         #self.ids.health_condition_layout.add_widget(MySegmentedControl())
-        self.ids.health_segment.custom_panel_width = "170dp"
-        self.ids.location_segment.custom_panel_width = "150dp"
-        self.ids.crown_cone_segment.custom_panel_width = "130dp"
+        self.ids.health_segment.custom_panel_width = "160dp"
+        self.ids.location_segment.custom_panel_width = "140dp"
+        self.ids.crown_cone_segment.custom_panel_width = "80dp"
 
 
     def choose_feature(self, instance):
