@@ -10,6 +10,8 @@ from Model.add_data_screen import AddDataScreenModel
 from Controller.add_data_screen import AddDataScreenController
 from Model.list_sessions_screen import ListSessionsScreenModel
 from Controller.list_sessions_screen import ListSessionsScreenController
+from Model.photo_screen import PhotoScreenModel
+from Controller.photo_screen import PhotoScreenController
 
 screens = {
     "home screen": {
@@ -31,4 +33,9 @@ screens = {
         "model": ListSessionsScreenModel,
         "controller": ListSessionsScreenController,
     },
+
+    "photo screen": {
+        "model": PhotoScreenModel,
+        "controller": PhotoScreenController,
+    }
 }

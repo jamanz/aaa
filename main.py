@@ -117,10 +117,32 @@ from kivy.core.window import Window
 from kivy.utils import platform
 from kivy.utils import get_color_from_hex
 
+from android_permissions import AndroidPermissions
+
 from kivy.config import Config
 # Config.set('graphics', 'width', '360')
 # Config.set('graphics', 'height', '740')
 Config.set('modules', 'monitor', '')
+
+
+if platform == 'android':
+    from jnius import autoclass
+    from android.runnable import run_on_ui_thread
+    from android import mActivity
+    View = autoclass('android.view.View')
+
+    @run_on_ui_thread
+    def hide_landscape_status_bar(instance, width, height):
+        # width,height gives false layout events, on pinch/spread
+        # so use Window.width and Window.height
+        if Window.width > Window.height:
+            # Hide status bar
+            option = View.SYSTEM_UI_FLAG_FULLSCREEN
+        else:
+            # Show status bar
+            option = View.SYSTEM_UI_FLAG_VISIBLE
+        mActivity.getWindow().getDecorView().setSystemUiVisibility(option)
+
 
 class agroApp3MVC(MDApp):
     app_folder = os.path.dirname(os.path.abspath(__file__))
@@ -167,14 +189,22 @@ class agroApp3MVC(MDApp):
 
     def build(self) -> MDScreenManager:
         self.generate_application_screens()
+        if platform == 'android':
+            Window.bind(on_resize=hide_landscape_status_bar)
         # Logger.info(f"{__name__}: application screens loaded, SM: {self.manager_screens.screens}")
         return self.manager_screens
 
     def on_start(self):
         Logger.info(f"{__name__}: on_start fired")
-        if platform == 'android':
-            from android.permissions import request_permissions, Permission
-            request_permissions([Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE])
+        # if platform == 'android':
+        #     from android.permissions import request_permissions, Permission
+        #     request_permissions([Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE])
+        self.dont_gc = AndroidPermissions(self.start_app)
+
+    def start_app(self):
+        self.dont_gc = None
+        self.enable_swipe = True
+
 
     def on_pause(self):
         Logger.info(f"{__name__}: on_pause fired")

@@ -4,6 +4,7 @@ from View.AddDataScreen.components.addDataCard import addDataCard
 from kivy.logger import Logger
 from kivy.uix.button import Button
 from kivymd.uix.boxlayout import MDBoxLayout
+from kivymd.uix.relativelayout import MDRelativeLayout
 from kivy.properties import StringProperty, BooleanProperty, NumericProperty
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
@@ -12,6 +13,8 @@ from kivymd.uix.menu import MDDropdownMenu
 from kivy.metrics import dp
 from kivy.utils import get_color_from_hex
 from kivymd.uix.textfield import MDTextField
+from kivy.uix.camera import Camera
+
 
 
 class PreviewContent(MDBoxLayout):

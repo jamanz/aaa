@@ -40,7 +40,7 @@ version = 0.1
 requirements = python3,pillow,android,kivy==2.1.0,kivymd==1.0.2,google-auth-oauthlib,
                oauthlib,requests_oauthlib,httplib2,pyasn1,pyasn1-modules,requests,rsa,
                oauth2client,urllib3,chardet,gspread,google-auth,cachetools,idna,
-               numpy,pandas==1.0.3
+               numpy,pandas==1.0.3,camera4kivy,gestures4kivy,
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
@@ -97,7 +97,7 @@ android.presplash_color = white
 #icon.adaptive_background.filename = %(source.dir)s/assets/Nofim_Logo_Final.png
 
 # (list) Permissions
-android.permissions = INTERNET
+android.permissions = INTERNET, CAMERA
 
 # (list) features (adds uses-feature -tags to manifest)
 #android.features = android.hardware.usb.host
@@ -331,7 +331,7 @@ android.allow_backup = True
 #p4a.local_recipes =
 
 # (str) Filename to the hook for p4a
-#p4a.hook =
+p4a.hook = camerax_provider/gradle_options.py
 
 # (str) Bootstrap to use for android builds
 # p4a.bootstrap = sdl2

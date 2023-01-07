@@ -170,6 +170,9 @@ In forums was point to switch ```p4a.branch = develop``` but it worked without i
  - Added and modified items preview in Session Screen and Add Data Screen 
  - Finish Uploading to Google sheet in right format
  - Seems like resolve Issue with RecycleView, need build to check
+ - Added New Screen - PhotoScreen, make vanilla version according to provided example for using module Camera4Kivy
+
+
 
 
 ## References:
@@ -177,5 +180,5 @@ In forums was point to switch ```p4a.branch = develop``` but it worked without i
 
 2. [app Optimization Methods](https://gist.github.com/Guhan-SenSam/9dfb11b7bfd8fd24561f4fcd9ff0d5de)
 
-
+3. [example of using camera4kivy](https://github.com/Android-for-Python/c4k_photo_example)
 

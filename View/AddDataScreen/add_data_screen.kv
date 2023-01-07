@@ -1,5 +1,9 @@
 #:import addDataCard View.AddDataScreen.components.addDataCard
 
+<CameraButtonsLayout>
+
+
+
 <AddDataScreenView>:
     MDBoxLayout:
         spacing: "5dp"
@@ -27,14 +31,20 @@
             padding: "6dp"
             size_hint_y: 0.2
             MDFillRoundFlatIconButton:
+                text: "Make photo"
+                icon: "camera"
+                size_hint: .3, None
+                on_release: root.app.go_next_screen("add data screen", "photo screen")
+
+            MDFillRoundFlatIconButton:
                 text: "Preview"
                 icon: "account-eye"
-                size_hint: .4, None
+                size_hint: .3, None
                 on_release: root.show_preview()
             MDFillRoundFlatIconButton:
                 text: "Confirm"
                 icon: "check-circle"
-                size_hint: .4, None
+                size_hint: .3, None
                 on_release: root.save_record_and_back_to_session_screen()
 
 
