@@ -12,6 +12,7 @@
 
 <HealthConditionControl@MySegmentedControl>:
     pos_hint: {'center_x': .5, 'bot': 1}
+    control_type: "Health condition"
     #segment_color: self.app.theme_cls.primary_palette
     MDSegmentedControlItem:
         text: '0'
@@ -34,7 +35,7 @@
 
 <LocationControl@MySegmentedControl>:
     pos_hint: {'center_x': .5, 'bot': 1}
-
+    control_type: "Tree location"
     #segment_color: self.app.theme_cls.primary_palette
     MDSegmentedControlItem:
         text: 'X'
@@ -59,12 +60,15 @@
 <CrownConeControl@MySegmentedControl>:
     pos_hint: {'center_x': .5, 'bot': 1}
     #segment_color: self.app.theme_cls.primary_palette
+    #on_active: self.on_active(*args)
+    control_type: "Crown cone"
     MDSegmentedControlItem:
         text: 'Yes'
         font_size: f"13sp"
     MDSegmentedControlItem:
         text: 'No'
         font_size: f"13sp"
+
 
 
 
@@ -139,7 +143,7 @@
             FeatureButton:
                 id: height_btn
                 on_press: root.choose_feature(self)
-                text: "Height"
+                text: "Tree height"
                 pos_hint: {'x': .66, 'bot': 1}
 
         MDSeparator:

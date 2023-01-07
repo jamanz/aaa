@@ -2,7 +2,7 @@ from kivy.storage.jsonstore import JsonStore
 
 from View.base_screen import BaseScreenView
 from kivymd.uix.list import OneLineListItem, OneLineIconListItem, OneLineAvatarIconListItem
-from kivy.properties import StringProperty, ObjectProperty, BooleanProperty, NumericProperty, ListProperty
+from kivy.properties import StringProperty, ObjectProperty, BooleanProperty, NumericProperty, ListProperty, DictProperty
 from pathlib import Path
 from kivymd.uix.toolbar import MDTopAppBar
 from kivymd.uix.button import MDFillRoundFlatButton
@@ -15,51 +15,70 @@ import weakref
 
 from kivy.weakproxy import WeakProxy
 
-class CustomWorkSheetListItem(MDRectangleFlatIconButton):
-    item_id = StringProperty()
-    icon_name = StringProperty()
-    # parent = ObjectProperty()
+class PreviewRecordedTreeContent(MDBoxLayout):
+    tree_number = StringProperty()
+    tree_specie = StringProperty()
+    stem_number = StringProperty()
+    tree_diameter = StringProperty()
+    crown_diameter = StringProperty()
+    tree_height = StringProperty()
+
+    health_condition = StringProperty()
+    tree_location = StringProperty('X')
+    crown_cone = StringProperty()
+    crown_value = StringProperty()
+    specie_value = StringProperty()
+
+    def update_values(self, record):
+        self.tree_number = str(record.get('Tree Number'))
+        self.tree_specie = str(record.get('Tree specie'))
+        self.stem_number = str(record.get('Stem number'))
+        self.tree_diameter = str(record.get('Tree diameter'))
+        self.crown_diameter = str(record.get('Crown diameter'))
+        self.tree_height = str(record.get('Tree height'))
+
+        self.health_condition = str(record.get('Health condition'))
+        self.tree_location = str(record.get('Tree location'))
+        self.crown_cone = str(record.get('Crown cone'))
+        self.crown_value = str(record.get('Crown value'))
+        self.specie_value = str(record.get('Specie value'))
 
 
-class DialogForUploadContent(MDBoxLayout):
-    chosen_worksheet = StringProperty()
-    last_picked_id = StringProperty()
+class PreUploadDialogContent(MDBoxLayout):
+    chosen_worksheet_title = StringProperty()
+    number_of_records = NumericProperty(0)
     screen_view = ObjectProperty()
-    # def __init__(self, **kwargs):
+
+    def set_values(self, title: str, number_of_records: int):
+        self.chosen_worksheet_title = title
+        self.number_of_records = number_of_records
+        # def __init__(self, **kwargs):
     #     super().__init__(**kwargs)
     #     self.populate_with_available_ws_buttons()
 
-    def pick_worksheet(self, instance):
-        print(f"last picked id: {self.last_picked_id}")
-        # if self.last_picked_id:
-        #     self.ids[self.last_picked_id].icon_name = ''
-        #     self.ids[instance.id].icon_name = 'arrow-left-bottom'
-        #     self.last_picked_id = instance.id
-        # else:
-        #     self.last_picked_id = instance.id
-        #     self.ids[instance.id].icon_name = 'arrow-left-bottom'
-        if self.last_picked_id:
-            self.ids[self.last_picked_id].icon_color = 'white'
-            self.ids[instance.id].icon_color = 'green'
-            self.last_picked_id = instance.id
-        else:
-            self.last_picked_id = instance.id
-            self.ids[instance.id].icon_color = 'green'
-        self.screen_view.worksheet_to_upload = instance.text
+    # def pick_worksheet(self, instance):
+    #     print(f"last picked id: {self.last_picked_id}")
+    #         self.ids[self.last_picked_id].icon_color = 'white'
+    #         self.ids[instance.id].icon_color = 'green'
+    #         self.last_picked_id = instance.id
+    #     else:
+    #         self.last_picked_id = instance.id
+    #         self.ids[instance.id].icon_color = 'green'
+    #     self.screen_view.worksheet_to_upload = instance.text
 
-    def populate_with_available_ws_buttons(self):
-        available_ws = self.screen_view.get_list_of_available_ws()
-        print(f"Available WS: {available_ws}")
-        for i, ws in enumerate(available_ws):
-            ws_button = CustomWorkSheetListItem(
-                    text=f'{ws.title}',
-                    id=ws.title,
-                    on_release=self.pick_worksheet
-                )
-            self.ids[ws_button.id] = WeakProxy(ws_button)
-            self.ids.ws_buttons_layout.add_widget(
-                ws_button
-            )
+    # def populate_with_available_ws_buttons(self):
+    #     available_ws = self.screen_view.get_list_of_available_ws()
+    #     print(f"Available WS: {available_ws}")
+    #     for i, ws in enumerate(available_ws):
+    #         ws_button = CustomWorkSheetListItem(
+    #                 text=f'{ws.title}',
+    #                 id=ws.title,
+    #                 on_release=self.pick_worksheet
+    #             )
+    #         self.ids[ws_button.id] = WeakProxy(ws_button)
+    #         self.ids.ws_buttons_layout.add_widget(
+    #             ws_button
+    #         )
 
 
 
@@ -68,12 +87,33 @@ class TreeItem(OneLineAvatarIconListItem):
     id = NumericProperty()
     tree_page = ObjectProperty()
     can_delete = BooleanProperty(True)
+    record_data = DictProperty()
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-    def callback(self, item):
+    # def __init__(self, **kwargs):
+    #     super().__init__(**kwargs)
+    def show_tree_preview(self, item):
         Logger.info(f"{__name__}: item pressed: {item.text}")
+
+        def close_dialog(event):
+            self.preview_record_dialog.dismiss()
+
+        def confirm_dialog(event):
+            self.preview_record_dialog.dismiss()
+
+        close_btn = MDFlatButton(text="Cancel", on_release=close_dialog)
+        confirm_btn = MDFlatButton(text="Confirm", on_release=confirm_dialog)
+
+        content_cls = PreviewRecordedTreeContent()
+        content_cls.update_values(item.record_data)
+
+        self.preview_record_dialog = MDDialog(title='Recorded Tree Values',
+                               size_hint=(.6, .5),
+                               type="custom",
+                               content_cls=content_cls,
+                               buttons=(close_btn, confirm_btn)
+                               )
+        self.preview_record_dialog.open()
+
 
     def delete_item(self, item):
         self.tree_page = self.parent.parent
@@ -85,8 +125,8 @@ class TreeItemsPage(MDRecycleView):
     tree_items_list = ListProperty()
     session_screen_view = ObjectProperty()
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    # def __init__(self, **kwargs):
+    #     super().__init__(**kwargs)
 
     def delete_item(self, index):
         self.session_screen_view = self.parent.parent
@@ -97,8 +137,9 @@ class TreeItemsPage(MDRecycleView):
     def update_items(self, can_delete=True):
         Logger.info(f"{__name__}: items updated")
         self.data = [
-            {'text': str(record),
+            {'text': f"#{record.get('Tree Number')} with {len(record)} points",
              'id': int(i),
+             'record_data': record,
              'can_delete': can_delete}
             for i, record in enumerate(self.tree_items_list)]
 
@@ -108,10 +149,12 @@ class SessionScreenView(BaseScreenView):
     current_session_json = None
     current_session_state = "incomplete"
 
+    total_session_records = NumericProperty()
+
     app_bar_title = StringProperty()
     show_buttons = BooleanProperty(True)
 
-    worksheet_to_upload = StringProperty()
+    chosen_worksheet_title = StringProperty()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -122,34 +165,32 @@ class SessionScreenView(BaseScreenView):
             self.upload_dialog.dismiss()
 
         def confirm_dialog(event):
-            Logger.info(f"{__name__}: Chosen worksheet: {self.worksheet_to_upload}")
-            if self.worksheet_to_upload == '':
-                self.upload_session()
-            else:
-                self.set_worksheet_in_model(self.worksheet_to_upload)
-                self.upload_session()
-                self.upload_dialog.dismiss()
-                self.app.go_prev_screen()
+            Logger.info(f"{__name__}: Chosen worksheet: {self.chosen_worksheet_title}")
+            self.upload_session()
+            self.upload_dialog.dismiss()
+            self.app.go_prev_screen()
 
         close_btn = MDFlatButton(text="Cancel", on_release=close_dialog)
         confirm_btn = MDFlatButton(text="Confirm", on_release=confirm_dialog)
-        content_cls = DialogForUploadContent()
+
+        content_cls = PreUploadDialogContent()
         content_cls.screen_view = self
-        content_cls.populate_with_available_ws_buttons()
-        self.upload_dialog = MDDialog(title='Choose Google worksheet to upload',
-                               size_hint=(.6, .5),
+
+        num_of_session_rec = self.total_session_records
+        worksheetname = self.model.worksheet_title
+        session_name = self.path_to_json.stem.split('_')[0]
+
+        content_cls.set_values(worksheetname, num_of_session_rec)
+
+        self.upload_dialog = MDDialog(title=f'Upload Session: {session_name}',
+                               #size_hint=(.6, .5),
+                               #height="300dp",
                                type="custom",
                                content_cls=content_cls,
                                buttons=(close_btn, confirm_btn)
                                )
         self.ids['upload_dialog'] = weakref.ref(self.upload_dialog.content_cls)
         self.upload_dialog.open()
-
-    def set_worksheet_in_model(self, worksheet_title):
-        self.model.set_chosen_worksheet(worksheet_title)
-
-    def get_list_of_available_ws(self):
-        return self.model.list_available_worksheets()
 
     def receive_session_json_path(self, session_path: Path):
         Logger.info(f"{__name__}: retrieved json path")
@@ -171,6 +212,7 @@ class SessionScreenView(BaseScreenView):
         self.show_buttons = False
 
         records = self.current_session_json['data'].get('records')
+        self.total_session_records = len(records)
 
         self.ids.tree_items_page.tree_items_list = records
         self.ids.tree_items_page.update_items(can_delete=False)
@@ -183,6 +225,7 @@ class SessionScreenView(BaseScreenView):
         self.app_bar_title = session_name
         self.show_buttons = True
         records = self.current_session_json['data'].get('records')
+        self.total_session_records = len(records)
 
         self.ids.tree_items_page.tree_items_list = records
         self.ids.tree_items_page.update_items()
@@ -199,6 +242,7 @@ class SessionScreenView(BaseScreenView):
     def update_records_in_tree_items(self):
         self.current_session_json = JsonStore(self.path_to_json)
         records = self.current_session_json['data'].get('records')
+        self.total_session_records = len(records)
         self.ids.tree_items_page.tree_items_list = records
         self.ids.tree_items_page.update_items()
         self.ids.tree_items_page.refresh_from_data()

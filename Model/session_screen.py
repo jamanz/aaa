@@ -1,3 +1,5 @@
+import gspread
+
 from Model.base_model import BaseScreenModel
 from kivy.storage.jsonstore import JsonStore
 from kivy.properties import ObjectProperty, StringProperty
@@ -5,7 +7,7 @@ from pathlib import Path
 import os
 from kivy.logger import Logger
 from Utility.google_sheets import (next_available_row, features_name_to_sheets_columns_map,
-                                   get_g_sheet_client, get_g_sheet_client_sheet_list)
+                                   receive_client_sheet_by_id, get_g_sheet_client_sheet_list)
 from kivy.clock import Clock
 
 
@@ -13,50 +15,75 @@ class SessionScreenModel(BaseScreenModel):
     session_json = None
     session_json_path = None
     g_sheet_client = None
-    chosen_worksheet = None
+    chosen_worksheet: gspread.Worksheet = None
+    worksheet_title = 'Default first worksheet'
 
     def __init__(self):
         #schedule connection to Google Sheets
-        Clock.schedule_once(self.init_g_sheet_client, 3)
-        self.chosen_worksheet = StringProperty('worksheet1')
+        # self.chosen_worksheet = StringProperty('worksheet1')
         Logger.info(f"{__name__}: Inited")
 
-    def init_g_sheet_client(self, dt):
-        self.g_sheet_client = get_g_sheet_client()
-        Logger.info(f"{__name__}: async Google sheets inited")
-        #return True
+    def receive_client_and_worksheet_from_home_screen_model(self, worksheet: gspread.Worksheet):
+        # self.g_sheet_client = client
+        self.chosen_worksheet = worksheet
+        self.worksheet_title = worksheet.title
+        # self.g_sheet_client = client
+        Logger.info(f"{__name__}: worksheet: {self.chosen_worksheet} and client {self.g_sheet_client} received from home screen model")
 
-    def list_available_worksheets(self):
-        return get_g_sheet_client_sheet_list(self.g_sheet_client)
+    # def init_g_sheet_client(self, dt):
+    #     self.g_sheet_client = receive_client_sheet_by_id()
+    #     Logger.info(f"{__name__}: async Google sheets inited")
+    #
 
-    def set_chosen_worksheet(self, worksheet_title):
-        print(f"getted: {worksheet_title}, with type: {type(worksheet_title)}")
-        self.chosen_worksheet = worksheet_title
+    # def list_available_worksheets(self):
+    #     return get_g_sheet_client_sheet_list(self.g_sheet_client)
+    #
+    # def set_chosen_worksheet(self, worksheet_title):
+    #     print(f"getted: {worksheet_title}, with type: {type(worksheet_title)}")
+    #     self.chosen_worksheet = worksheet_title
 
-    def upload_records_to_sheet(self, records):
-        Logger.info(f"{__name__}: current GSheet client: {self.g_sheet_client}")
-        free_row_i = next_available_row(self.g_sheet_client.worksheet(self.chosen_worksheet))
+    def upload_records_to_sheet(self, records, session_name, session_date):
+        Logger.info(f"{__name__}: current GSheet worksheet: {self.chosen_worksheet}")
+        if self.chosen_worksheet is None:
+            # Default to upload
+            self.chosen_worksheet = receive_client_sheet_by_id().sheet1
+
+        free_row_i = next_available_row(self.chosen_worksheet)
         Logger.info(f"{__name__}: first free row at index: {free_row_i}")
         batch = []
 
         for record in records:
             values = []
+            # mapping of input features to google sheet columns
             for feature in features_name_to_sheets_columns_map.keys():
-                feature_val = record.get(feature)
-                if feature_val:
-                    values.append(feature_val)
+                if feature == 'Session name':
+                    values.append(session_name.split()[0])
+                elif feature == 'Session date':
+                    values.append(session_date)
                 else:
-                    values.append('NONE')
+                    feature_val = record.get(feature)
+                    if feature in ['Health condition', 'Specie value', 'Tree location', 'Crown value']:
+                        try:
+                            feature_val = int(feature_val)
+                        except:
+                            pass
+                    if feature_val:
+                        values.append(feature_val)
+                    else:
+                        # If nothing set None
+                        values.append('None')
 
+            values = list(reversed(values))
+            # forming bath to send
             batch.append(
                 {
-                    'range': f'A{free_row_i}:F{free_row_i}',
+                    'range': f'D{free_row_i}:O{free_row_i}',
                     'values': [values]
                 }
             )
             free_row_i += 1
 
-        self.g_sheet_client.worksheet(self.chosen_worksheet).batch_update(batch)
+        self.chosen_worksheet.batch_update(batch)
         Logger.info(f"{__name__}: Batch sent to Google Sheet")
 
     def delete_record_in_tree_items(self, index):
@@ -68,13 +95,15 @@ class SessionScreenModel(BaseScreenModel):
 
     def upload_session(self, session_path: Path):
         self.session_json = JsonStore(session_path, indent=4)
-        info = self.session_json.get("info")
-        info['state'] = "completed"
-        self.session_json.put("info", **info)
 
         session_name = session_path.stem
         session_records = self.session_json.get('data')['records']
-        self.upload_records_to_sheet(session_records)
+        session_date = self.session_json.get('info')['date']
+        self.upload_records_to_sheet(session_records, session_name, session_date)
+
+        info = self.session_json.get("info")
+        info['state'] = "completed"
+        self.session_json.put("info", **info)
 
         # move to completed directory
         new_path = Path(session_path.parent, "completed", session_path.name)

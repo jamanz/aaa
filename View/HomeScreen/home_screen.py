@@ -1,7 +1,7 @@
 from View.base_screen import BaseScreenView
 from kivy.storage.jsonstore import JsonStore
 import secrets
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty, ObjectProperty
 from kivy import Logger
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.boxlayout import MDBoxLayout
@@ -10,6 +10,46 @@ from kivymd.uix.button import MDFlatButton
 from functools import partial
 from kivymd.uix.pickers import MDDatePicker
 import weakref
+from kivymd.uix.button import MDRectangleFlatIconButton
+from kivy.weakproxy import WeakProxy
+
+
+class CustomWorkSheetButton(MDRectangleFlatIconButton):
+    item_id = StringProperty()
+    icon_name = StringProperty()
+
+
+class WorksheetChoiceDialogContent(MDBoxLayout):
+    chosen_worksheet = StringProperty()
+    last_picked_id = StringProperty()
+    screen_view = ObjectProperty()
+
+    def pick_worksheet(self, instance):
+        if self.last_picked_id:
+            self.ids[self.last_picked_id].icon_color = 'white'
+            self.ids[instance.id].icon_color = 'green'
+            self.last_picked_id = instance.id
+        else:
+            self.last_picked_id = instance.id
+            self.ids[instance.id].icon_color = 'green'
+
+        self.screen_view.chosen_worksheet = instance.text
+
+    def populate_with_available_ws_buttons(self, list_of_available_worksheets: list[str]):
+
+        for i, ws in enumerate(list_of_available_worksheets):
+            ws_button = CustomWorkSheetButton(
+                    text=f'{ws}',
+                    id=ws,
+                    on_release=self.pick_worksheet
+                )
+            self.ids[ws_button.id] = WeakProxy(ws_button)
+            self.ids.ws_buttons_layout.add_widget(
+                ws_button
+            )
+
+
+
 
 
 class DialogContent(MDBoxLayout):
@@ -32,8 +72,10 @@ class HomeScreenView(BaseScreenView):
     # session_json_path = StringProperty()
     new_session_name = StringProperty()
     new_session_date = StringProperty()
+    current_worksheet = ObjectProperty()
 
-    #img_path = StringProperty('TREEZ-LOGO-RGB.png')
+    chosen_worksheet = StringProperty()
+    #img_path = StringProperty('TREEZ_LOGO_RGB.png')
 
     def __init__(self, **kwargs):
         super(HomeScreenView, self).__init__(**kwargs)
@@ -73,6 +115,42 @@ class HomeScreenView(BaseScreenView):
                                )
         self.ids['new_ses_dialog'] = weakref.ref(self.dialog.content_cls)
         self.dialog.open()
+
+    def set_worksheet_in_model(self, worksheet_title):
+        self.model.set_chosen_worksheet(worksheet_title)
+
+    def start_worksheet_choice_dialog(self):
+
+        def close_dialog(event):
+            self.worksheet_choice_dialog.dismiss()
+
+        def confirm_dialog(event):
+            # self.chosen_worksheet was set from the dialog class
+            Logger.info(f"{__name__}: Chosen worksheet: {self.chosen_worksheet}")
+            if self.chosen_worksheet == '':
+                Logger.info(f"{__name__}: self.chosen_worksheet is empty")
+            else:
+                self.set_worksheet_in_model(self.chosen_worksheet)
+                self.worksheet_choice_dialog.dismiss()
+
+        close_btn = MDFlatButton(text="Cancel", on_release=close_dialog)
+        confirm_btn = MDFlatButton(text="Confirm", on_release=confirm_dialog)
+
+        content_cls = WorksheetChoiceDialogContent()
+        content_cls.screen_view = self
+        list_of_available_worksheets = self.model.get_list_of_available_worksheets_to_view()
+        content_cls.populate_with_available_ws_buttons(list_of_available_worksheets)
+
+        self.worksheet_choice_dialog = MDDialog(title='Choose Google worksheet to upload',
+                               size_hint=(.6, .5),
+                               type="custom",
+                               content_cls=content_cls,
+                               buttons=(close_btn, confirm_btn)
+                               )
+        # cc
+        self.ids['worksheet_choice_dialog'] = WeakProxy(self.worksheet_choice_dialog.content_cls)
+        self.worksheet_choice_dialog.open()
+
 
 
     def start_recorded_sessions(self):

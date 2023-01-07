@@ -148,14 +148,29 @@ Add empty txt filler to avoid OS not existing data folder (vanilla bone)
 use
 ```py .\main.py -m screen:nexus7.2,portrait,scale=0.75```
 for testing on different screens
-```py main.py -m screen``` list all avaible screens
+```py main.py -m screen``` list all available screens
 
-Problem with displaying layouts on android screen occured, 
+Problem with displaying layouts on android screen occurred, 
 but with simulated screen it doing well:
 update kv files to use dp metrics for displaying widgets, and sp for text
 
 Resolved problem with fitting MDSegmentControl
 Fixed distance btw AppBar and Other view, also 
+
+## 30-35 Pomo:
+Done with suggestions for Tree Specie TextField, it consists of:
+ - initialization in Session Screen controller pandas element, build for .spec included setting ```pandas=1.0.3```
+In forums was point to switch ```p4a.branch = develop``` but it worked without it
+ - Selecting among available Goggle worksheets in one document on uploading, initialized in Session Screen Model
+ - Issue with RecycleView was persisted
+
+
+## 35-40 Pomo:
+ - Placed worksheet choosing as new button at Home Screen
+ - Added and modified items preview in Session Screen and Add Data Screen 
+ - Finish Uploading to Google sheet in right format
+ - Seems like resolve Issue with RecycleView, need build to check
+
 
 ## References:
 1. [updating recycle view](https://medium.com/nerd-for-tech/how-to-refresh-kivy-recycleview-72244883d075)

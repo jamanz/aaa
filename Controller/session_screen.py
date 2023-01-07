@@ -7,9 +7,6 @@ import View.SessionScreen.session_screen
 # If you no longer need a hot reload, you can delete this instruction.
 importlib.reload(View.SessionScreen.session_screen)
 
-
-
-
 class SessionScreenController:
     """
     The `SessionScreenController` class represents a controller implementation.

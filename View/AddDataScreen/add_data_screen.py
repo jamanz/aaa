@@ -14,8 +14,6 @@ from kivy.utils import get_color_from_hex
 from kivymd.uix.textfield import MDTextField
 
 
-
-
 class PreviewContent(MDBoxLayout):
     tree_number = StringProperty()
     tree_specie = StringProperty()
@@ -27,6 +25,8 @@ class PreviewContent(MDBoxLayout):
     health_condition = StringProperty()
     tree_location = StringProperty('X')
     crown_cone = StringProperty()
+    crown_value = StringProperty()
+    specie_value = StringProperty()
 
     def update_values(self, record):
         self.tree_number = str(record.get('Tree Number'))
@@ -35,6 +35,12 @@ class PreviewContent(MDBoxLayout):
         self.tree_diameter = str(record.get('Tree diameter'))
         self.crown_diameter = str(record.get('Crown diameter'))
         self.tree_height = str(record.get('Tree height'))
+
+        self.health_condition = str(record.get('Health condition'))
+        self.tree_location = str(record.get('Tree location'))
+        self.crown_cone = str(record.get('Crown cone'))
+        self.crown_value = str(record.get('Crown value'))
+        self.specie_value = str(record.get('Specie value'))
 
 
 
@@ -54,7 +60,7 @@ class AddDataScreenView(BaseScreenView):
         ok_btn = MDFlatButton(text="Ok", on_release=ok_dialog)
 
         self.dialog = MDDialog(title='Preview',
-                               size_hint=(.7, .5),
+                               size_hint=(.7, None),
                                type="custom",
                                content_cls=PreviewContent(),
                                buttons=(close_btn, ok_btn)
@@ -69,6 +75,7 @@ class AddDataScreenView(BaseScreenView):
         Logger.info(f"{__name__}: Inited")
 
         self.dataCard = addDataCard()
+        self.dataCard.add_data_view = self
         self.ids.box_layout.add_widget(self.dataCard)
 
         self.suggestion_menu = MDDropdownMenu(
@@ -76,9 +83,6 @@ class AddDataScreenView(BaseScreenView):
             position="bottom",
             width_mult=4,
         )
-
-
-
 
     def cancel_record(self):
         self.controller.clear_record()

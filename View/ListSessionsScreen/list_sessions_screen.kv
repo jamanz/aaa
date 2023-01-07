@@ -3,20 +3,25 @@
 <SessionItem>:
     text: root.session_name
     on_press: root.callback(self)
-    size_hint: 1, .2
+    #size_hint: 1, .2
+    font_size: "13sp"
 
 
 <SessionsPage>:
     viewclass: "SessionItem"
+    spacing: "5dp"
+    padding: "10dp"
+    orientation: "vertical"
     RecycleBoxLayout:
-        padding: "5dp"
-        spacing: "5dp"
+        #padding: "5dp"
+        #spacing: "5dp"
+        orientation: "vertical"
         default_size: None, f"{72}dp"
         default_size_hint: 1, None
-        size_hint_y: .4
-        #height: f"{self.minimum_height}dp"
-        height: f"{root.height}dp"
-        orientation: "vertical"
+        size_hint_y: None
+        height: f"{self.minimum_height}dp"
+        #height: f"{root.height}dp"
+
 
 
 <ListSessionsScreenView>:

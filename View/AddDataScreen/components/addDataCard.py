@@ -62,6 +62,7 @@ from kivymd.uix.recycleview import MDRecycleView
 
 class MySegmentedControl(MDSegmentedControl):
     custom_panel_width = StringProperty('100dp')
+    control_type = StringProperty('')
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -72,6 +73,16 @@ class MySegmentedControl(MDSegmentedControl):
         self.ids.segment_panel.width = self.custom_panel_width
         self._segment_switch_x = f"{float(self.custom_panel_width[:-2]) - 6}dp"
 
+    def on_active(self,*args, ) -> None:
+        '''Called when the segment is activated.'''
+        print(args, len(args))
+        if len(args) == 1:
+            control_value = args[0].text
+            control_object_label = args[0].parent.parent.control_type
+            #print("screen parent: ", )
+            self.parent.parent.parent.add_data_view.get_input_feature_value(control_object_label, control_value)
+
+
 class FeatureButton(MDFillRoundFlatButton):
     pass
 
@@ -81,16 +92,18 @@ class addDataCard(MDCard):
     chosen_feature = StringProperty()
     chosen_feature_instance = ObjectProperty()
     shadow_animation = ObjectProperty()
-
     health_cond = StringProperty()
 
-    suggestions = ListProperty(["apple", "banana", "orange", "grape", "mango"])
+    add_data_view = ObjectProperty()
+
+
+   # suggestions = ListProperty(["apple", "banana", "orange", "grape", "mango"])
 
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         Logger.info(f"{__name__}: Inited, data card ids: {self.ids}")
-        #self.ids.health_condition_layout.add_widget(MySegmentedControl())
+
         self.ids.health_segment.custom_panel_width = "160dp"
         self.ids.location_segment.custom_panel_width = "140dp"
         self.ids.crown_cone_segment.custom_panel_width = "80dp"

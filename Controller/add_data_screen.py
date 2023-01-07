@@ -46,13 +46,41 @@ class AddDataScreenController:
 
     def get_input_feature_value(self, feature_key, feature_value):
         self.new_record_dict[feature_key] = feature_value
+        if self.new_record_dict.get('Crown cone') and self.new_record_dict['Crown diameter']:
+            print('READY TO CALC CROWN VALUE')
+            self.new_record_dict['Crown value'] = \
+                self.calculate_crown_value(self.new_record_dict['Crown cone'], self.new_record_dict['Crown diameter'])
+        if self.new_record_dict.get('Tree specie') and not self.new_record_dict.get('Specie value'):
+            specie = self.new_record_dict.get('Tree specie')
+            if specie in self.tree_suggestions_df['latin_name'].values:
+                tree_specie_value_df = self.tree_suggestions_df.loc[self.tree_suggestions_df['latin_name'] == specie]
+                tree_specie_value = tree_specie_value_df['value'].tolist()[0]
+                self.new_record_dict['Specie value'] = tree_specie_value
+            else:
+                pass
+
+    def calculate_crown_value(self, crown_cone: str, crown_diameter: str):
+        value = 0
+        if float(crown_diameter) > 12:
+            value = 5
+        elif 8 < float(crown_diameter) <= 12:
+            value = 4 if crown_cone == 'No' else 5
+        elif 4 < float(crown_diameter) <= 8:
+            value = 3 if crown_cone == 'No' else 5
+        elif 2 < float(crown_diameter) <= 4:
+            value = 2 if crown_cone == 'No' else 4
+        elif float(crown_diameter) <= 2:
+            value = 1 if crown_cone == 'No' else 3
+        else:
+            value = -1
+        return value
+
 
     def find_suggestions(self, text: str)->list[str]:
         out_df = self.tree_suggestions_df[self.tree_suggestions_df['latin_name'].str.contains(text)]
         # print("out df: ", out_df['latin_name'].tolist())
         # return list(filter(lambda sugg: sugg.lower().startswith(text.lower()), self.tree_suggestions_df))
         return out_df['latin_name'].tolist()
-
 
     def write_record_to_json(self):
         self.model.write_record_to_json(self, self.new_record_dict)

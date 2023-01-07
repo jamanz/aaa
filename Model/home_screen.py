@@ -1,3 +1,4 @@
+import gspread
 from kivy.properties import ObjectProperty
 
 from Model.base_model import BaseScreenModel
@@ -7,10 +8,13 @@ import pathlib
 from pathlib import Path
 from kivy.logger import Logger
 from os.path import dirname, abspath
+from kivy.properties import StringProperty
 #from Utility.google_sheets import authorize_gsheets
 import time
 import calendar
-
+from Utility.google_sheets import (next_available_row, features_name_to_sheets_columns_map,
+                                   auth_in_gsheets, receive_client_sheet_by_id, get_g_sheet_client_sheet_list)
+from kivy.clock import Clock
 
 class HomeScreenModel(BaseScreenModel):
     """
@@ -19,9 +23,37 @@ class HomeScreenModel(BaseScreenModel):
     """
     json_storage_path = pathlib.Path("assets", "data").resolve()
 
+    # Instances for uploading to GSheets
+    g_sheet_client = None
+    chosen_worksheet = None
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        Logger.info(f"{__name__}: Inited, app abs data path: {self.json_storage_path}")
+        # Default for upload if user don't done choice about worksheet
+        self.chosen_worksheet = StringProperty('worksheet1')
+        Logger.info(f"{__name__}: Inited")
+        Clock.schedule_once(self.authorize_g_sheet_client, 1)
+
+    def send_worksheet_instance_to_session_screen_model(self, worksheet_title: str):
+        for observer in self._observers:
+            if observer.name == "session screen":
+                worksheet = self.g_sheet_client.worksheet(worksheet_title)
+                observer.model.receive_client_and_worksheet_from_home_screen_model(worksheet)
+
+    def get_list_of_available_worksheets_to_view(self):
+        return [ws.title for ws in self.list_available_worksheets()]
+
+    def authorize_g_sheet_client(self, dt):
+        self.g_sheet_client = receive_client_sheet_by_id()
+        Logger.info(f"{__name__}: async Google sheets inited")
+
+    def list_available_worksheets(self):
+        return get_g_sheet_client_sheet_list(self.g_sheet_client)
+
+    def set_chosen_worksheet(self, worksheet_title):
+        Logger.info(f"{__name__}: retrieved from View worksheet with title : {worksheet_title}")
+        self.send_worksheet_instance_to_session_screen_model(worksheet_title)
+
 
     def start_list_sessions(self, state):
         Logger.info(f"{__name__}: Started listing sessions, state={state}")

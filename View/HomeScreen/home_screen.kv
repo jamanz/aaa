@@ -1,3 +1,27 @@
+<CustomWorkSheetButton>:
+    size_hint: .9, .3
+    icon: 'arrow-left-bottom'
+    icon_color: 'white'
+
+<WorksheetChoiceDialogContent>:
+    id: upload_dialog
+
+    orientation: "vertical"
+    spacing: "10dp"
+    size_hint_y: None
+    height: "200dp"
+    width: "80dp"
+
+    MDBoxLayout:
+        id: ws_buttons_layout
+
+        orientation: "vertical"
+        size_hint: 1, .9
+        spacing: "5dp"
+        padding: "5dp"
+        #md_bg_color: utils.get_color_from_hex('#975c0e')
+
+
 <HomeScreenView>:
     size_hint: 1, 1
 
@@ -23,6 +47,11 @@
             text: "Recorded sessions"
             on_press:
                 root.start_recorded_sessions()
+
+        NavigationButton:
+            text: "Set Google worksheet"
+            on_press:
+                root.start_worksheet_choice_dialog()
 
 
 <NavigationButton@MDFillRoundFlatButton>:

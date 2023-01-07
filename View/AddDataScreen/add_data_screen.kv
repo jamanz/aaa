@@ -42,28 +42,50 @@
 <PreviewContent>
     id: preview
     orientation: "vertical"
-    spacing: "28dp"
+    spacing: "5dp"
+
     size_hint_y: None
-    height: "160dp"
-    width: "80dp"
+    height: "300dp"
 
     MDLabel:
+        markup: True
+        size_hint: .9, 0.1
         id: tree_number
-        text: "Tree Number: " + root.tree_number
+        #spacing: "10dp"
+        font_size: "13sp"
+        text: f"Tree Number: [b]{root.tree_number}[/b]\nTree Specie: [b]{root.tree_specie}[/b]\nSpecie value: [b]{root.specie_value}[/b]"
+
+
 
     MDSeparator:
 
     MDLabel:
-        id: tree_specie
-        text: "Tree Specie: " + root.tree_specie
-
-    MDSeparator:
-
-    MDLabel:
+        markup: True
         id: stem_number
-        text: "Stem Number: " + root.stem_number
+        size_hint: .9, 0.1
+        font_size: "13sp"
+        text: f"Stem Number: [b]{root.stem_number}[/b]\nTree Diameter: [b]{root.tree_diameter}[/b]"
 
     MDSeparator:
+
+    MDLabel:
+        markup: True
+        id: stem_number
+        size_hint: .9, 0.1
+        font_size: "13sp"
+        text: f"Crown Diameter: [b]{root.crown_diameter}[/b]\nTree Height: [b]{root.tree_height}[/b]"
+
+    MDSeparator:
+
+
+    MDLabel:
+        markup: True
+        id: health_condition
+        size_hint: .9, 0.1
+        font_size: "13sp"
+        text: f"Health condition: [b]{root.health_condition}[/b]\nTree location: [b]{root.tree_location}[/b]\nCrown Cone: [b]{root.crown_cone}[/b]\nCrown value: [b]{root.crown_value}[/b]"
+
+
 
 
 

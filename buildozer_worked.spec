@@ -1,10 +1,10 @@
 [app]
 
 # (str) Title of your application
-title = AAPP40
+title = Treez
 
 # (str) Package name
-package.name = aApp
+package.name = Treez
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = org.test
@@ -47,11 +47,11 @@ requirements = python3,pillow,android,kivy==2.1.0,kivymd==1.0.2,google-auth-oaut
 # requirements.source.kivy = ../../kivy
 
 # (str) Presplash of the application
-presplash.filename = %(source.dir)s/assets/Nofim_Logo_Final.png
+presplash.filename = %(source.dir)s/assets/TREEZ_LOGO_RGB.png
 #presplash.color =
 
 # (str) Icon of the application
-icon.filename = %(source.dir)s/assets/Nofim_Logo_Final.png
+icon.filename = %(source.dir)s/assets/TREEZ_LOGO_RGB.png
 
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
 orientation = portrait
@@ -84,7 +84,7 @@ fullscreen = 0
 # red, blue, green, black, white, gray, cyan, magenta, yellow, lightgray,
 # darkgray, grey, lightgrey, darkgrey, aqua, fuchsia, lime, maroon, navy,
 # olive, purple, silver, teal.
-android.presplash_color = aqua
+android.presplash_color = white
 
 # (string) Presplash animation using Lottie format.
 # see https://lottiefiles.com/ for examples and https://airbnb.design/lottie/
