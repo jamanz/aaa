@@ -13,7 +13,7 @@
 <HealthConditionControl@MySegmentedControl>:
     pos_hint: {'center_x': .5, 'bot': 1}
     control_type: "Health condition"
-    #segment_color: self.app.theme_cls.primary_palette
+    segment_color: app.theme_cls.accent_color
     MDSegmentedControlItem:
         text: '0'
         font_size: f"13sp"
@@ -36,7 +36,7 @@
 <LocationControl@MySegmentedControl>:
     pos_hint: {'center_x': .5, 'bot': 1}
     control_type: "Tree location"
-    #segment_color: self.app.theme_cls.primary_palette
+    segment_color: app.theme_cls.accent_color
     MDSegmentedControlItem:
         text: 'X'
         font_size: f"13sp"
@@ -59,7 +59,7 @@
 
 <CrownConeControl@MySegmentedControl>:
     pos_hint: {'center_x': .5, 'bot': 1}
-    #segment_color: self.app.theme_cls.primary_palette
+    segment_color: app.theme_cls.accent_color
     #on_active: self.on_active(*args)
     control_type: "Crown cone"
     MDSegmentedControlItem:

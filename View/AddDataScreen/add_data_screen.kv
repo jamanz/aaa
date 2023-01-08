@@ -1,7 +1,5 @@
 #:import addDataCard View.AddDataScreen.components.addDataCard
 
-<CameraButtonsLayout>
-
 
 
 <AddDataScreenView>:
@@ -34,7 +32,7 @@
                 text: "Make photo"
                 icon: "camera"
                 size_hint: .3, None
-                on_release: root.app.go_next_screen("add data screen", "photo screen")
+                on_release: root.make_photo_for_tree()
 
             MDFillRoundFlatIconButton:
                 text: "Preview"
@@ -45,14 +43,69 @@
                 text: "Confirm"
                 icon: "check-circle"
                 size_hint: .3, None
-                on_release: root.save_record_and_back_to_session_screen()
+                on_release: root.show_submit_record_dialog()
 
+
+
+<SubmitRecordContent>
+    id: submit_record
+    orientation: "vertical"
+    spacing: "5dp"
+
+    size_hint_y: None
+    height: "400dp"
+
+    MDLabel:
+        markup: True
+        size_hint: .9, 0.1
+        id: tree_number
+        #spacing: "10dp"
+        font_size: "13sp"
+        text: f"Tree Number: [b]{root.tree_number}[/b]\nTree Specie: [b]{root.tree_specie}[/b]\nSpecie value: [b]{root.specie_value}[/b]"
+
+
+
+    MDSeparator:
+
+    MDLabel:
+        markup: True
+        id: stem_number
+        size_hint: .9, 0.1
+        font_size: "13sp"
+        text: f"Stem Number: [b]{root.stem_number}[/b]\nTree Diameter: [b]{root.tree_diameter}[/b]"
+
+    MDSeparator:
+
+    MDLabel:
+        markup: True
+        id: stem_number
+        size_hint: .9, 0.1
+        font_size: "13sp"
+        text: f"Crown Diameter: [b]{root.crown_diameter}[/b]\nTree Height: [b]{root.tree_height}[/b]"
+
+    MDSeparator:
+
+
+    MDLabel:
+        markup: True
+        id: health_condition
+        size_hint: .9, 0.1
+        font_size: "13sp"
+        text: f"Health condition: [b]{root.health_condition}[/b]\nTree location: [b]{root.tree_location}[/b]\nCrown Cone: [b]{root.crown_cone}[/b]\nCrown value: [b]{root.crown_value}[/b]"
+
+    MDTextField:
+        font_size: "13sp"
+        id: comments_id
+        hint_text: "Additional comments"
+        multiline: True
+        on_text_validate: root.set_comment(self.text)
 
 
 <PreviewContent>
     id: preview
     orientation: "vertical"
     spacing: "5dp"
+    mg_bg_color: app.theme_cls.accent_color
 
     size_hint_y: None
     height: "300dp"

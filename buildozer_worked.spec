@@ -40,7 +40,7 @@ version = 0.1
 requirements = python3,pillow,android,kivy==2.1.0,kivymd==1.0.2,google-auth-oauthlib,
                oauthlib,requests_oauthlib,httplib2,pyasn1,pyasn1-modules,requests,rsa,
                oauth2client,urllib3,chardet,gspread,google-auth,cachetools,idna,
-               numpy,pandas==1.0.3,camera4kivy,gestures4kivy,
+               numpy,pandas==1.0.3,camera4kivy,gestures4kivy,gspread_formatting
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes

@@ -25,3 +25,8 @@ class AddDataScreenModel(BaseScreenModel):
 
     def receive_session_json_path(self, session_path: Path):
         self.session_json_path = session_path
+
+    def send_tree_number_to_photoscreen(self, tree_num):
+        for observer in self._observers:
+            if observer.name == "photo screen":
+                observer.set_tree_name(tree_num)

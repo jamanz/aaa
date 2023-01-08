@@ -3,7 +3,7 @@ from kivy.logger import Logger
 
 from kivy.core.window import Window
 from kivy.lang import Builder
-from kivy.properties import ObjectProperty
+from kivy.properties import ObjectProperty, StringProperty
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.utils import platform
@@ -21,12 +21,20 @@ PS1 = """
 
 
 class PhotoScreenView(BaseScreenView):
+
+    tree_name = StringProperty()
+    photo_count = 0
+
     def __init__(self, **kwargs):
         Builder.load_string(PS1)
         super().__init__(**kwargs)
         Logger.info(f"{__name__}: Inited")
 
+    def set_tree_name(self, tree_name):
+        self.tree_name = tree_name
+
     def on_enter(self):
+        self.photo_count = 0
         self.photo_preview.connect_camera(filepath_callback=self.capture_path)
 
     def on_pre_leave(self):
@@ -77,6 +85,7 @@ class PhotoLayout1(BoxLayout):
 
 BL1 = """
 <ButtonsLayout1>:
+    id: butt_layou
     Background1:
     Button:
         id:other
@@ -103,7 +112,7 @@ BL1 = """
 
 
 class ButtonsLayout1(RelativeLayout):
-
+    filename = StringProperty()
     def __init__(self, **args):
         Builder.load_string(BL1)
         super().__init__(**args)
@@ -129,7 +138,19 @@ class ButtonsLayout1(RelativeLayout):
             self.ids.flash.size_hint = (None, .15)
 
     def photo(self):
-        self.parent.ids.preview.capture_photo()
+        file_name = self.parent.parent.tree_name
+        photo_count = self.parent.parent.photo_count
+        Logger.info(f"{__name__:} photo name -> {file_name}")
+        if file_name:
+            if photo_count == 0:
+                self.parent.ids.preview.capture_photo(name=f"{file_name}")
+                self.parent.parent.photo_count += 1
+            else:
+                self.parent.ids.preview.capture_photo(name=f"{file_name}_{photo_count}")
+                self.parent.parent.photo_count += 1
+
+        else:
+            self.parent.ids.preview.capture_photo()
 
     def flash(self):
         icon = self.parent.ids.preview.flash()

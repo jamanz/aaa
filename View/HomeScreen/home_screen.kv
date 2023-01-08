@@ -5,7 +5,6 @@
 
 <WorksheetChoiceDialogContent>:
     id: upload_dialog
-
     orientation: "vertical"
     spacing: "10dp"
     size_hint_y: None
@@ -24,13 +23,24 @@
 
 <HomeScreenView>:
     size_hint: 1, 1
+#    FloatLayout:
+#        orientation: 'vertical'
+
+    canvas.before:
+        Rectangle:
+            source: 'assets/images/TREEZ-LOGO-RGB.png'
+            size: [self.size[0], self.size[1]-220]
+            pos: [root.pos[0], root.pos[1]+200]
+
 
     BoxLayout:
-        size_hint: .5, .33
-        spacing: "28dp"
-        pos_hint: {"center_x": .5, "center_y": .3}
+        size_hint: .5, .3
+        spacing: "5dp"
+        pos_hint: {"center_x": .5, "center_y": .2}
         id: buttons_layo
         orientation: "vertical"
+
+
 
         NavigationButton:
             id: new_ses_btn
@@ -55,7 +65,7 @@
 
 
 <NavigationButton@MDFillRoundFlatButton>:
-    size_hint: 1, .3
+    size_hint: 1, .2
     #font_size: '20sp'
 
 

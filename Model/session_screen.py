@@ -9,6 +9,9 @@ from kivy.logger import Logger
 from Utility.google_sheets import (next_available_row, features_name_to_sheets_columns_map,
                                    receive_client_sheet_by_id, get_g_sheet_client_sheet_list)
 from kivy.clock import Clock
+from gspread_formatting import CellFormat, format_cell_ranges, Color
+
+
 
 
 class SessionScreenModel(BaseScreenModel):
@@ -17,6 +20,12 @@ class SessionScreenModel(BaseScreenModel):
     g_sheet_client = None
     chosen_worksheet: gspread.Worksheet = None
     worksheet_title = 'Default first worksheet'
+
+    format_red = CellFormat(backgroundColor=Color.fromHex("#a52a2a"))
+    format_green = CellFormat(backgroundColor=Color.fromHex("#2aa547"))
+    format_grey = CellFormat(backgroundColor=Color.fromHex("#d0caca"))
+    format_yellow = CellFormat(backgroundColor=Color.fromHex("#e1d483"))
+    format_white = CellFormat(backgroundColor=Color.fromHex("#ffffff"))
 
     def __init__(self):
         #schedule connection to Google Sheets
@@ -48,16 +57,22 @@ class SessionScreenModel(BaseScreenModel):
             # Default to upload
             self.chosen_worksheet = receive_client_sheet_by_id().sheet1
 
+
+
         free_row_i = next_available_row(self.chosen_worksheet)
         Logger.info(f"{__name__}: first free row at index: {free_row_i}")
         batch = []
 
+        cell_formats = []
+
         for record in records:
             values = []
+            total_tree_value = 0
+            values_set = []
             # mapping of input features to google sheet columns
             for feature in features_name_to_sheets_columns_map.keys():
                 if feature == 'Session name':
-                    values.append(session_name.split()[0])
+                    values.append(session_name.split('_')[0])
                 elif feature == 'Session date':
                     values.append(session_date)
                 else:
@@ -65,25 +80,50 @@ class SessionScreenModel(BaseScreenModel):
                     if feature in ['Health condition', 'Specie value', 'Tree location', 'Crown value']:
                         try:
                             feature_val = int(feature_val)
+                            total_tree_value += feature_val
+                            values_set.append(True)
                         except:
-                            pass
+                            if feature == 'Tree location':
+                                values_set.append(True)
+                            else:
+                                values_set.append(False)
+
                     if feature_val:
                         values.append(feature_val)
                     else:
                         # If nothing set None
                         values.append('None')
+            # formating table colors according to cumulative tree value
+            total_tree_value_col_range = f'C{free_row_i}'
+            if all(values_set):
+                if 17 <= total_tree_value <= 20:
+                    cell_formats.append([total_tree_value_col_range, self.format_red])
+                elif 14 <= total_tree_value <= 16:
+                    cell_formats.append([total_tree_value_col_range, self.format_green])
+                elif 7 <= total_tree_value <= 13:
+                    cell_formats.append([total_tree_value_col_range, self.format_grey])
+                elif 0 <= total_tree_value <= 6:
+                    cell_formats.append([total_tree_value_col_range, self.format_yellow])
+            else:
+                cell_formats.append([total_tree_value_col_range, self.format_white])
 
-            values = list(reversed(values))
+
             # forming bath to send
             batch.append(
                 {
-                    'range': f'D{free_row_i}:O{free_row_i}',
-                    'values': [values]
-                }
+                    'range': f'C{free_row_i}:O{free_row_i}',
+                    'values': [[total_tree_value]+list(reversed(values))]
+                },
             )
+            print("record coment: ", record.get('Comment'))
+            batch.append({
+                    'range': f'A{free_row_i}',
+                    'values': [[record.get('Comment')]]
+                })
             free_row_i += 1
 
         self.chosen_worksheet.batch_update(batch)
+        format_cell_ranges(self.chosen_worksheet, cell_formats)
         Logger.info(f"{__name__}: Batch sent to Google Sheet")
 
     def delete_record_in_tree_items(self, index):

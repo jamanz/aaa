@@ -144,6 +144,57 @@ if platform == 'android':
         mActivity.getWindow().getDecorView().setSystemUiVisibility(option)
 
 
+
+colors = {
+    "Red": {
+        "A200": "#AA4A44",
+        "A500": "#AA4A44",
+        "A700": "#AA4A44",
+        "200": "#AA4A44",
+        "500": "#AA4A44",
+        "700": "#AA4A44",
+    },
+
+
+    "Green": {
+        "A200": "#628038",
+        "A500": "#628038",
+        "A700": "#628038",
+        "200": "#628038",
+        "500": "#628038",
+        "700": "#628038",
+    },
+    "Grey": {
+        "A200": "#53565A",
+        "A500": "#53565A",
+        "A700": "#53565A",
+        "200": "#53565A",
+        "500": "#53565A",
+        "700": "#53565A",
+    },
+
+    "BlueGray": {
+        "A200": "#DBE2E9",
+        "A500": "#DBE2E9",
+        "A700": "#DBE2E9",
+        "200": "#DBE2E9",
+        "500": "#DBE2E9",
+        "700": "#DBE2E9",
+    },
+
+
+
+    "Light": {
+        "StatusBar": "#DBE2E9",
+        "AppBar": "#628038",
+        "Background": "#DBE2E9",
+
+        "Dialog": "#DBE2E9",
+        "FlatButtonDown": "#DBE2E9",
+    },
+}
+
+
 class agroApp3MVC(MDApp):
     app_folder = os.path.dirname(os.path.abspath(__file__))
     g_sheet = None
@@ -152,9 +203,13 @@ class agroApp3MVC(MDApp):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-
+        self.theme_cls.colors = colors
         self.theme_cls.theme_style = "Light"#"#53565A"
+
         self.theme_cls.primary_palette = 'Green'#get_color_from_hex("#628038")#"Orange"
+        self.theme_cls.accent_palette = "BlueGray"
+
+
         #self.theme_cls.
         # self.user_data_dir
         self.load_all_kv_files(self.directory)

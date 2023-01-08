@@ -9,10 +9,11 @@ from kivymd.uix.behaviors import (
     RectangularRippleBehavior,
     BackgroundColorBehavior,
     CommonElevationBehavior,
+    RectangularElevationBehavior
 )
 from kivy.metrics import dp
 from kivymd.uix.recycleview import MDRecycleView
-
+from kivy.app import App
 #
 # class SuggestButton(MDFillRoundFlatButton):
 #     id = NumericProperty()
@@ -75,20 +76,21 @@ class MySegmentedControl(MDSegmentedControl):
 
     def on_active(self,*args, ) -> None:
         '''Called when the segment is activated.'''
-        print(args, len(args))
+
         if len(args) == 1:
             control_value = args[0].text
             control_object_label = args[0].parent.parent.control_type
             #print("screen parent: ", )
             self.parent.parent.parent.add_data_view.get_input_feature_value(control_object_label, control_value)
-
+            print(f"parent: {self.parent}")
+            self.segment_color = self.parent.parent.parent.add_data_view.app.theme_cls.primary_color
 
 class FeatureButton(MDFillRoundFlatButton):
     pass
 
 
 
-class addDataCard(MDCard, CommonElevationBehavior):
+class addDataCard(MDCard, RectangularElevationBehavior):
     chosen_feature = StringProperty()
     chosen_feature_instance = ObjectProperty()
     shadow_animation = ObjectProperty()
@@ -102,11 +104,11 @@ class addDataCard(MDCard, CommonElevationBehavior):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        Logger.info(f"{__name__}: Inited, data card ids: {self.ids}")
+        #Logger.info(f"{__name__}: Inited, data card ids: {self.ids}")
 
-        self.ids.health_segment.custom_panel_width = "160dp"
-        self.ids.location_segment.custom_panel_width = "140dp"
-        self.ids.crown_cone_segment.custom_panel_width = "80dp"
+        self.ids.health_segment.custom_panel_width = "120dp"
+        self.ids.location_segment.custom_panel_width = "110dp"
+        self.ids.crown_cone_segment.custom_panel_width = "60dp"
 
 
     def choose_feature(self, instance):

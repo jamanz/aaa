@@ -59,6 +59,7 @@ class AddDataScreenController:
             else:
                 pass
 
+
     def calculate_crown_value(self, crown_cone: str, crown_diameter: str):
         value = 0
         if float(crown_diameter) > 12:

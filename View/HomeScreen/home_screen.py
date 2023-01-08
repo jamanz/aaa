@@ -81,6 +81,7 @@ class HomeScreenView(BaseScreenView):
         super(HomeScreenView, self).__init__(**kwargs)
         Logger.info(f"{__name__}: Inited")
 
+
     def start_new_session_dialog(self):
 
         def close_dialog(event):
@@ -110,6 +111,7 @@ class HomeScreenView(BaseScreenView):
         self.dialog = MDDialog(title='Create new session',
                                size_hint=(.7, .5),
                                type="custom",
+                               md_bg_color=self.app.theme_cls.accent_color,
                                content_cls=DialogContent(),
                                buttons=(close_btn, confirm_btn)
                                )
@@ -143,6 +145,7 @@ class HomeScreenView(BaseScreenView):
 
         self.worksheet_choice_dialog = MDDialog(title='Choose Google worksheet to upload',
                                size_hint=(.6, .5),
+                               md_bg_color=self.app.theme_cls.accent_color,
                                type="custom",
                                content_cls=content_cls,
                                buttons=(close_btn, confirm_btn)
