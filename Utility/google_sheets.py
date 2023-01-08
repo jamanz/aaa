@@ -42,8 +42,8 @@ def auth_in_gsheets() -> gspread.client:
     return client
 
 
-def next_available_row(worksheet):
-    str_list = list(filter(None, worksheet.col_values(1)))
+def next_available_row(worksheet: gspread.Worksheet):
+    str_list = list(filter(None, worksheet.col_values(12)))
     return int(len(str_list)+1)
 
 

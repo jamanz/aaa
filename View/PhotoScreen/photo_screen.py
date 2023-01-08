@@ -43,13 +43,13 @@ PL1 = """
         id: pad_end
     Preview:
         id: preview
-        letterbox_color: .8, .3, 1, .5
+        letterbox_color: .4, .4, .3, .7
     ButtonsLayout1:
         id: buttons
 <Background1@Label>:
     canvas:
         Color: 
-            rgba: .8, .3, 1, .5
+            rgba: .4, .4, .3, .7
         Rectangle:
             pos: self.pos
             size: self.size

@@ -46,8 +46,8 @@ class AddDataScreenController:
 
     def get_input_feature_value(self, feature_key, feature_value):
         self.new_record_dict[feature_key] = feature_value
-        if self.new_record_dict.get('Crown cone') and self.new_record_dict['Crown diameter']:
-            print('READY TO CALC CROWN VALUE')
+        if self.new_record_dict.get('Crown cone') and self.new_record_dict.get('Crown diameter'):
+
             self.new_record_dict['Crown value'] = \
                 self.calculate_crown_value(self.new_record_dict['Crown cone'], self.new_record_dict['Crown diameter'])
         if self.new_record_dict.get('Tree specie') and not self.new_record_dict.get('Specie value'):

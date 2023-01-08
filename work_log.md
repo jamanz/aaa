@@ -173,7 +173,8 @@ In forums was point to switch ```p4a.branch = develop``` but it worked without i
  - Added New Screen - PhotoScreen, make vanilla version according to provided example for using module Camera4Kivy
 
 
-
+## 40-45 Pomo:
+ - Tested on other Android device. Camera works for Android 10 devices but crash on Android 9
 
 ## References:
 1. [updating recycle view](https://medium.com/nerd-for-tech/how-to-refresh-kivy-recycleview-72244883d075)

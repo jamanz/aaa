@@ -46,7 +46,6 @@ class PreviewContent(MDBoxLayout):
         self.specie_value = str(record.get('Specie value'))
 
 
-
 class AddDataScreenView(BaseScreenView):
     app_bar_title = StringProperty('New Tree')
     suggestion_is_selected = BooleanProperty(False)

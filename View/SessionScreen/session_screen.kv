@@ -96,7 +96,7 @@
 
         default_size_hint: 1, None
         size_hint_y: None
-        height: f"{self.minimum_height}dp"
+        height: self.minimum_height
         #height: f"{root.height}dp"
         orientation: "vertical"
 
@@ -110,11 +110,11 @@
         #md_bg_color: utils.get_color_from_hex('#c1c72f')
 
         MDTopAppBar:
-            size_hint: 1, None
-            elevation: "5dp"
+            #size_hint: 1, None
+            elevation: "2dp"
             title: root.app_bar_title
             type_height: "medium"
-            headline_text: "Headline"
+            #headline_text: "Headline"
             left_action_items: [["arrow-left", lambda x: root.app.go_prev_screen()]]
 
         TreeItemsPage:

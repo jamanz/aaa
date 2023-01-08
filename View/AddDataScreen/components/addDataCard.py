@@ -88,7 +88,7 @@ class FeatureButton(MDFillRoundFlatButton):
 
 
 
-class addDataCard(MDCard):
+class addDataCard(MDCard, CommonElevationBehavior):
     chosen_feature = StringProperty()
     chosen_feature_instance = ObjectProperty()
     shadow_animation = ObjectProperty()
