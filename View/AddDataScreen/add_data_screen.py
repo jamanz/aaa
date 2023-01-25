@@ -11,11 +11,12 @@ from kivymd.uix.dialog import MDDialog
 import weakref
 from kivymd.uix.menu import MDDropdownMenu
 from kivy.metrics import dp
+from kivy.animation import Animation
 from kivy.utils import get_color_from_hex
 from kivymd.uix.textfield import MDTextField
 from kivy.uix.camera import Camera
-
-
+from kivy.clock import Clock
+from functools import partial
 
 class PreviewContent(MDBoxLayout):
     tree_number = StringProperty()
@@ -84,11 +85,11 @@ class SubmitRecordContent(MDBoxLayout):
         self.comment = record.get('Comment', '')
 
 
-
 class AddDataScreenView(BaseScreenView):
     app_bar_title = StringProperty('New Tree')
     suggestion_is_selected = BooleanProperty(False)
     feature_value_len = NumericProperty(0)
+    data_card = ObjectProperty()
 
     def make_photo_for_tree(self):
         self.app.go_next_screen("add data screen", "photo screen")
@@ -119,7 +120,6 @@ class AddDataScreenView(BaseScreenView):
         self.ids.submit_record.update_values(self.controller.get_record())
         self.submit_dialog.open()
 
-
     def show_preview(self):
 
         def close_dialog(event):
@@ -142,7 +142,6 @@ class AddDataScreenView(BaseScreenView):
         self.ids.preview_dialog.update_values(self.controller.get_record())
         self.dialog.open()
 
-
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         Logger.info(f"{__name__}: Inited")
@@ -161,6 +160,11 @@ class AddDataScreenView(BaseScreenView):
     def cancel_record(self):
         self.controller.clear_record()
         self.app.go_prev_screen()
+
+        # reset color of feature buttons
+        for k in self.dataCard.ids.keys():
+            if '_btn' in k:
+                self.dataCard.ids[k].md_bg_color = self.app.theme_cls.accent_color
 
     def save_record_and_back_to_session_screen(self):
         self.controller.write_record_to_json()
@@ -190,9 +194,21 @@ class AddDataScreenView(BaseScreenView):
         print('menu dissmised in callback')
 
     def get_input_feature_value(self, feature_key, feature_value):
+
+        def run_anim(dt):
+            anim = Animation(md_bg_color=self.app.theme_cls.primary_color, duration=.3)
+            anim.start(self.dataCard.chosen_feature_instance)
+
         if feature_key == 'Tree Number':
             self.model.send_tree_number_to_photoscreen(feature_value)
+
+        Clock.schedule_once(run_anim, .1)
+        print(self.dataCard.chosen_feature_instance)
+
+        #anim.start(self.dataCard.chosen_feature_instance)
+        #.md_bg_color =
         self.controller.get_input_feature_value(feature_key, feature_value)
+
 
     def initiate_suggestions(self, feature_key, feature_value):
         self.suggestion_menu.dismiss()
@@ -211,5 +227,6 @@ class AddDataScreenView(BaseScreenView):
     def on_pre_enter(self, *args):
         self.feature_value_len = 0
         self.dataCard.ids.input_field_id.text = ''
+
         self.dataCard.ids.input_field_id.hint_text = "Chose feature to input"
         Logger.info(f"{__name__}: on_pre_enter fired ,ids: {self.ids.box_layout.ids}")

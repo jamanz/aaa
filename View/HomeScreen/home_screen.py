@@ -35,6 +35,7 @@ class WorksheetChoiceDialogContent(MDBoxLayout):
 
         self.screen_view.chosen_worksheet = instance.text
 
+
     def populate_with_available_ws_buttons(self, list_of_available_worksheets: list[str]):
 
         for i, ws in enumerate(list_of_available_worksheets):
@@ -47,9 +48,6 @@ class WorksheetChoiceDialogContent(MDBoxLayout):
             self.ids.ws_buttons_layout.add_widget(
                 ws_button
             )
-
-
-
 
 
 class DialogContent(MDBoxLayout):
@@ -67,13 +65,13 @@ class DialogContent(MDBoxLayout):
     def cancel_date(self, instance, value):
         self.date = '1011-11-11'
 
+
 class HomeScreenView(BaseScreenView):
 
     # session_json_path = StringProperty()
     new_session_name = StringProperty()
     new_session_date = StringProperty()
     current_worksheet = ObjectProperty()
-
     chosen_worksheet = StringProperty()
     #img_path = StringProperty('TREEZ_LOGO_RGB.png')
 
@@ -153,7 +151,6 @@ class HomeScreenView(BaseScreenView):
         # cc
         self.ids['worksheet_choice_dialog'] = WeakProxy(self.worksheet_choice_dialog.content_cls)
         self.worksheet_choice_dialog.open()
-
 
 
     def start_recorded_sessions(self):

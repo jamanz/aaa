@@ -43,9 +43,10 @@ class AndroidPermissions:
             #################################################
             # Customize run time permissions for the app here
             #################################################
-            self.permissions = [Permission.CAMERA, Permission.RECORD_AUDIO, Permission.WRITE_EXTERNAL_STORAGE]
-            if api_version < 29:
-                self.permissions.append(Permission.WRITE_EXTERNAL_STORAGE)
+            self.permissions = [Permission.CAMERA, Permission.RECORD_AUDIO, Permission.WRITE_EXTERNAL_STORAGE,
+                                Permission.READ_EXTERNAL_STORAGE]
+            # if api_version < 29:
+            #     self.permissions.append(Permission.WRITE_EXTERNAL_STORAGE)
                 #################################################
             self.permission_status([], [])
         elif self.start_app:
@@ -58,7 +59,7 @@ class AndroidPermissions:
         if granted:
             if self.start_app:
                 self.start_app()
-        elif self.permission_dialog_count < 2:
+        elif self.permission_dialog_count < 3:
             Clock.schedule_once(self.permission_dialog)
         else:
             self.no_permission_view()
@@ -73,8 +74,9 @@ class AndroidPermissions:
         view.add_widget(Button(text='Permission NOT granted.\n\n' + \
                                     'Tap to quit app.\n\n\n' + \
                                     'If you selected "Don\'t Allow",\n' + \
-                                    'enable permission with App Settings.',
-                               on_press=self.bye))
+                                    'enable permission with App Settings.' + \
+                                    f'Your api version is {api_version},\n',
+                                    on_press=self.bye))
         view.open()
 
     def bye(self, instance):

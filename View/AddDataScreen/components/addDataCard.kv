@@ -1,14 +1,15 @@
 
 
 <FeatureButton>:
-    #size_hint: 0.25, None
     font_size: f"13sp"
     text_size: self.parent.width/3.1, self.parent.height/2.2
     size: self.text_size
-
     padding: "1dp"
-    #elevation: "10dp"
-    #minimum_width: "100dp"
+    elevation: "1dp"
+
+    md_bg_color: app.theme_cls.accent_color
+
+
 
 <HealthConditionControl@MySegmentedControl>:
     pos_hint: {'center_x': .5, 'bot': 1}
@@ -78,8 +79,8 @@
     pos_hint: {"center_x": .5}
     radius: "20dp"
     padding: "2dp"
-    elevation: 2
-
+    elevation: 1
+    feature_input: input_field_id
     MDBoxLayout:
 
         orientation: 'vertical'
@@ -94,55 +95,57 @@
             id: input_field_id
             multiline: False
             hint_text: "Chose feature to input"
+            focus: True
 
             #helper_text: "This will disappear when you click off"
             #helper_text_mode: "on_focus"
-            on_text_validate: root.parent.parent.parent.get_input_feature_value(root.chosen_feature, self.text)
-            on_text: root.parent.parent.parent.initiate_suggestions(root.chosen_feature, self.text)
+
+            on_text_validate: root.add_data_view.get_input_feature_value(root.chosen_feature, self.text)
+            on_text: root.add_data_view.initiate_suggestions(root.chosen_feature, self.text)
 
         MDSeparator:
 
 
         MDRelativeLayout:
-            #cols: 3
             size_hint: 0.95, 0.3
             pos_hint: {'center_x': 0.5, 'center_y': 0.7}
-            #orientation: 'lr-tb'
             spacing: "3dp"
             padding: "1dp"
-            #md_bg_color: utils.get_color_from_hex('#975c0e')
+            id: buttons_box
 
             FeatureButton:
                 id: tree_number_btn
-                on_press: root.choose_feature(self)
-                #on_release: root.release_but(self)
+                on_release: root.choose_feature(self)
                 text: "Tree Number"
                 pos_hint: {'x': 0, 'top': 1}
+
             FeatureButton:
                 id: tree_specie_btn
-                on_press: root.choose_feature(self)
+                on_release: root.choose_feature(self)
                 pos_hint: {'x': .33, 'top': 1}
-                #on_release: root.release_but(self)
                 text: "Tree specie"
+
             FeatureButton:
                 id: stem_number_btn
-                on_press: root.choose_feature(self)
-                #on_release: root.release_but(self)
+                on_release: root.choose_feature(self)
                 pos_hint: {'x': 0.66, 'top': 1}
                 text: "Stem number"
+
             FeatureButton:
                 id: tree_diameter_btn
-                on_press: root.choose_feature(self)
+                on_release: root.choose_feature(self)
                 text: "Tree diameter"
                 pos_hint: {'x': 0, 'bot': 1}
+
             FeatureButton:
                 id: crown_diameter_btn
-                on_press: root.choose_feature(self)
+                on_release: root.choose_feature(self)
                 text: "Crown diameter"
                 pos_hint: {'x': .33, 'bot': 1}
+
             FeatureButton:
                 id: height_btn
-                on_press: root.choose_feature(self)
+                on_release: root.choose_feature(self)
                 text: "Tree height"
                 pos_hint: {'x': .66, 'bot': 1}
 

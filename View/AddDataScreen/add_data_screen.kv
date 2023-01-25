@@ -1,8 +1,7 @@
 #:import addDataCard View.AddDataScreen.components.addDataCard
 
-
-
 <AddDataScreenView>:
+    #data_card: add_data_card
     MDBoxLayout:
         spacing: "5dp"
         id: screen_box_layout
@@ -22,6 +21,7 @@
             size_hint: .95, 1
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
             id: box_layout
+
 
         MDBoxLayout:
             orientation: 'horizontal'

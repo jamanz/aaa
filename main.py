@@ -122,7 +122,7 @@ from android_permissions import AndroidPermissions
 from kivy.config import Config
 # Config.set('graphics', 'width', '360')
 # Config.set('graphics', 'height', '740')
-Config.set('modules', 'monitor', '')
+#Config.set('modules', 'monitor', '')
 
 
 if platform == 'android':
