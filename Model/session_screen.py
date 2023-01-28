@@ -7,11 +7,9 @@ from pathlib import Path
 import os
 from kivy.logger import Logger
 from Utility.google_sheets import (next_available_row, features_name_to_sheets_columns_map,
-                                   receive_client_sheet_by_id, get_g_sheet_client_sheet_list)
+                                   receive_client_sheet_by_id, get_g_sheet_client_sheet_list, get_worksheet, make_oauth)
 from kivy.clock import Clock
 from gspread_formatting import CellFormat, format_cell_ranges, Color
-
-
 
 
 class SessionScreenModel(BaseScreenModel):
@@ -32,32 +30,34 @@ class SessionScreenModel(BaseScreenModel):
         # self.chosen_worksheet = StringProperty('worksheet1')
         Logger.info(f"{__name__}: Inited")
 
+    def start_record_editing(self, tree_number: str):
+        for observer in self._observers:
+            if observer.name == "add data screen":
+                record = observer.model.get_record_for_edit_from_json_by_name(tree_number)
+                observer.controller.update_record(record)
+
+    def get_util_worksheet(self):
+        self.g_sheet_client = make_oauth()
+        self.chosen_worksheet = get_worksheet(self.g_sheet_client)
+        self.worksheet_title = self.chosen_worksheet.title
+
+    def receive_worksheet(self, worksheet: gspread.Worksheet):
+        self.chosen_worksheet = worksheet
+        self.worksheet_title = worksheet.title
+
     def receive_client_and_worksheet_from_home_screen_model(self, worksheet: gspread.Worksheet):
         # self.g_sheet_client = client
         self.chosen_worksheet = worksheet
         self.worksheet_title = worksheet.title
         # self.g_sheet_client = client
-        Logger.info(f"{__name__}: worksheet: {self.chosen_worksheet} and client {self.g_sheet_client} received from home screen model")
-
-    # def init_g_sheet_client(self, dt):
-    #     self.g_sheet_client = receive_client_sheet_by_id()
-    #     Logger.info(f"{__name__}: async Google sheets inited")
-    #
-
-    # def list_available_worksheets(self):
-    #     return get_g_sheet_client_sheet_list(self.g_sheet_client)
-    #
-    # def set_chosen_worksheet(self, worksheet_title):
-    #     print(f"getted: {worksheet_title}, with type: {type(worksheet_title)}")
-    #     self.chosen_worksheet = worksheet_title
+        Logger.info(f"{__name__}: worksheet: {self.chosen_worksheet.title} received from home screen model")
 
     def upload_records_to_sheet(self, records, session_name, session_date):
         Logger.info(f"{__name__}: current GSheet worksheet: {self.chosen_worksheet}")
         if self.chosen_worksheet is None:
             # Default to upload
-            self.chosen_worksheet = receive_client_sheet_by_id().sheet1
-
-
+            # self.chosen_worksheet = receive_client_sheet_by_id().sheet1
+            self.get_util_worksheet()
 
         free_row_i = next_available_row(self.chosen_worksheet)
         Logger.info(f"{__name__}: first free row at index: {free_row_i}")

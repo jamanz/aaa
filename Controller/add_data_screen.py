@@ -23,19 +23,11 @@ class AddDataScreenController:
     tree_suggestions_df = pd.read_csv(tree_values_path, index_col=False)[['value', 'latin_name']]
     # columns = defaultdict(list)
     # tree_suggestions = None
-
+    is_record_edited = False
 
     def __init__(self, model):
         self.model = model  # Model.add_data_screen.AddDataScreenModel
         self.view = View.AddDataScreen.add_data_screen.AddDataScreenView(controller=self, model=self.model)
-
-        # with open(self.tree_values_path) as f:
-        #     reader = csv.DictReader(f)  # read rows into a dictionary format
-        #     for row in reader:  # read a row as {column1: value1, column2: value2,...}
-        #         for (k, v) in row.items():  # go over each column name and value
-        #             self.columns[k].append(v)
-        # self.tree_suggestions = self.columns['latin_name']
-
         self.new_record_dict = {}
 
     def clear_record(self):
@@ -43,6 +35,10 @@ class AddDataScreenController:
 
     def get_record(self):
         return self.new_record_dict
+
+    def update_record(self, new_record: dict):
+        self.new_record_dict = new_record
+        self.is_record_edited = True
 
     def get_input_feature_value(self, feature_key, feature_value):
         self.new_record_dict[feature_key] = feature_value
@@ -58,7 +54,6 @@ class AddDataScreenController:
                 self.new_record_dict['Specie value'] = tree_specie_value
             else:
                 pass
-
 
     def calculate_crown_value(self, crown_cone: str, crown_diameter: str):
         value = 0
@@ -76,7 +71,6 @@ class AddDataScreenController:
             value = -1
         return value
 
-
     def find_suggestions(self, text: str)->list[str]:
         out_df = self.tree_suggestions_df[self.tree_suggestions_df['latin_name'].str.contains(text)]
         # print("out df: ", out_df['latin_name'].tolist())
@@ -84,8 +78,9 @@ class AddDataScreenController:
         return out_df['latin_name'].tolist()
 
     def write_record_to_json(self):
-        self.model.write_record_to_json(self, self.new_record_dict)
+        self.model.write_record_to_json(self, self.new_record_dict, record_edited=self.is_record_edited)
         self.new_record_dict.clear()
+        self.is_record_edited = False
 
     def get_suggestions_for_input(self, feature_value: str) -> list[str]:
         pass

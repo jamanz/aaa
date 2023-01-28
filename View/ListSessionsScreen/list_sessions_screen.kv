@@ -6,6 +6,15 @@
     md_bg_color: utils.get_color_from_hex('#a1211f')
     #size_hint: 1, .2
     font_size: "13sp"
+    _txt_left_pad: "15dp"
+
+    IconRightWidget:
+        size_hint: .1, .5
+        pos_hint: {"x": .95, "center_y": .4}
+        opacity: 1 if root.can_delete else 0
+        disabled: not root.can_delete
+        icon: 'delete'
+        on_press: root.delete_session(root)
 
 
 <SessionsPage>:

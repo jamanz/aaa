@@ -11,9 +11,16 @@ class AddDataScreenModel(BaseScreenModel):
     session_json_path = None
     session_json = None
 
-    def write_record_to_json(self, event, recod_dict: dict):
+    def write_record_to_json(self, event, recod_dict: dict, record_edited=False):
         self.session_json = JsonStore(self.session_json_path)
-        updated_recs = [recod_dict] + self.session_json.get('data')['records']
+        prev_records = self.session_json.get('data')['records']
+        # remove from store old record
+        if record_edited:
+            remove_rec_name = recod_dict.get('Tree Number')
+            for ind, rec in enumerate(prev_records):
+                if rec.get('Tree Number') == remove_rec_name:
+                    prev_records.pop(ind)
+        updated_recs = [recod_dict] + prev_records
         self.session_json.put('data', records=updated_recs)
 
         self.update_records_in_session_screen_view()
@@ -30,3 +37,12 @@ class AddDataScreenModel(BaseScreenModel):
         for observer in self._observers:
             if observer.name == "photo screen":
                 observer.set_tree_name(tree_num)
+
+    def get_record_for_edit_from_json_by_name(self, record_name: str):
+        self.session_json = JsonStore(self.session_json_path)
+        recs = self.session_json.get('data')['records']
+        for ind, record in enumerate(recs):
+            if record['Tree Number'] == record_name:
+                edit_rec = recs.pop(ind)
+                return edit_rec
+

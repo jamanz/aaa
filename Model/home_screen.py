@@ -13,7 +13,8 @@ from kivy.properties import StringProperty
 import time
 import calendar
 from Utility.google_sheets import (next_available_row, features_name_to_sheets_columns_map,
-                                   auth_in_gsheets, receive_client_sheet_by_id, get_g_sheet_client_sheet_list)
+                                   auth_in_gsheets, receive_client_sheet_by_id, get_g_sheet_client_sheet_list,
+                                   make_oauth, get_worksheet)
 from kivy.clock import Clock
 
 class HomeScreenModel(BaseScreenModel):
@@ -26,13 +27,29 @@ class HomeScreenModel(BaseScreenModel):
     # Instances for uploading to GSheets
     g_sheet_client = None
     chosen_worksheet = None
+    google_client = None
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         # Default for upload if user don't done choice about worksheet
         self.chosen_worksheet = StringProperty('worksheet1')
         Logger.info(f"{__name__}: Inited")
-        Clock.schedule_once(self.authorize_g_sheet_client, 1)
+        # Clock.schedule_once(self.authorize_g_sheet_client, 1)
+
+    def get_worksheet(self):
+        if self.google_client is None:
+            self.auth_in_google()
+        self.chosen_worksheet = get_worksheet(self.google_client)
+        return self.chosen_worksheet
+
+    def send_first_worksheet_instance_to_session_screen_model(self):
+        for observer in self._observers:
+            if observer.name == "session screen":
+                self.get_worksheet()
+                observer.model.receive_worksheet(self.chosen_worksheet)
+
+    def auth_in_google(self):
+        self.google_client = make_oauth()
 
     def send_worksheet_instance_to_session_screen_model(self, worksheet_title: str):
         for observer in self._observers:

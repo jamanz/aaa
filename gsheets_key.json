@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "argosoft-366212",
+  "private_key_id": "ecdf43e9b8ef28c28b8b01d0b9406c076a9e8283",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDVpAespRXdZhET\no2G+T2eXq7b83XobJVTk7FKYpHykPBiMbRZ+5nhDTFehmUJereYAQ+a7R5AHQvMo\nR8br5BTibPJPa4EV3sdAZ42jmKKhQ7JE6MQrua9hoo7Ea/u78njLbzD0WeldFBZI\ntj1NF2D6Ewo//uvHSWS8X+abgBuGBkbk0rIZHKEUhfsQYJ7RtKDdOmFvw4WMdwha\nYaWO4ELHcum4v6vJcoooxfKeJZI9TVAR4ix/zbGGrS91ukF+QPh05ct9jtTF8OI8\nDd5+sgoSy8QkjeoaWFXVdW3fhVuUAUd8TJkR1vXEVrOXin7qEdA7kWk62wMAq2ar\nYJl/sxmzAgMBAAECggEAYiXFUM9WyCvH1JnOobug/9DndCvbmPUBl1nqaC3JBTqG\nnJzRJOOEhIZiC9942j5R1/VZ3tf1lyBuzSaMgHp8Dbm3aD0fRIjgSPpJ28qXjDap\ng3bcCKp5pAUmSZ7CO4odbHhcqSVVTGmaAzWV3ADNkJWGs/fNIfTZzqDQNMgZ3OvV\n9F7vogiC3aoeMbpgyGqoDmL8nU0OHRbOkKlRSxiVIap4obPhHVYgiG7rojb7WiMz\nnnHBQLisMufG4X+MsjbmEG7EREjhDrSgN3lnUCAG+fHJRKn3pzQag1dXR1i+rSZK\nFrTP7/lZQV5hN7sAU2vALnjcQ3FpH/ciMTSb1m72YQKBgQD53dyENDBGhVpKOjys\nkrwaWUySYX3Ya+sNIbW9VB42H/YBtOMKloo2UaaoIp3ZQ+6FGgIvlZxBUdRCwdpn\nv6fPV1bnifQW7wnURgBPOTWTo1qf5W1hVn3m1u4XxHylLFLFwk410z4rxW8vMlQm\nkUIfHPEAlK+Y7/QDaQZ3O6monwKBgQDa4odFDCL3tIGafh2H53ctkWfHxmSY31cQ\nNerpp4r73iWUr9m/skAyHR8NY6qSBakXepEv8bFyjojHnrLwAbSJeVi0g7Lpcejv\nLjDw+MNiC8iXHVOmYOrqDOZFwezf2SJAllNbwWRMvpfGDW2ldolCOagJuNyBFDef\n3RyiHvDybQKBgQCmDte2GQUYaRnHiQq32lEe5cgo5JgBVD+Dm6qv6A6oA/e3zKKz\nb7btQLiUt2TWdvo3BUD8pN6S3rJFp5XiK5J4DuCXwqww7a5HoDombKv5sa/R4mUe\nMqA74Q2dSB1anKlp+qeFyB1ic7Vf1X/tnc4m5VIaA7br2lT+Szdb2I/5mwKBgC46\nI1loy8XGwIxxUClQsDHWgLWHZ92FZazNxlQch1TUQNmbHgDHU5mB3voD75UxTtnf\nj+QxRkmsYqTOFnpr0cYq85oEKnf1D73b4ogx8Ym2dWG81trPoy1VFhjrcOyBviMn\n3GkHefhfVEyGr35/f1OWO6/588/rBihkGVT/9eEtAoGAUZRumghXO3b7AfK3WLI7\n7NBG7uo6UFO/jfzS42RuXZiUWmu7MebmRQa4OSnwKiAgBlbpJEki1vBDktJT4ev7\nUx8bVrY8OIGr+Z4H7/uHWc11i3B4FEK/YA/66SR53E/4uJPbAPepQnVqSeUCRoh1\ni5YyTWOP2JOabWh+DAO008A=\n-----END PRIVATE KEY-----\n",
+  "client_email": "devkostya@argosoft-366212.iam.gserviceaccount.com",
+  "client_id": "106671822014415182442",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/devkostya%40argosoft-366212.iam.gserviceaccount.com"
+}

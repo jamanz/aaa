@@ -1,3 +1,11 @@
+<GoogleSheetsDialogContent>:
+    id: gsheet_dialog
+    orientation: "vertical"
+    spacing: "20dp"
+    MDLabel:
+        text: f"You authorized as:\n{root.user_email}"
+
+
 <CustomWorkSheetButton>:
     size_hint: .9, .3
     icon: 'arrow-left-bottom'
@@ -59,9 +67,9 @@
                 root.start_recorded_sessions()
 
         NavigationButton:
-            text: "Set Google worksheet"
+            text: "Auth in Google"
             on_press:
-                root.start_worksheet_choice_dialog()
+                root.start_login()
 
 
 <NavigationButton@MDFillRoundFlatButton>:

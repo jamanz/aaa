@@ -1,6 +1,5 @@
 #:import utils kivy.utils
 
-
 <PreviewRecordedTreeContent>
     id: preview_recorded
     orientation: "vertical"
@@ -16,8 +15,6 @@
         #spacing: "10dp"
         font_size: "13sp"
         text: f"Tree Number: [b]{root.tree_number}[/b]\nTree Specie: [b]{root.tree_specie}[/b]\nSpecie value: [b]{root.specie_value}[/b]"
-
-
 
     MDSeparator:
 
@@ -69,7 +66,7 @@
 
 <TreeItem>:
     #size_hint: 1, .5
-    on_press: root.show_tree_preview(self)
+    on_release: root.show_tree_preview(self)
     font_size: "12sp"
     _txt_left_pad: "12dp"
     #bcolor: utils.get_color_from_hex('#B1122f')

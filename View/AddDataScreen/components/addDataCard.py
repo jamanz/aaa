@@ -24,13 +24,29 @@ class MySegmentedControl(MDSegmentedControl):
     custom_panel_width = StringProperty('100dp')
     control_type = StringProperty('')
 
+    health_cond_vals = ['0', '1', '2', '3', '4', '5']
+    tree_loc_vals = ['X', '1', '2', '3', '4', '5']
+    crown_cone_vals = ['Yes', 'No']
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self._segment_switch_x = 6
 
     def on_custom_panel_width(self, *args):
         Logger.info(f"{__name__}: panel width changed, ids: {self.ids}")
         self.ids.segment_panel.width = self.custom_panel_width
-        self._segment_switch_x = f"{float(self.custom_panel_width[:-2]) - 6}dp"
+        # self._segment_switch_x = f"{float(self.custom_panel_width[:-2]) - 6}dp"
+
+    def preset_segment_panel_pos_from_val(self, val):
+        if self.control_type == 'Health condition':
+            ind = self.health_cond_vals.index(val)
+            self._segment_switch_x = ind*(float(self.ids.segment_panel.width)/len(self.health_cond_vals)) + 6
+        elif self.control_type == 'Tree location':
+            ind = self.tree_loc_vals.index(val)
+            self._segment_switch_x = ind*(float(self.ids.segment_panel.width)/len(self.tree_loc_vals)) + 6
+        elif self.control_type == 'Crown cone':
+            ind = self.crown_cone_vals.index(val)
+            self._segment_switch_x = ind * (float(self.ids.segment_panel.width) / len(self.crown_cone_vals)) + 6
 
     def on_active(self,*args, ) -> None:
         '''Called when the segment is activated.'''
@@ -63,28 +79,36 @@ class addDataCard(MDCard, RoundedRectangularElevationBehavior): #RectangularElev
         self.ids.location_segment.custom_panel_width = "110dp"
         self.ids.crown_cone_segment.custom_panel_width = "60dp"
 
+    def fill_card_with_record(self, record: dict):
+        self.add_data_view.controller.update_record(record)
+
     def refocus(self, *args):
         self.feature_input.focus = True
 
     def choose_feature(self, instance):
         Logger.info(f"{__name__}: pressed - {instance.text}")
-        self.ids.input_field_id.text = ''
-        Logger.info(f"{__name__}: field focus: {self.ids.input_field_id.focus}")
+
+        feature_value = self.add_data_view.controller.new_record_dict.get(instance.text)
+        if feature_value:
+            self.ids.input_field_id.text = feature_value
+        else:
+            self.ids.input_field_id.text = ''
+
+        self.ids.input_field_id.helper_text = ''
 
         self.ids.input_field_id.hint_text = instance.text
+        if instance.text == 'Tree diameter':
+            m_units = 'cm'
+            self.ids.input_field_id.helper_text = f"Measurement units: [{m_units}]"
+        elif instance.text == 'Crown diameter' or instance.text == 'Tree height':
+            m_units = 'm'
+            self.ids.input_field_id.helper_text = f"Measurement units: [{m_units}]"
+        else:
+            self.ids.input_field_id.helper_text = ''
+
         self.chosen_feature = instance.text
         self.chosen_feature_instance = instance
-        # Clock.schedule_once(self.refocus)
+
         self.feature_input.focus = True
 
-
-
-
-
-
-
-
-
-
-        # print(f"btn inited, obj prop: {self.parent.root}")
 

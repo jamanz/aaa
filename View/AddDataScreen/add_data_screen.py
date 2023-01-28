@@ -91,6 +91,8 @@ class AddDataScreenView(BaseScreenView):
     feature_value_len = NumericProperty(0)
     data_card = ObjectProperty()
 
+    is_new = BooleanProperty(True)
+
     def make_photo_for_tree(self):
         self.app.go_next_screen("add data screen", "photo screen")
 
@@ -100,6 +102,7 @@ class AddDataScreenView(BaseScreenView):
             self.submit_dialog.dismiss()
 
         def ok_dialog(event):
+
             self.ids.submit_record.set_comment(self.ids.submit_record.ids.comments_id.text)
             # self.get_input_feature_value('Comment', self.ids.submit_record.ids.comments_id.text)
             self.save_record_and_back_to_session_screen()
@@ -196,19 +199,23 @@ class AddDataScreenView(BaseScreenView):
     def get_input_feature_value(self, feature_key, feature_value):
 
         def run_anim(dt):
-            anim = Animation(md_bg_color=self.app.theme_cls.primary_color, duration=.3)
-            anim.start(self.dataCard.chosen_feature_instance)
+            if feature_key in self.feature_button_instance_map.keys():
+                anim = Animation(md_bg_color=self.app.theme_cls.primary_color, duration=.3)
+                anim.start(self.dataCard.chosen_feature_instance)
+            # elif feature_key in self.feature_segment_instance_map.keys():
+            #     anim = Animation(segment_color=self.app.theme_cls.primary_color, duration=.3)
+            #     anim.start(self.dataCard.chosen_feature_instance)
+
+
 
         if feature_key == 'Tree Number':
             self.model.send_tree_number_to_photoscreen(feature_value)
 
+
         Clock.schedule_once(run_anim, .1)
         print(self.dataCard.chosen_feature_instance)
 
-        #anim.start(self.dataCard.chosen_feature_instance)
-        #.md_bg_color =
         self.controller.get_input_feature_value(feature_key, feature_value)
-
 
     def initiate_suggestions(self, feature_key, feature_value):
         self.suggestion_menu.dismiss()
@@ -226,7 +233,55 @@ class AddDataScreenView(BaseScreenView):
 
     def on_pre_enter(self, *args):
         self.feature_value_len = 0
-        self.dataCard.ids.input_field_id.text = ''
 
+        self.dataCard.ids.input_field_id.text = ''
         self.dataCard.ids.input_field_id.hint_text = "Chose feature to input"
+
+        self.feature_button_instance_map = { 'Tree Number': None,
+                                        'Tree specie': None,
+                                        'Stem number': None,
+                                        'Tree diameter': None,
+                                        'Crown diameter': None,
+                                        'Tree height': None}
+
+        self.feature_segment_instance_map = {'Health condition': None,
+                                        'Tree location': None,
+                                        'Crown cone': None}
+
+        # map features
+        for k in self.dataCard.ids.keys():
+            if '_btn' in k:
+                self.feature_button_instance_map[self.dataCard.ids[k].text] = self.dataCard.ids[k]
+            if 'segment' in k:
+                self.feature_segment_instance_map[self.dataCard.ids[k].control_type] = self.dataCard.ids[k]
+
+        # default colors
+        for new_feature in self.feature_button_instance_map.keys():
+            self.feature_button_instance_map[new_feature].md_bg_color = self.app.theme_cls.accent_color
+
+        for new_feature in self.feature_segment_instance_map.keys():
+            self.feature_segment_instance_map[new_feature].segment_color = self.app.theme_cls.accent_color
+            print(f"ACTIVE SEGMENT OF {new_feature} is {self.feature_segment_instance_map[new_feature].current_active_segment}")
+
+        # color features
+        # colors for buttons and segment positions for existed record
+        if self.controller.is_record_edited:
+            for record_feature in self.controller.new_record_dict.keys():
+
+                if record_feature in self.feature_button_instance_map.keys():
+                    self.feature_button_instance_map[record_feature].md_bg_color = self.app.theme_cls.primary_color
+
+                if record_feature in self.feature_segment_instance_map.keys():
+                    self.feature_segment_instance_map[record_feature].segment_color = self.app.theme_cls.primary_color
+                    segment_val = self.controller.new_record_dict.get(record_feature)
+                    print('segment_val: ', segment_val)
+                    self.feature_segment_instance_map[record_feature].preset_segment_panel_pos_from_val(segment_val)
+        else:
+            # reset color of feature buttons
+            for new_feature in self.feature_button_instance_map.keys():
+                self.feature_button_instance_map[new_feature].md_bg_color = self.app.theme_cls.accent_color
+            for new_feature in self.feature_segment_instance_map.keys():
+                self.feature_segment_instance_map[new_feature].segment_color = self.app.theme_cls.accent_color
+
+
         Logger.info(f"{__name__}: on_pre_enter fired ,ids: {self.ids.box_layout.ids}")

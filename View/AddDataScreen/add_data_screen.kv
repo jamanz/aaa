@@ -19,7 +19,7 @@
         MDRelativeLayout:
             #orientation: 'vertical'
             size_hint: .95, 1
-            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            pos_hint: {'center_x': 0.5, 'center_y': 0.45}
             id: box_layout
 
 
@@ -29,7 +29,7 @@
             padding: "6dp"
             size_hint_y: 0.2
             MDFillRoundFlatIconButton:
-                text: "Make photo"
+                text: "Photo"
                 icon: "camera"
                 size_hint: .3, None
                 on_release: root.make_photo_for_tree()

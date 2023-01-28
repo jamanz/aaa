@@ -45,6 +45,7 @@ class AndroidPermissions:
             #################################################
             self.permissions = [Permission.CAMERA, Permission.RECORD_AUDIO, Permission.WRITE_EXTERNAL_STORAGE,
                                 Permission.READ_EXTERNAL_STORAGE]
+            self.granted_list = []
             # if api_version < 29:
             #     self.permissions.append(Permission.WRITE_EXTERNAL_STORAGE)
                 #################################################
@@ -56,6 +57,7 @@ class AndroidPermissions:
         granted = True
         for p in self.permissions:
             granted = granted and check_permission(p)
+            self.granted_list.append(granted)
         if granted:
             if self.start_app:
                 self.start_app()
@@ -75,7 +77,8 @@ class AndroidPermissions:
                                     'Tap to quit app.\n\n\n' + \
                                     'If you selected "Don\'t Allow",\n' + \
                                     'enable permission with App Settings.' + \
-                                    f'Your api version is {api_version},\n',
+                                    f'Your api version is {api_version},\n' + \
+                                    f'Permisions: {self.granted_list}',
                                     on_press=self.bye))
         view.open()
 
