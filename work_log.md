@@ -176,6 +176,12 @@ In forums was point to switch ```p4a.branch = develop``` but it worked without i
 ## 40-45 Pomo:
  - Tested on other Android device. Camera works for Android 10 devices but crash on Android 9
 
+## 45-55 Pomo:
+ - Improved UI
+ - Added Login in Google, it worked for Web App type 
+ - Make build for Android, firuge out specific dependencies
+ - Sign application with Keystore
+ - Face issue "loopback flow has been blocked" when trying to auth from app
 ## References:
 1. [updating recycle view](https://medium.com/nerd-for-tech/how-to-refresh-kivy-recycleview-72244883d075)
 

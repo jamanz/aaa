@@ -149,6 +149,9 @@ class HomeScreenView(BaseScreenView):
         self.auth_dialog.open()
 
     def start_login(self):
+        print('in kivy call login s')
+        self.app.gl_login()
+        print('in kivy call login e')
         if os.path.exists("./config/authorized_user.json"):
             self.start_authorized_dialog()
         else:

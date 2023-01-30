@@ -1,8 +1,10 @@
 import gspread
 import os
 from google.oauth2.credentials import Credentials
+from google.oauth2.credentials import UserAccessTokenCredentials
 from pathlib import Path
 import json
+from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 # print(os.path)
 # print(os.listdir(os.environ['APPDATA']))
@@ -15,6 +17,8 @@ DEFAULT_SCOPES = [
 ]
 
 cred_path = Path('config')
+print('step1')
+print('step2')
 gc = gspread.oauth(
     scopes=DEFAULT_SCOPES,
     credentials_filename=str(cred_path.joinpath('credentials.json')),

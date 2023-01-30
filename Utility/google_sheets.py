@@ -9,6 +9,7 @@ import json
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 
+
 SAMPLE_SPREADSHEET_ID = '1D6D-jEE5cBvrPABljLZla5d1NtjOhmCR76ymPgNN3r0'
 TOKEN_FILE = pathlib.Path('gsheets_key.json')
 
@@ -77,9 +78,10 @@ DEFAULT_SCOPES = [
     "https://www.googleapis.com/auth/drive",
 ]
 
-cred_path = pathlib.Path('config')
+cred_path = pathlib.Path('config').resolve()
 
 DEFAULT_WORKSHEET_NAME = 'TreezTable'
+
 
 
 def create_new_sheet_with_template(ws: gspread.Worksheet):
@@ -88,12 +90,14 @@ def create_new_sheet_with_template(ws: gspread.Worksheet):
 
 
 def make_oauth():
+
     gc = gspread.oauth(
         scopes=DEFAULT_SCOPES,
         credentials_filename=str(cred_path.joinpath('credentials.json')),
         authorized_user_filename=str(cred_path.joinpath('authorized_user.json'))
 
     )
+
     return gc
 
 def get_worksheet(client: gspread.Client):
@@ -108,7 +112,7 @@ def get_worksheet(client: gspread.Client):
 def get_user_email():
     with open(cred_path.joinpath('authorized_user.json')) as file:
         data = json.load(file)
-
+    print('Started getting user email ', os.listdir(cred_path))
     creds = Credentials.from_authorized_user_info(info=data, scopes=["https://www.googleapis.com/auth/userinfo.email"])
     email_service = build('oauth2', 'v2', credentials=creds)
     user_info = email_service.userinfo().get().execute()

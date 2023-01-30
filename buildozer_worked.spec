@@ -7,7 +7,7 @@ title = Treez
 package.name = Treez
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = org.test
+package.domain = org.treezApp
 
 # (str) Source code where the main.py live
 source.dir = .
@@ -40,7 +40,10 @@ version = 0.1
 requirements = python3,pillow,android,kivy==2.1.0,kivymd==1.0.2,google-auth-oauthlib,
                oauthlib,requests_oauthlib,httplib2,pyasn1,pyasn1-modules,requests,rsa,
                oauth2client,urllib3,chardet,gspread,google-auth,cachetools,idna,
-               numpy,pandas==1.0.3,camera4kivy,gestures4kivy,gspread_formatting
+               numpy,pandas==1.0.3,camera4kivy,gestures4kivy,gspread_formatting,
+               google-api-core==1.16.0,google-api-python-client,googleapis-common-protos,
+               google-auth-httplib2,pyparsing,uritemplate,
+               flask==2.0.3, werkzeug==2.0.3,
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
@@ -203,7 +206,7 @@ android.private_storage = True
 #android.add_resources =
 
 # (list) Gradle dependencies to add
-#android.gradle_dependencies =
+android.gradle_dependencies = com.google.android.gms:play-services-auth:18.0.0
 
 # (bool) Enable AndroidX support. Enable when 'android.gradle_dependencies'
 # contains an 'androidx' package, or any package from Kotlin source.
@@ -218,7 +221,7 @@ android.private_storage = True
 # (list) Gradle repositories to add {can be necessary for some android.gradle_dependencies}
 # please enclose in double quotes
 # e.g. android.gradle_repositories = "maven { url 'https://kotlin.bintray.com/ktor' }"
-#android.add_gradle_repositories =
+android.add_gradle_repositories = "mavenCentral()"
 
 # (list) packaging options to add
 # see https://google.github.io/android-gradle-dsl/current/com.android.build.gradle.internal.dsl.PackagingOptions.html
@@ -238,7 +241,7 @@ android.private_storage = True
 #android.ouya.icon.filename = %(source.dir)s/data/ouya_icon.png
 
 # (str) XML file to include as an intent filters in <activity> tag
-#android.manifest.intent_filters =
+android.manifest.intent_filters = intents.xml
 
 # (list) Copy these files to src/main/res/xml/ (used for example with intent-filters)
 #android.res_xml = PATH_TO_FILE,

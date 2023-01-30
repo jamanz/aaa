@@ -119,17 +119,51 @@ from kivy.utils import get_color_from_hex
 
 from android_permissions import AndroidPermissions
 
+from dotenv import load_dotenv
+from Utility.google_auth import initialize_google, login_google, logout_google
+from Utility.google_auth_utils import login_providers, auto_login, stop_login
+
 from kivy.config import Config
 # Config.set('graphics', 'width', '360')
 # Config.set('graphics', 'height', '740')
 #Config.set('modules', 'monitor', '')
 
+load_dotenv()
+
 
 if platform == 'android':
-    from jnius import autoclass
+    from jnius import autoclass, cast
     from android.runnable import run_on_ui_thread
     from android import mActivity
+
     View = autoclass('android.view.View')
+
+    Toast = autoclass("android.widget.Toast")
+    String = autoclass("java.lang.String")
+    CharSequence = autoclass("java.lang.CharSequence")
+    Intent = autoclass("android.content.Intent")
+    Uri = autoclass("android.net.Uri")
+    NewRelic = autoclass("com.newrelic.agent.android.NewRelic")
+    LayoutParams = autoclass("android.view.WindowManager$LayoutParams")
+    AndroidColor = autoclass("android.graphics.Color")
+
+    PythonActivity = autoclass("org.kivy.android.PythonActivity")
+
+    context = PythonActivity.mActivity
+
+    @run_on_ui_thread
+    def show_toast(text):
+        t = Toast.makeText(
+            context, cast(CharSequence, String(text)), Toast.LENGTH_SHORT
+        )
+        t.show()
+
+
+    @run_on_ui_thread
+    def set_statusbar_color():
+        window = context.getWindow()
+        window.addFlags(LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        window.setStatusBarColor(AndroidColor.TRANSPARENT)
 
     @run_on_ui_thread
     def hide_landscape_status_bar(instance, width, height):
@@ -199,6 +233,7 @@ class agroApp3MVC(MDApp):
     app_folder = os.path.dirname(os.path.abspath(__file__))
     g_sheet = None
     list_of_prev_screens = []
+    current_provider = ""
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -244,8 +279,24 @@ class agroApp3MVC(MDApp):
 
     def build(self) -> MDScreenManager:
         self.generate_application_screens()
+
+        Logger.info(f"{__name__}: Start initializing google")
+
+        #new_s
+        initialize_google(
+            self.after_login,
+            self.error_listener,
+            os.getenv("GOOGLE_CLIENT_ID"),
+            os.getenv("GOOGLE_CLIENT_SECRET"),
+        )
+        #new_e
+
+        Logger.info(f"{__name__}: End initializing google")
+
         if platform == 'android':
             Window.bind(on_resize=hide_landscape_status_bar)
+
+            set_statusbar_color()
         # Logger.info(f"{__name__}: application screens loaded, SM: {self.manager_screens.screens}")
         return self.manager_screens
 
@@ -255,6 +306,40 @@ class agroApp3MVC(MDApp):
         #     from android.permissions import request_permissions, Permission
         #     request_permissions([Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE])
         self.dont_gc = AndroidPermissions(self.start_app)
+
+        # new
+        if platform == "android":
+            if auto_login(login_providers.google):
+                self.current_provider = login_providers.google
+            primary_clr = [108 / 255, 52 / 255, 131 / 255]
+            hex_color = '#%02x%02x%02x' % (
+            int(primary_clr[0] * 200), int(primary_clr[1] * 200), int(primary_clr[2] * 200))
+            set_statusbar_color()
+
+    #new_s
+    def gl_login(self, *args):
+        login_google()
+        self.current_provider = login_providers.google
+
+    def logout_(self):
+        if self.current_provider == login_providers.google:
+            logout_google(self.after_logout)
+
+    def after_login(self, name, email, photo_uri, creds):
+        if platform == "android":
+            show_toast("Logged in using {}".format(self.current_provider))
+            print(f'name: {name}, email, {email}, creds: {creds}')
+
+    def after_logout(self):
+        self.current_provider = 'google'
+        if platform == "android":
+            show_toast(text="Logged out from {} login".format(self.current_provider))
+
+    def error_listener(self):
+        if platform == "android":
+            show_toast("Error logging in.")
+
+    #new_e
 
     def start_app(self):
         self.dont_gc = None

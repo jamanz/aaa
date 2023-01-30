@@ -4,6 +4,8 @@ from pathlib import Path
 import os
 import glob
 
+# todo: remove hint text on enter addDataScreen
+
 class ListSessionsScreenModel(BaseScreenModel):
     json_storage_path = Path("assets", "data").resolve()
 
