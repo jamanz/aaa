@@ -95,9 +95,9 @@ def make_oauth():
         scopes=DEFAULT_SCOPES,
         credentials_filename=str(cred_path.joinpath('credentials.json')),
         authorized_user_filename=str(cred_path.joinpath('authorized_user.json'))
-
     )
 
+    
     return gc
 
 def get_worksheet(client: gspread.Client):

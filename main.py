@@ -120,8 +120,11 @@ from kivy.utils import get_color_from_hex
 from android_permissions import AndroidPermissions
 
 from dotenv import load_dotenv
-from Utility.google_auth import initialize_google, login_google, logout_google
-from Utility.google_auth_utils import login_providers, auto_login, stop_login
+# from Utility.google_auth import initialize_google, login_google, logout_google
+# from Utility.google_auth_utils import login_providers, auto_login, stop_login
+from kivyauth.google_auth import initialize_google, login_google, logout_google
+from kivyauth.utils import stop_login
+from kivyauth.utils import login_providers, auto_login
 
 from kivy.config import Config
 # Config.set('graphics', 'width', '360')
@@ -282,7 +285,7 @@ class agroApp3MVC(MDApp):
 
         Logger.info(f"{__name__}: Start initializing google")
 
-        #new_s
+        # new_s
         initialize_google(
             self.after_login,
             self.error_listener,
@@ -297,7 +300,8 @@ class agroApp3MVC(MDApp):
             Window.bind(on_resize=hide_landscape_status_bar)
 
             set_statusbar_color()
-        # Logger.info(f"{__name__}: application screens loaded, SM: {self.manager_screens.screens}")
+
+        Logger.info(f"{__name__}: application screens loaded, SM: {self.manager_screens.screens}")
         return self.manager_screens
 
     def on_start(self):
@@ -325,10 +329,10 @@ class agroApp3MVC(MDApp):
         if self.current_provider == login_providers.google:
             logout_google(self.after_logout)
 
-    def after_login(self, name, email, photo_uri, creds):
+    def after_login(self, name, email, photo_uri):
         if platform == "android":
             show_toast("Logged in using {}".format(self.current_provider))
-            print(f'name: {name}, email, {email}, creds: {creds}')
+            print(f'name: {name}, email, {email}')
 
     def after_logout(self):
         self.current_provider = 'google'
