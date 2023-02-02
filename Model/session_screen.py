@@ -7,7 +7,8 @@ from pathlib import Path
 import os
 from kivy.logger import Logger
 from Utility.google_sheets import (next_available_row, features_name_to_sheets_columns_map,
-                                   receive_client_sheet_by_id, get_g_sheet_client_sheet_list, get_worksheet, make_oauth)
+                                   receive_client_sheet_by_id, get_g_sheet_client_sheet_list, get_worksheet, make_oauth,
+                                   check_auth, get_client)
 from kivy.clock import Clock
 from gspread_formatting import CellFormat, format_cell_ranges, Color
 
@@ -30,6 +31,9 @@ class SessionScreenModel(BaseScreenModel):
         # self.chosen_worksheet = StringProperty('worksheet1')
         Logger.info(f"{__name__}: Inited")
 
+    def receive_g_client_from_home_screen_model(self, g_client: gspread.Client):
+        self.g_sheet_client = g_client
+
     def start_record_editing(self, tree_number: str):
         for observer in self._observers:
             if observer.name == "add data screen":
@@ -37,8 +41,15 @@ class SessionScreenModel(BaseScreenModel):
                 observer.controller.update_record(record)
 
     def get_util_worksheet(self):
-        self.g_sheet_client = make_oauth()
-        self.chosen_worksheet = get_worksheet(self.g_sheet_client)
+
+        if not self.g_sheet_client:
+            if check_auth():
+                self.g_sheet_client = get_client()
+            else:
+                self.g_sheet_client = make_oauth()
+
+        session_name = self.session_json_path.stem.split('_')[0]
+        self.chosen_worksheet = get_worksheet(self.g_sheet_client, session_name)
         self.worksheet_title = self.chosen_worksheet.title
 
     def receive_worksheet(self, worksheet: gspread.Worksheet):

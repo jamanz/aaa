@@ -119,7 +119,8 @@ class TreeItemsPage(MDRecycleView):
     def update_items(self, can_delete=True):
         Logger.info(f"{__name__}: items updated")
         self.data = [
-            {'text': f"#{record.get('Tree Number')} with {len(record)} points",
+            #'text': f"#{record.get('Tree Number')} with {len(record)} points"
+            {'text': f"#{record.get('Tree Number')}",
              'id': int(i),
              'record_data': record,
              'can_delete': can_delete}
@@ -145,8 +146,9 @@ class SessionScreenView(BaseScreenView):
     def start_record_editing(self, tree_item: TreeItem):
         Logger.info(f"{__name__}: data of tree item to edit - {tree_item.record_data}")
         tree_num = tree_item.record_data.get('Tree Number')
-        self.model.start_record_editing(tree_num)
-        self.go_to_add_data_screen()
+        if tree_num:
+            self.model.start_record_editing(tree_num)
+            self.go_to_add_data_screen()
 
     def start_upload_dialog(self):
         def close_dialog(event):
@@ -165,6 +167,7 @@ class SessionScreenView(BaseScreenView):
         content_cls.screen_view = self
 
         num_of_session_rec = self.total_session_records
+
         if self.model.chosen_worksheet is None:
             self.model.get_util_worksheet()
 

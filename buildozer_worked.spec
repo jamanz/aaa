@@ -7,7 +7,7 @@ title = Treez
 package.name = Treez
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = org.treezApp
+package.domain = org.treezApp.Treez
 
 # (str) Source code where the main.py live
 source.dir = .
@@ -37,13 +37,19 @@ version = 0.1
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3,pillow,android,kivy==2.1.0,kivymd==1.0.2,google-auth-oauthlib,
+requirements = python3,pillow,android,kivy==2.1.0,kivymd==1.0.2,
                oauthlib,requests_oauthlib,httplib2,pyasn1,pyasn1-modules,requests,rsa,
-               oauth2client,urllib3,chardet,gspread,google-auth,cachetools,idna,
+               oauth2client,urllib3,chardet,gspread,cachetools,idna,
                numpy,pandas==1.0.3,camera4kivy,gestures4kivy,gspread_formatting,
-               google-api-core==1.16.0,google-api-python-client,googleapis-common-protos,
-               google-auth-httplib2,pyparsing,uritemplate,
-               flask==2.0.3, werkzeug==2.0.3,
+               pyparsing,uritemplate,
+               flask==2.0.3, werkzeug==2.0.3,kivyauth,python-dotenv,
+
+               google-api-python-client==2.70.0,
+               google-auth==2.15.0,
+               googleapis-common-protos==1.57.0,
+               google-auth-httplib2==0.1.0,
+               google-api-core==2.10.0,
+               google-auth-oauthlib==0.5.3
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes

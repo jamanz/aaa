@@ -6,14 +6,16 @@ from kivy import Logger
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.dialog import MDDialog
-from kivymd.uix.button import MDFlatButton
+from kivymd.uix.button import MDFlatButton, MDFillRoundFlatButton
 from functools import partial
 from kivymd.uix.pickers import MDDatePicker
 import weakref
 from kivymd.uix.button import MDRectangleFlatIconButton
 from kivy.weakproxy import WeakProxy
 import os
-from Utility.google_sheets import get_user_email
+import pathlib
+from Utility.google_sheets import get_user_email, check_auth
+from kivy.cache import Cache
 
 class GoogleSheetsDialogContent(MDBoxLayout):
     user_email = StringProperty()
@@ -70,6 +72,39 @@ class DialogContent(MDBoxLayout):
     def cancel_date(self, instance, value):
         self.date = '1011-11-11'
 
+class NavigationButton(MDFillRoundFlatButton):
+    is_visible = BooleanProperty(False)
+
+
+from kivy.uix.widget import Widget
+class WebView(Widget):
+    pass
+
+
+from kivy.utils import platform
+from kivy.clock import Clock
+if platform == 'android':
+    from jnius import autoclass
+    from android.runnable import run_on_ui_thread
+
+    WebView = autoclass('android.webkit.WebView')
+    WebViewClient = autoclass('android.webkit.WebViewClient')
+    activity = autoclass('org.kivy.android.PythonActivity').mActivity
+
+    class WebView(Widget):
+        def __init__(self, **kwargs):
+            super().__init__(**kwargs)
+            Clock.schedule_once(self.create_webview, 0)
+
+        @run_on_ui_thread
+        def create_webview(self, *args):
+            webview = WebView(activity)
+            webview.getSettings().setJavaScriptEnabled(True)
+            wvc = WebViewClient()
+            webview.setWebViewClient(wvc);
+            activity.setContentView(webview)
+            webview.loadUrl('http://www.google.com')
+
 
 class HomeScreenView(BaseScreenView):
 
@@ -78,15 +113,31 @@ class HomeScreenView(BaseScreenView):
     new_session_date = StringProperty()
     current_worksheet = ObjectProperty()
     chosen_worksheet = StringProperty()
-    #img_path = StringProperty('TREEZ_LOGO_RGB.png')
+
     user_email = StringProperty()
 
-    is_autg = BooleanProperty()
+    is_auth = BooleanProperty()
 
     def __init__(self, **kwargs):
         super(HomeScreenView, self).__init__(**kwargs)
         Logger.info(f"{__name__}: Inited")
+        self.cred_path = pathlib.Path('config').resolve()
 
+    def on_pre_enter(self, *args):
+        self.display_nav_buttons()
+        print('Cache: ', Cache.print_usage())
+
+    def display_nav_buttons(self):
+        nav_buttons_ids = ['new_ses_btn', 'incomplete_ses_btn', 'completed_ses_btn']
+        log_button_id = "login_btn"
+        if check_auth():
+            for button in nav_buttons_ids:
+                self.ids[button].is_visible = True
+            self.ids[log_button_id].is_visible = False
+        else:
+            for button in nav_buttons_ids:
+                self.ids[button].is_visible = False
+            self.ids[log_button_id].is_visible = True
 
     def start_new_session_dialog(self):
 
@@ -149,14 +200,14 @@ class HomeScreenView(BaseScreenView):
         self.auth_dialog.open()
 
     def start_login(self):
-        print('in kivy call login s')
-        self.app.gl_login()
-        print('in kivy call login e')
-        if os.path.exists("./config/authorized_user.json"):
+        # self.app.gl_login()
+        if check_auth():
             self.start_authorized_dialog()
         else:
+            WebView()
             self.model.auth_in_google()
             self.start_authorized_dialog()
+            self.display_nav_buttons()
 
 
     def set_worksheet_in_model(self, worksheet_title):

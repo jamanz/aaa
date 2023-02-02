@@ -50,6 +50,12 @@ class HomeScreenModel(BaseScreenModel):
 
     def auth_in_google(self):
         self.google_client = make_oauth()
+        self.send_g_client_to_session_screen_model(self.google_client)
+
+    def send_g_client_to_session_screen_model(self, g_client: gspread.Client):
+        for observer in self._observers:
+            if observer.name == "session screen":
+                observer.model.receive_g_client_from_home_screen_model(g_client)
 
     def send_worksheet_instance_to_session_screen_model(self, worksheet_title: str):
         for observer in self._observers:

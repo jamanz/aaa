@@ -182,6 +182,18 @@ In forums was point to switch ```p4a.branch = develop``` but it worked without i
  - Make build for Android, firuge out specific dependencies
  - Sign application with Keystore
  - Face issue "loopback flow has been blocked" when trying to auth from app
+
+
+When we use Desktop app after successful auth and retrieve of auth_user.json we got:
+01-31 19:22:22.759 23285 23325 I python  :    File "/content/aaa/.buildozer/android/platform/build-arm64-v8a_armeabi-v7a/build/python-installs/Treez/arm64-v8a/googleapiclient/discovery.py", line 566, in build_from_document
+01-31 19:22:22.759 23285 23325 I python  :  AttributeError: 'ClientOptions' object has no attribute 'credentials_file'
+01-31 19:22:22.759 23285 23325 I python  : Python for android ended.
+
+possible its googleapiclient version probem  
+## Buildozer
+
+
+
 ## References:
 1. [updating recycle view](https://medium.com/nerd-for-tech/how-to-refresh-kivy-recycleview-72244883d075)
 

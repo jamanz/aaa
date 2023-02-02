@@ -60,7 +60,7 @@
     MDLabel:
         markup: True
         size_hint: 0.8, 0.8
-        text: f"[b]{root.num_of_rec}[/b] records will be uploaded to [b]{root.chosen_title}[/b]"
+        text: f"[b]{root.num_of_rec}[/b] records will be uploaded to [b]{root.chosen_title}[/b] worksheet"
         font_size: "12sp"
         #text: "def text"
 
@@ -108,9 +108,9 @@
 
         MDTopAppBar:
             #size_hint: 1, None
-            elevation: "2dp"
+            elevation: 2
             title: root.app_bar_title
-            type_height: "medium"
+            #type_height: "medium"
             #headline_text: "Headline"
             left_action_items: [["arrow-left", lambda x: root.app.go_prev_screen()]]
 

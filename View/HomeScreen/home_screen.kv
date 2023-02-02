@@ -3,7 +3,8 @@
     orientation: "vertical"
     spacing: "20dp"
     MDLabel:
-        text: f"You authorized as:\n{root.user_email}"
+        text: f"You logged in as :\n{root.user_email}"
+        #text: f"You logged in"
 
 
 <CustomWorkSheetButton>:
@@ -34,12 +35,16 @@
 #    FloatLayout:
 #        orientation: 'vertical'
 
-    canvas.before:
-        Rectangle:
-            source: 'assets/images/TREEZ-LOGO-RGB.png'
-            size: [self.size[0], self.size[1]-220]
-            pos: [root.pos[0], root.pos[1]+250]
+    #canvas.before:
+    #    Rectangle:
+    #        source: 'assets/images/TREEZ-LOGO-RGB.png'
+    #        size: [self.size[0]/2, self.size[1]/2]
+    #        pos: [root.pos[0], root.pos[1]]
 
+    Image:
+        source: 'assets/images/TREEZ-LOGO-BG.png'
+        size: [self.texture_size[0]/1.5, self.texture_size[1]/1.5]
+        pos: [root.pos[0], root.pos[1]+90]
 
     BoxLayout:
         size_hint: .5, .3
@@ -57,25 +62,33 @@
                 root.start_new_session_dialog()
 
         NavigationButton:
+            id: incomplete_ses_btn
             text: "Incomplete sessions"
             on_press:
                 root.start_incomplete_sessions()
 
         NavigationButton:
+            id: completed_ses_btn
             text: "Recorded sessions"
             on_press:
                 root.start_recorded_sessions()
 
-        NavigationButton:
+        MDFillRoundFlatButton:
+            id: login_btn
             text: "Auth in Google"
+            is_visible: True
+            opacity: 1 if self.is_visible else 0
+            disabled: not self.is_visible
+            size_hint: 1, .2
             on_press:
                 root.start_login()
 
 
-<NavigationButton@MDFillRoundFlatButton>:
+<NavigationButton>:
     size_hint: 1, .2
     #font_size: '20sp'
-
+    opacity: 1 if root.is_visible else 0
+    disabled: not root.is_visible
 
 <DialogContent>
     id: dialog

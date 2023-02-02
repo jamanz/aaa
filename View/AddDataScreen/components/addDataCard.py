@@ -13,6 +13,8 @@ from kivymd.uix.behaviors import (
     RectangularElevationBehavior
 )
 
+
+
 from kivy import app
 from kivy.clock import Clock
 from kivy.metrics import dp
@@ -38,6 +40,7 @@ class MySegmentedControl(MDSegmentedControl):
         # self._segment_switch_x = f"{float(self.custom_panel_width[:-2]) - 6}dp"
 
     def preset_segment_panel_pos_from_val(self, val):
+        Logger.info(f"{__name__}: preset activated")
         if self.control_type == 'Health condition':
             ind = self.health_cond_vals.index(val)
             self._segment_switch_x = ind*(float(self.ids.segment_panel.width)/len(self.health_cond_vals)) + 6
@@ -75,9 +78,10 @@ class addDataCard(MDCard, RoundedRectangularElevationBehavior): #RectangularElev
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.ids.health_segment.custom_panel_width = "120dp"
-        self.ids.location_segment.custom_panel_width = "110dp"
+        self.ids.health_segment.custom_panel_width = "90dp"
+        self.ids.location_segment.custom_panel_width = "90dp"
         self.ids.crown_cone_segment.custom_panel_width = "60dp"
+
 
     def fill_card_with_record(self, record: dict):
         self.add_data_view.controller.update_record(record)
@@ -87,7 +91,7 @@ class addDataCard(MDCard, RoundedRectangularElevationBehavior): #RectangularElev
 
     def choose_feature(self, instance):
         Logger.info(f"{__name__}: pressed - {instance.text}")
-
+        self.ids.input_field_id.disabled = False
         feature_value = self.add_data_view.controller.new_record_dict.get(instance.text)
         if feature_value:
             self.ids.input_field_id.text = feature_value
@@ -110,5 +114,6 @@ class addDataCard(MDCard, RoundedRectangularElevationBehavior): #RectangularElev
         self.chosen_feature_instance = instance
 
         self.feature_input.focus = True
+
 
 

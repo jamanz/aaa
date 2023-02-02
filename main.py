@@ -131,7 +131,7 @@ from kivy.config import Config
 # Config.set('graphics', 'height', '740')
 #Config.set('modules', 'monitor', '')
 
-load_dotenv()
+#load_dotenv()
 
 
 if platform == 'android':
@@ -146,7 +146,7 @@ if platform == 'android':
     CharSequence = autoclass("java.lang.CharSequence")
     Intent = autoclass("android.content.Intent")
     Uri = autoclass("android.net.Uri")
-    NewRelic = autoclass("com.newrelic.agent.android.NewRelic")
+    #NewRelic = autoclass("com.newrelic.agent.android.NewRelic")
     LayoutParams = autoclass("android.view.WindowManager$LayoutParams")
     AndroidColor = autoclass("android.graphics.Color")
 
@@ -194,12 +194,18 @@ colors = {
 
 
     "Green": {
-        "A200": "#628038",
-        "A500": "#628038",
-        "A700": "#628038",
-        "200": "#628038",
-        "500": "#628038",
-        "700": "#628038",
+        # "A200": "#628038",
+        # "A500": "#628038",
+        # "A700": "#628038",
+        # "200": "#628038",
+        # "500": "#628038",
+        # "700": "#628038",
+        "A200": "#76944C",
+        "A500": "#76944C",
+        "A700": "#76944C",
+        "200": "#76944C",
+        "500": "#76944C",
+        "700": "#76944C",
     },
     "Grey": {
         "A200": "#53565A",
@@ -231,6 +237,7 @@ colors = {
     },
 }
 
+## todo: after photo screen add data cleans repair
 
 class agroApp3MVC(MDApp):
     app_folder = os.path.dirname(os.path.abspath(__file__))
@@ -284,41 +291,45 @@ class agroApp3MVC(MDApp):
         self.generate_application_screens()
 
         Logger.info(f"{__name__}: Start initializing google")
-
+        # GOOGLE_CLIENT_ID = "845840319772-jc8oaudi9vhqdl5p1ansukeuu839ipj4.apps.googleusercontent.com"
+        # GOOGLE_CLIENT_SECRET = "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"
         # new_s
         initialize_google(
             self.after_login,
             self.error_listener,
-            os.getenv("GOOGLE_CLIENT_ID"),
-            os.getenv("GOOGLE_CLIENT_SECRET"),
+            # GOOGLE_CLIENT_ID,
+            # GOOGLE_CLIENT_SECRET
+            # os.getenv("GOOGLE_CLIENT_ID"),
+            # os.getenv("GOOGLE_CLIENT_SECRET"),
         )
         #new_e
 
         Logger.info(f"{__name__}: End initializing google")
 
-        if platform == 'android':
-            Window.bind(on_resize=hide_landscape_status_bar)
-
-            set_statusbar_color()
+        # if platform == 'android':
+        #     Window.bind(on_resize=hide_landscape_status_bar)
+        #
+        #     set_statusbar_color()
 
         Logger.info(f"{__name__}: application screens loaded, SM: {self.manager_screens.screens}")
         return self.manager_screens
 
     def on_start(self):
         Logger.info(f"{__name__}: on_start fired")
-        # if platform == 'android':
-        #     from android.permissions import request_permissions, Permission
-        #     request_permissions([Permission.READ_EXTERNAL_STORAGE, Permission.WRITE_EXTERNAL_STORAGE])
-        self.dont_gc = AndroidPermissions(self.start_app)
+        if platform == 'android':
+            from android.permissions import request_permissions, Permission
+            request_permissions([Permission.CAMERA, Permission.RECORD_AUDIO, Permission.WRITE_EXTERNAL_STORAGE,
+                                Permission.READ_EXTERNAL_STORAGE])
+        # self.dont_gc = AndroidPermissions(self.start_app)
 
         # new
-        if platform == "android":
-            if auto_login(login_providers.google):
-                self.current_provider = login_providers.google
-            primary_clr = [108 / 255, 52 / 255, 131 / 255]
-            hex_color = '#%02x%02x%02x' % (
-            int(primary_clr[0] * 200), int(primary_clr[1] * 200), int(primary_clr[2] * 200))
-            set_statusbar_color()
+        # if platform == "android":
+        #     if auto_login(login_providers.google):
+        #         self.current_provider = login_providers.google
+        #     primary_clr = [108 / 255, 52 / 255, 131 / 255]
+        #     hex_color = '#%02x%02x%02x' % (
+        #     int(primary_clr[0] * 200), int(primary_clr[1] * 200), int(primary_clr[2] * 200))
+        #     set_statusbar_color()
 
     #new_s
     def gl_login(self, *args):

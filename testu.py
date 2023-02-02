@@ -26,7 +26,11 @@ gc = gspread.oauth(
 
 )#credentials_filename='./credentials.json')
 # print(gc.list_spreadsheet_files())
-sh = gc.open("agroTablez")
+sh = gc.open("TreezTable")
+
+print(gspread.auth.load_credentials(cred_path.joinpath('authorized_user.json')).scopes)
+# for ws in sh.worksheets():
+gc.login()
 
 with open(cred_path.joinpath('authorized_user.json')) as file:
     data = json.load(file)
@@ -35,4 +39,4 @@ with open(cred_path.joinpath('authorized_user.json')) as file:
 creds = Credentials.from_authorized_user_info(info=data, scopes=["https://www.googleapis.com/auth/userinfo.email"])
 email_service = build('oauth2', 'v2', credentials=creds)
 user_info = email_service.userinfo().get().execute()
-print(user_info)
+# print(user_info)
