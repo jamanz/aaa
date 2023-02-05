@@ -44,12 +44,12 @@
         #padding: '1dp'
         spacing: '5dp'
 
+
         MDTopAppBar:
             #size_hint: 1, .2
             title: root.app_bar_title
             elevation: 2
-            #type_height: "small"
-            #headline_text: root.app_bar_title
+            anchor_title: "left"
             left_action_items: [["arrow-left", lambda x: root.app.go_prev_screen()]]
 
 

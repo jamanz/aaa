@@ -31,6 +31,11 @@ class SessionScreenModel(BaseScreenModel):
         # self.chosen_worksheet = StringProperty('worksheet1')
         Logger.info(f"{__name__}: Inited")
 
+    def send_tree_data_to_photo_screen(self, ses_name: str, tree_name: str):
+        for observer in self._observers:
+            if observer.name == "photo screen":
+                observer.model.receive_tree_data_from_session_screen(ses_name, tree_name)
+
     def receive_g_client_from_home_screen_model(self, g_client: gspread.Client):
         self.g_sheet_client = g_client
 
@@ -44,12 +49,15 @@ class SessionScreenModel(BaseScreenModel):
 
         if not self.g_sheet_client:
             if check_auth():
-                self.g_sheet_client = get_client()
+                try:
+                    self.g_sheet_client = get_client()
+                except:
+                    self.g_sheet_client = make_oauth()
             else:
                 self.g_sheet_client = make_oauth()
 
-        session_name = self.session_json_path.stem.split('_')[0]
-        self.chosen_worksheet = get_worksheet(self.g_sheet_client, session_name)
+        self.session_name = self.session_json_path.stem.split('_')[0]
+        self.chosen_worksheet = get_worksheet(self.g_sheet_client, self.session_name)
         self.worksheet_title = self.chosen_worksheet.title
 
     def receive_worksheet(self, worksheet: gspread.Worksheet):

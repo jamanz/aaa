@@ -4,9 +4,9 @@
     id: preview_recorded
     orientation: "vertical"
     spacing: "5dp"
-
+    padding: ["1dp", "10dp", "1dp", "30dp"]
     size_hint_y: None
-    height: "300dp"
+    height: "400dp"
 
     MDLabel:
         markup: True
@@ -49,35 +49,50 @@
 
 
 <PreUploadDialogContent>:
-    md_bg_color: utils.get_color_from_hex('#c1c72f')
-    #size_hint: 1, 1
     pos_hint: {"center_x":.5, "center_y":.5}
-    minimum_size: "100dp", "300dp"
-    #spacing: "10dp"
-    #padding: "10dp"
+    minimum_size: "100dp", "400dp"
     num_of_rec: self.number_of_records
     chosen_title: self.chosen_worksheet_title
+    _txt_left_pad: 2
     MDLabel:
+
         markup: True
-        size_hint: 0.8, 0.8
+        #size_hint: 0.8, 0.8
         text: f"[b]{root.num_of_rec}[/b] records will be uploaded to [b]{root.chosen_title}[/b] worksheet"
         font_size: "12sp"
         #text: "def text"
 
+
 <TreeItem>:
     #size_hint: 1, .5
     on_release: root.show_tree_preview(self)
-    font_size: "12sp"
-    _txt_left_pad: "12dp"
-    #bcolor: utils.get_color_from_hex('#B1122f')
+    #font_size: "12sp"
+    _txt_left_pad: "92dp"
+
+
+    IconLeftWidget:
+        icon: "camera"
+        size_hint_y: .5
+#        pos_hint: {"x": .8, "center_y": .5}
+        on_release: root.make_photo_for_tree(root)
+        opacity: 1 if root.can_delete else 0
+        disabled: not root.can_delete
 
     IconRightWidget:
-        size_hint: .1, .5
-        pos_hint: {"x": .93, "center_y": .5}
+        size_hint_y: .5
+        #pos_hint: {"x": .9, "center_y": .5}
         opacity: 1 if root.can_delete else 0
         disabled: not root.can_delete
         icon: 'delete'
-        on_press: root.delete_item(root)
+        on_release: root.delete_item(root)
+
+
+#    TreeItemIconsContainer:
+#        id: tree_item_icons_container
+#        spacing: "20dp"
+#        MDIconButton:
+
+
 
 
 <TreeItemsPage>:
@@ -86,10 +101,9 @@
     spacing: "5dp"
     padding: "10dp"
     RecycleBoxLayout:
-        #color: (0, 0.7, 0.4, .8)
-        default_size: None, "56dp"
-        #padding: "5dp"
-        #spacing: "5dp"
+
+        default_size: None, "72dp"
+
 
         default_size_hint: 1, None
         size_hint_y: None
@@ -107,11 +121,10 @@
         #md_bg_color: utils.get_color_from_hex('#c1c72f')
 
         MDTopAppBar:
-            #size_hint: 1, None
+
             elevation: 2
             title: root.app_bar_title
-            #type_height: "medium"
-            #headline_text: "Headline"
+            anchor_title: "left"
             left_action_items: [["arrow-left", lambda x: root.app.go_prev_screen()]]
 
         TreeItemsPage:

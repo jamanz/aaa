@@ -12,7 +12,8 @@ from functools import partial
 from kivymd.uix.recycleview import MDRecycleView
 import os
 from kivy.core.window import Window
-
+from kivymd.uix.button import MDFlatButton
+from kivymd.uix.dialog import MDDialog
 
 class SessionItem(OneLineAvatarIconListItem):
     session_name = StringProperty()
@@ -49,11 +50,38 @@ class SessionsPage(MDRecycleView):
 
     list_sessions_view = ObjectProperty()
 
-    def delete_session(self, session):
-        self.list_sessions_view = self.parent.parent
-        self.sessions_list.pop(session.page_id)
-        self.list_sessions_view.delete_session(session)
+    delete_session_index = NumericProperty()
+    delete_session_name = StringProperty()
+    delete_session_sid = StringProperty()
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        close_delete_dialog_btn = MDFlatButton(text="Cancel", on_release=self.close_delete_session_dialog)
+        confirm_delete_dialog_btn = MDFlatButton(text="Confirm", on_release=self.confirm_delete_session_dialog)
+        self.delete_session_dialog = MDDialog(title="Delete",
+                                      type="alert",
+                                      buttons=(close_delete_dialog_btn, confirm_delete_dialog_btn)
+                                      )
+
+    def close_delete_session_dialog(self, event):
+        self.delete_session_dialog.dismiss()
+
+    def confirm_delete_session_dialog(self, event):
+        self.sessions_list.pop(self.delete_session_index)
+        self.list_sessions_view.delete_session(self.delete_session_sid)
         self.update_sessions('incomplete')
+        self.delete_session_dialog.dismiss()
+
+    def delete_session(self, session):
+        self.delete_session_index = session.page_id
+        self.delete_session_name = session.session_name
+        self.delete_session_sid = session.session_sid
+        ses_path = self.incomplete_path.joinpath(f'{session.session_name}_{session.session_sid}.json')
+        ses_num_of_records = len(JsonStore(ses_path).get('data').get('records'))
+
+        self.delete_session_dialog.title = "Delete Session"
+        self.delete_session_dialog.text = f"You sure you want delete [b]{self.delete_session_name}[/b] with [b]{ses_num_of_records}[/b] records?"
+        self.delete_session_dialog.open()
 
     def update_sessions(self, session_type):
         if session_type == 'completed':
@@ -87,8 +115,8 @@ class ListSessionsScreenView(BaseScreenView):
     incomplete_path = Path("assets", "data").resolve()
     completed_path = Path("assets", "data", "completed").resolve()
 
-    def delete_session(self, session: SessionItem):
-        self.model.delete_session(session.session_sid)
+    def delete_session(self, session_sid: str):
+        self.model.delete_session(session_sid)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -102,7 +130,7 @@ class ListSessionsScreenView(BaseScreenView):
         self.current_sessions_list_type = 'incomplete'
         self.app_bar_title = "Incomplete sessions"
         self.ids.sessions_page.update_sessions('incomplete')
-
+        self.ids.sessions_page.list_sessions_view = self
 
 
     def start_completed_sessions(self):
@@ -110,6 +138,7 @@ class ListSessionsScreenView(BaseScreenView):
         self.current_sessions_list_type = 'completed'
         self.app_bar_title = "Completed sessions"
         self.ids.sessions_page.update_sessions('completed')
+        self.ids.sessions_page.list_sessions_view = self
 
 
 

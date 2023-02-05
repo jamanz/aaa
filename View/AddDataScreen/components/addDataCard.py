@@ -35,8 +35,12 @@ class MySegmentedControl(MDSegmentedControl):
         self._segment_switch_x = 6
 
     def on_custom_panel_width(self, *args):
-        Logger.info(f"{__name__}: panel width changed, ids: {self.ids}")
+        Logger.info(f"{__name__}: basic seg switch: {self.ids.segment_switch.width}")
         self.ids.segment_panel.width = self.custom_panel_width
+        if self.control_type == 'Health condition':
+            self.ids.segment_switch.width = 70# self.ids.segment_panel.width/(len(self.health_cond_vals)-1)
+            Logger.info(f"{__name__}: changed seg switch: {self.ids.segment_switch.width}")
+
         # self._segment_switch_x = f"{float(self.custom_panel_width[:-2]) - 6}dp"
 
     def preset_segment_panel_pos_from_val(self, val):
@@ -79,9 +83,9 @@ class addDataCard(MDCard, RoundedRectangularElevationBehavior): #RectangularElev
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.ids.health_segment.custom_panel_width = "90dp"
+
         self.ids.location_segment.custom_panel_width = "90dp"
         self.ids.crown_cone_segment.custom_panel_width = "60dp"
-
 
     def fill_card_with_record(self, record: dict):
         self.add_data_view.controller.update_record(record)

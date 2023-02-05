@@ -42,7 +42,7 @@ class WorksheetChoiceDialogContent(MDBoxLayout):
 
         self.screen_view.chosen_worksheet = instance.text
 
-
+    from kivymd.uix.toolbar import MDTopAppBar
     def populate_with_available_ws_buttons(self, list_of_available_worksheets: list[str]):
 
         for i, ws in enumerate(list_of_available_worksheets):
@@ -76,35 +76,6 @@ class NavigationButton(MDFillRoundFlatButton):
     is_visible = BooleanProperty(False)
 
 
-from kivy.uix.widget import Widget
-class WebView(Widget):
-    pass
-
-
-from kivy.utils import platform
-from kivy.clock import Clock
-if platform == 'android':
-    from jnius import autoclass
-    from android.runnable import run_on_ui_thread
-
-    WebView = autoclass('android.webkit.WebView')
-    WebViewClient = autoclass('android.webkit.WebViewClient')
-    activity = autoclass('org.kivy.android.PythonActivity').mActivity
-
-    class WebView(Widget):
-        def __init__(self, **kwargs):
-            super().__init__(**kwargs)
-            Clock.schedule_once(self.create_webview, 0)
-
-        @run_on_ui_thread
-        def create_webview(self, *args):
-            webview = WebView(activity)
-            webview.getSettings().setJavaScriptEnabled(True)
-            wvc = WebViewClient()
-            webview.setWebViewClient(wvc);
-            activity.setContentView(webview)
-            webview.loadUrl('http://www.google.com')
-
 
 class HomeScreenView(BaseScreenView):
 
@@ -118,10 +89,17 @@ class HomeScreenView(BaseScreenView):
 
     is_auth = BooleanProperty()
 
+    browser = None
+
+
     def __init__(self, **kwargs):
         super(HomeScreenView, self).__init__(**kwargs)
         Logger.info(f"{__name__}: Inited")
         self.cred_path = pathlib.Path('config').resolve()
+
+    def open_plyer_camera(self):
+        from View.PhotoScreen.photo_screen import CameraDemo
+        self.cam_demo = CameraDemo()
 
     def on_pre_enter(self, *args):
         self.display_nav_buttons()
@@ -204,10 +182,15 @@ class HomeScreenView(BaseScreenView):
         if check_auth():
             self.start_authorized_dialog()
         else:
-            WebView()
+            # if platform == 'android':
+            #     self.browser = WebView('https://www.google.com',
+            #                            enable_javascript=True,
+            #                            enable_downloads=True,
+            #                            enable_zoom=True)
             self.model.auth_in_google()
             self.start_authorized_dialog()
             self.display_nav_buttons()
+            # self.browser.dismiss()
 
 
     def set_worksheet_in_model(self, worksheet_title):

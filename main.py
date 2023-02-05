@@ -253,7 +253,8 @@ class agroApp3MVC(MDApp):
 
         self.theme_cls.primary_palette = 'Green'#get_color_from_hex("#628038")#"Orange"
         self.theme_cls.accent_palette = "BlueGray"
-
+        self.theme_cls.material_style = "M3"
+        print("type M: ", self.theme_cls.material_style)
 
         #self.theme_cls.
         # self.user_data_dir
@@ -283,7 +284,7 @@ class agroApp3MVC(MDApp):
         return False
 
     def _key_handler(self, instance, key, *args):
-        if key is 27:
+        if key == 27:
             return self.go_prev_screen()
         return False
 

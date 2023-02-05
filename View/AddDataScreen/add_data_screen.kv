@@ -12,8 +12,7 @@
         MDTopAppBar:
             title: root.app_bar_title
             elevation: 2
-            #type_height: "medium"
-            #headline_text: "Headline"
+            anchor_title: "left"
             left_action_items: [["arrow-left", lambda x: root.cancel_record()]]
 
         MDRelativeLayout:
@@ -28,21 +27,21 @@
             spacing: "5dp"
             padding: "6dp"
             size_hint_y: 0.2
-            MDFillRoundFlatIconButton:
-                text: "Photo"
-                icon: "camera"
-                size_hint: .3, None
-                on_release: root.make_photo_for_tree()
+            #MDFillRoundFlatIconButton:
+             #   text: "Photo"
+              #  icon: "camera"
+               # size_hint: .3, None
+                #on_release: root.make_photo_for_tree()
 
             MDFillRoundFlatIconButton:
                 text: "Preview"
                 icon: "account-eye"
-                size_hint: .3, None
+                size_hint: .45, None
                 on_release: root.show_preview()
             MDFillRoundFlatIconButton:
                 text: "Confirm"
                 icon: "check-circle"
-                size_hint: .3, None
+                size_hint: .45, None
                 on_release: root.show_submit_record_dialog()
 
 
@@ -50,8 +49,8 @@
 <SubmitRecordContent>
     id: submit_record
     orientation: "vertical"
-    spacing: "5dp"
-
+    spacing: "2dp"
+    padding: "2dp"
     size_hint_y: None
     height: "400dp"
 
@@ -62,8 +61,6 @@
         #spacing: "10dp"
         font_size: "13sp"
         text: f"Tree Number: [b]{root.tree_number}[/b]\nTree Specie: [b]{root.tree_specie}[/b]\nSpecie value: [b]{root.specie_value}[/b]"
-
-
 
     MDSeparator:
 
@@ -98,6 +95,7 @@
         id: comments_id
         hint_text: "Additional comments"
         multiline: True
+        on_text: root.raise_window_for_comment()
         on_text_validate: root.set_comment(self.text)
 
 
@@ -108,7 +106,7 @@
     mg_bg_color: app.theme_cls.accent_color
 
     size_hint_y: None
-    height: "300dp"
+    height: "400dp"
 
     MDLabel:
         markup: True

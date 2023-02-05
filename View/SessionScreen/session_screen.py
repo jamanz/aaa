@@ -1,7 +1,7 @@
 from kivy.storage.jsonstore import JsonStore
 
 from View.base_screen import BaseScreenView
-from kivymd.uix.list import OneLineListItem, OneLineIconListItem, OneLineAvatarIconListItem
+from kivymd.uix.list import OneLineListItem, OneLineIconListItem, OneLineAvatarIconListItem, TwoLineAvatarIconListItem
 from kivy.properties import StringProperty, ObjectProperty, BooleanProperty, NumericProperty, ListProperty, DictProperty
 from pathlib import Path
 from kivymd.uix.toolbar import MDTopAppBar
@@ -12,8 +12,10 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDFlatButton, MDRectangleFlatIconButton
 from kivymd.uix.dialog import MDDialog
 import weakref
-
+from kivymd.uix.list import IRightBodyTouch
 from kivy.weakproxy import WeakProxy
+from kivy.metrics import dp
+
 
 class PreviewRecordedTreeContent(MDBoxLayout):
     tree_number = StringProperty()
@@ -54,84 +56,133 @@ class PreUploadDialogContent(MDBoxLayout):
         self.number_of_records = number_of_records
 
 
+class TreeItemIconsContainer(IRightBodyTouch, MDBoxLayout):
+    adaptive_width = True
 
-class TreeItem(OneLineAvatarIconListItem):
+
+class TreeItem(TwoLineAvatarIconListItem):
     id = NumericProperty()
     tree_page = ObjectProperty()
     can_delete = BooleanProperty(True)
     record_data = DictProperty()
     item = ObjectProperty()
+    tree_name = StringProperty()
+    preview_record_dialog = ObjectProperty()
 
     def show_tree_preview(self, item):
-        def close_dialog(event):
-            print('Cancel Edit Rec')
-            self.preview_record_dialog.dismiss()
-
-        def edit_dialog(event):
-            print(f"Edit dialog env, {self.tree_page.session_screen_view}")
-            self.tree_page.session_screen_view.start_record_editing(item)
-            self.preview_record_dialog.dismiss()
-
         self.item = item
         self.tree_page = self.parent.parent
+        self.tree_page.chosen_item = item
+
         Logger.info(f"{__name__}: item pressed: {item.text}, tree page: {self.tree_page}")
 
-        close_btn = MDFlatButton(text="Cancel", on_release=close_dialog)
-        edit_btn = MDFlatButton(text="Edit", on_release=edit_dialog)
-
-        ok_btn = MDFlatButton(text="OK", on_release=close_dialog)
-
         if self.tree_page.session_screen_view.current_session_state == 'incomplete':
-            self.preview_record_dialog = MDDialog(title='Recorded Tree Values',
-                                                   size_hint=(.7, None),
-                                                   type="custom",
-                                                   content_cls=PreviewRecordedTreeContent(),
-                                                   buttons=(close_btn, edit_btn)
-                                                   )
+            self.preview_record_dialog = self.tree_page.preview_record_dialog
+            self.tree_page.preview_record_dialog.buttons = (self.tree_page.tree_preview_close_btn,
+                                                            self.tree_page.tree_preview_edit_btn)
+
+            self.tree_page.preview_record_dialog.ids.button_box.clear_widgets()
+            #self.tree_page.preview_record_dialog.ids.button_box.padding = "20dp"
+            self.tree_page.preview_record_dialog.create_buttons()
+
         else:
-            self.preview_record_dialog = MDDialog(title='Recorded Tree Values',
-                                                  size_hint=(.7, None),
-                                                  type="custom",
-                                                  content_cls=PreviewRecordedTreeContent(),
-                                                  buttons=([ok_btn])
-                                                  )
-        self.preview_record_dialog.content_cls.update_values(item.record_data)
-        self.preview_record_dialog.open()
+            self.preview_record_dialog = self.tree_page.preview_record_dialog
+            self.tree_page.preview_record_dialog.buttons = ([self.tree_page.tree_preview_ok_btn])
+
+            self.tree_page.preview_record_dialog.ids.button_box.clear_widgets()
+            #self.tree_page.preview_record_dialog.ids.button_box.padding = "20dp"
+            self.tree_page.preview_record_dialog.create_buttons()
+
+        self.tree_page.preview_record_dialog.content_cls.update_values(self.item.record_data)
+        self.tree_page.preview_record_dialog.open()
+
+    def make_photo_for_tree(self, tree_item):
+        print("Got: ", tree_item.tree_name)
+        self.tree_page = self.parent.parent
+        self.tree_page.session_screen_view.start_photo_for_tree(tree_item.tree_name)
 
 
     def delete_item(self, item):
         self.tree_page = self.parent.parent
         Logger.info(f"{__name__}: item: {item}, id: {item.id} gonna be deleted")
-        self.tree_page.delete_item(item.id)
+        self.tree_page.delete_item(item)
 
 
 class TreeItemsPage(MDRecycleView):
     tree_items_list = ListProperty()
     session_screen_view = ObjectProperty()
+    current_session_name = StringProperty()
+    chosen_item = ObjectProperty()
 
+    delete_item_index = NumericProperty()
+    delete_item_title = StringProperty()
 
-    def delete_item(self, index):
-        self.session_screen_view = self.parent.parent
-        self.tree_items_list.pop(index)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        Logger.info(f"{__name__}: inited")
+
+        self.tree_preview_close_btn = MDFlatButton(text="Cancel", on_release=self.close_dialog)
+        self.tree_preview_edit_btn = MDFlatButton(text="Edit", on_release=self.edit_dialog)
+        self.tree_preview_ok_btn = MDFlatButton(text="OK", on_release=self.close_dialog)
+
+        self.preview_record_dialog = MDDialog(title='Recorded Tree Values',
+                                              size_hint=(.7, None),
+                                              type="custom",
+                                              content_cls=PreviewRecordedTreeContent(),
+                                              buttons=[self.tree_preview_ok_btn]
+                                              )
+
+        close_delete_dialog_btn = MDFlatButton(text="Cancel", on_release=self.close_delete_dialog)
+        confirm_delete_dialog_btn = MDFlatButton(text="Confirm", on_release=self.confirm_delete_dialog)
+        self.delete_dialog = MDDialog(title="Delete",
+                                      type="alert",
+                                      buttons=(close_delete_dialog_btn, confirm_delete_dialog_btn)
+                                      )
+
+    def close_delete_dialog(self, event):
+        self.delete_dialog.dismiss()
+
+    def confirm_delete_dialog(self, event):
+        self.tree_items_list.pop(self.delete_item_index)
         self.update_items()
-        self.session_screen_view.delete_record_in_tree_items(index)
+        self.session_screen_view.delete_record_in_tree_items(self.delete_item_index)
+        self.delete_item_index = -1
+        self.delete_dialog.dismiss()
+
+    def close_dialog(self, event):
+        print('Cancel Edit Rec')
+        self.preview_record_dialog.dismiss()
+
+    def edit_dialog(self, event):
+        self.session_screen_view.start_record_editing(self.chosen_item)
+        self.preview_record_dialog.dismiss()
+
+    def delete_item(self, item):
+        self.delete_item_index = item.id
+        self.delete_item_title = item.text
+        self.delete_dialog.title = f"Delete tree {self.delete_item_title}?"
+        self.delete_dialog.open()
 
     def update_items(self, can_delete=True):
         Logger.info(f"{__name__}: items updated")
         self.data = [
-            #'text': f"#{record.get('Tree Number')} with {len(record)} points"
-            {'text': f"#{record.get('Tree Number')}",
+            {'text': f"[size=18]#{record.get('Tree Number')}[/size]",
+             'tree_name': record.get('Tree Number'),
+             'secondary_text': "[size=12]Photos [b]0/2[/b][/size]",
              'id': int(i),
+             #'_height': dp(30),
+
              'record_data': record,
              'can_delete': can_delete}
-            for i, record in enumerate(self.tree_items_list)]
+            for i, record in enumerate(self.tree_items_list)
+        ]
 
 
 class SessionScreenView(BaseScreenView):
     path_to_json = ObjectProperty()
     current_session_json = None
     current_session_state = "incomplete"
-
+    session_name = StringProperty()
     total_session_records = NumericProperty()
 
     app_bar_title = StringProperty()
@@ -139,9 +190,36 @@ class SessionScreenView(BaseScreenView):
 
     chosen_worksheet_title = StringProperty()
 
+    def start_photo_for_tree(self, tree_name):
+        self.model.send_tree_data_to_photo_screen(self.session_name, tree_name)
+        self.app.go_next_screen("session screen", "photo screen")
+
+    def close_upload_dialog(self, event):
+        self.upload_dialog.dismiss()
+
+    def confirm_upload_dialog(self, event):
+        Logger.info(f"{__name__}: Chosen worksheet: {self.chosen_worksheet_title}")
+        self.upload_session()
+        self.upload_dialog.dismiss()
+        self.app.go_prev_screen()
+
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         Logger.info(f"{__name__}: Inited")
+
+        # Prepare upload dialog
+        close_btn = MDFlatButton(text="Cancel", on_release=self.close_upload_dialog)
+        confirm_btn = MDFlatButton(text="Confirm", on_release=self.confirm_upload_dialog)
+        self.upload_content_cls = PreUploadDialogContent()
+        self.upload_content_cls.screen_view = self
+        self.upload_dialog = MDDialog(title=f'Upload Session',
+                                      anchor_x="center",
+                                      type="custom",
+                                      content_cls=self.upload_content_cls,
+                                      buttons=(close_btn, confirm_btn)
+                                      )
+        self.ids['upload_dialog'] = weakref.ref(self.upload_dialog.content_cls)
 
     def start_record_editing(self, tree_item: TreeItem):
         Logger.info(f"{__name__}: data of tree item to edit - {tree_item.record_data}")
@@ -151,39 +229,15 @@ class SessionScreenView(BaseScreenView):
             self.go_to_add_data_screen()
 
     def start_upload_dialog(self):
-        def close_dialog(event):
-            self.upload_dialog.dismiss()
-
-        def confirm_dialog(event):
-            Logger.info(f"{__name__}: Chosen worksheet: {self.chosen_worksheet_title}")
-            self.upload_session()
-            self.upload_dialog.dismiss()
-            self.app.go_prev_screen()
-
-        close_btn = MDFlatButton(text="Cancel", on_release=close_dialog)
-        confirm_btn = MDFlatButton(text="Confirm", on_release=confirm_dialog)
-
-        content_cls = PreUploadDialogContent()
-        content_cls.screen_view = self
 
         num_of_session_rec = self.total_session_records
-
         if self.model.chosen_worksheet is None:
             self.model.get_util_worksheet()
 
-        worksheetname = self.model.worksheet_title
-        session_name = self.path_to_json.stem.split('_')[0]
 
-        content_cls.set_values(worksheetname, num_of_session_rec)
-
-        self.upload_dialog = MDDialog(title=f'Upload Session: {session_name}',
-                               #size_hint=(.6, .5),
-                               #height="300dp",
-                               type="custom",
-                               content_cls=content_cls,
-                               buttons=(close_btn, confirm_btn)
-                               )
-        self.ids['upload_dialog'] = weakref.ref(self.upload_dialog.content_cls)
+        self.session_name = self.path_to_json.stem.split('_')[0]
+        ws_name = self.session_name
+        self.upload_content_cls.set_values(ws_name, num_of_session_rec)
         self.upload_dialog.open()
 
     def receive_session_json_path(self, session_path: Path):
@@ -201,8 +255,8 @@ class SessionScreenView(BaseScreenView):
     def add_completed_sessions_widgets(self):
         Logger.info(f"{__name__}: starting to add widgets for completed session")
         # self.ids.buttons_grid.clear_widgets()
-        session_name = self.path_to_json.stem.split('_')[0]
-        self.app_bar_title = session_name
+        self.session_name = self.path_to_json.stem.split('_')[0]
+        self.app_bar_title = self.session_name
         self.show_buttons = False
 
         records = self.current_session_json['data'].get('records')
@@ -212,12 +266,13 @@ class SessionScreenView(BaseScreenView):
         self.ids.tree_items_page.update_items(can_delete=False)
         self.ids.tree_items_page.session_screen_view = self
 
+
         Logger.info(f"{__name__}: ended to add widgets for completed session")
 
     def add_incomplete_sessions_widgets(self):
         Logger.info(f"{__name__}: starting to add widget for incomplete session")
-        session_name = self.path_to_json.stem.split('_')[0]
-        self.app_bar_title = session_name
+        self.session_name = self.path_to_json.stem.split('_')[0]
+        self.app_bar_title = self.session_name
         self.show_buttons = True
         records = self.current_session_json['data'].get('records')
         self.total_session_records = len(records)
@@ -225,6 +280,7 @@ class SessionScreenView(BaseScreenView):
         self.ids.tree_items_page.tree_items_list = records
         self.ids.tree_items_page.update_items()
         self.ids.tree_items_page.session_screen_view = self
+
         Logger.info(f"{__name__}: ended to add widgets for incomplete session")
 
     def upload_session(self):

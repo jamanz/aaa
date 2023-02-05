@@ -12,6 +12,53 @@ from View.PhotoScreen.components.toast import Toast
 
 
 
+if platform == 'android':
+    from plyer import camera
+    from os import getcwd
+    from os.path import exists
+    from kivy.uix.floatlayout import FloatLayout
+    from kivy.uix.popup import Popup
+
+
+    class MsgPopup(Popup):
+        def __init__(self, msg):
+            super(MsgPopup, self).__init__()
+            self.ids.message_label.text = msg
+
+    class CameraDemo(FloatLayout):
+        def __init__(self):
+            super(CameraDemo, self).__init__()
+            self.cwd = getcwd() + "/"
+            self.ids.path_label.text = self.cwd
+
+        def do_capture(self):
+            filepath = self.cwd + self.ids.filename_text.text
+
+            if (exists(filepath)):
+                popup = MsgPopup("Picture with this name already exists!")
+                popup.open()
+                return False
+
+            try:
+                camera.take_picture(filename=filepath,
+                                    on_complete=self.camera_callback)
+            except NotImplementedError:
+                popup = MsgPopup(
+                    "This feature has not yet been implemented for this platform.")
+                popup.open()
+
+        def camera_callback(self, filepath):
+            if (exists(filepath)):
+                popup = MsgPopup("Picture saved!")
+                popup.open()
+            else:
+                popup = MsgPopup("Could not save your picture!")
+                popup.open()
+
+
+
+
+
 PS1 = """
 <PhotoScreenView>:
     photo_preview: photo_layout.ids.preview
@@ -21,7 +68,7 @@ PS1 = """
 
 
 class PhotoScreenView(BaseScreenView):
-
+    session_name = StringProperty()
     tree_name = StringProperty()
     photo_count = 0
 
@@ -35,6 +82,9 @@ class PhotoScreenView(BaseScreenView):
 
     def on_enter(self):
         self.photo_count = 0
+        self.session_name = self.model.session_name
+        self.tree_name = self.model.tree_name
+
         self.photo_preview.connect_camera(filepath_callback=self.capture_path)
 
     def on_pre_leave(self):
@@ -138,15 +188,17 @@ class ButtonsLayout1(RelativeLayout):
             self.ids.flash.size_hint = (None, .15)
 
     def photo(self):
-        file_name = self.parent.parent.tree_name
+        tree_name = self.parent.parent.tree_name
+        session_name = self.parent.parent.session_name
         photo_count = self.parent.parent.photo_count
-        Logger.info(f"{__name__:} photo name -> {file_name}")
-        if file_name:
+
+        Logger.info(f"{__name__:} tree name -> {tree_name}")
+        if tree_name:
             if photo_count == 0:
-                self.parent.ids.preview.capture_photo(name=f"{file_name}")
+                self.parent.ids.preview.capture_photo(location='photos', subdir=session_name, name=f"{tree_name}")
                 self.parent.parent.photo_count += 1
             else:
-                self.parent.ids.preview.capture_photo(name=f"{file_name}_{photo_count}")
+                self.parent.ids.preview.capture_photo(location='photos', subdir=session_name, name=f"{tree_name}_{photo_count}")
                 self.parent.parent.photo_count += 1
 
         else:

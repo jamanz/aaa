@@ -19,6 +19,7 @@ from kivy.clock import Clock
 from functools import partial
 from kivy.core.window import Window
 
+
 class PreviewContent(MDBoxLayout):
     tree_number = StringProperty()
     tree_specie = StringProperty()
@@ -68,6 +69,10 @@ class SubmitRecordContent(MDBoxLayout):
     def set_comment(self, comment_str):
         self.comment = comment_str
         self.add_data_view.get_input_feature_value('Comment', comment_str)
+        Window.softinput_mode = ''
+
+    def raise_window_for_comment(self, *args):
+        Window.softinput_mode = 'pan'
 
     def update_values(self, record):
         self.tree_number = str(record.get('Tree Number'))
@@ -84,6 +89,7 @@ class SubmitRecordContent(MDBoxLayout):
         self.specie_value = str(record.get('Specie value'))
 
         self.comment = record.get('Comment', '')
+
 
 # todo: disable submit if tree num not set
 class AddDataScreenView(BaseScreenView):
@@ -109,27 +115,12 @@ class AddDataScreenView(BaseScreenView):
         self.ids.submit_record_dialog.update_values(self.controller.get_record())
         self.submit_dialog.open()
 
+    def close_record_preview_dialog(self, event):
+        self.record_preview_dialog.dismiss()
+
     def show_preview(self):
-
-        def close_dialog(event):
-            self.dialog.dismiss()
-
-        def ok_dialog(event):
-            self.dialog.dismiss()
-
-        close_btn = MDFlatButton(text="Back", on_release=close_dialog)
-        ok_btn = MDFlatButton(text="Ok", on_release=ok_dialog)
-
-        self.dialog = MDDialog(title='Preview',
-                               size_hint=(.7, None),
-                               md_bg_color=self.app.theme_cls.accent_color,
-                               type="custom",
-                               content_cls=PreviewContent(),
-                               buttons=(close_btn, ok_btn)
-                               )
-        self.ids['preview_dialog'] = weakref.ref(self.dialog.content_cls)
         self.ids.preview_dialog.update_values(self.controller.get_record())
-        self.dialog.open()
+        self.record_preview_dialog.open()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -143,8 +134,23 @@ class AddDataScreenView(BaseScreenView):
             caller=self.dataCard.ids.input_field_id,
             background_color=self.app.theme_cls.accent_color,
             position="bottom",
-            width_mult=5,
+            elevation=2,
+            ver_growth='down',
+            radius=[0, 24, 24, 24],
+            width_mult=4,
         )
+
+        # Prepare record preview dialog
+        close_preview_btn = MDFlatButton(text="Ok", on_release=self.close_record_preview_dialog)
+        self.record_preview_dialog = MDDialog(title='Preview',
+                                              size_hint=(.7, None),
+                                              md_bg_color=self.app.theme_cls.accent_color,
+                                              type="custom",
+                                              content_cls=PreviewContent(),
+                                              buttons=([close_preview_btn])
+                                              )
+        self.ids['preview_dialog'] = weakref.ref(self.record_preview_dialog.content_cls)
+
 
         # Prepare record submission dialog
         close_btn = MDFlatButton(text="Back", on_release=self.close_submit_dialog)
@@ -161,7 +167,6 @@ class AddDataScreenView(BaseScreenView):
         self.ids['submit_record_dialog'] = weakref.ref(self.submit_dialog.content_cls)
         self.ids.submit_record_dialog.add_data_view = self
 
-
     def cancel_record(self):
         self.controller.clear_record()
         self.app.go_prev_screen()
@@ -174,12 +179,14 @@ class AddDataScreenView(BaseScreenView):
     def save_record_and_back_to_session_screen(self):
         self.controller.write_record_to_json()
         self.app.go_prev_screen()
+    from kivymd.uix.list import OneLineListItem
 
     def show_suggestions(self, list_of_suggestions: list[str]):
         self.suggestion_menu.items = []
         menu_items = [
             {
-                "text": f"{sugg}",
+                "text": f"[size=14]{sugg}[/size]",
+                "_txt_top_pad": "2dp",
                 "viewclass": "OneLineListItem",
                 "height": dp(56),
                 "on_release": lambda x=f"{sugg}": self.suggestion_menu_callback(x),
@@ -204,21 +211,17 @@ class AddDataScreenView(BaseScreenView):
             if feature_key in self.feature_button_instance_map.keys():
                 anim = Animation(md_bg_color=self.app.theme_cls.primary_color, duration=.3)
                 anim.start(self.dataCard.chosen_feature_instance)
-            # elif feature_key in self.feature_segment_instance_map.keys():
-            #     anim = Animation(segment_color=self.app.theme_cls.primary_color, duration=.3)
-            #     anim.start(self.dataCard.chosen_feature_instance)
-
-
 
         if feature_key == 'Tree Number':
             self.model.send_tree_number_to_photoscreen(feature_value)
 
+        if feature_key in self.feature_button_instance_map.keys():
+            Clock.schedule_once(run_anim, .1)
 
-        Clock.schedule_once(run_anim, .1)
-        print(self.dataCard.chosen_feature_instance)
+        if feature_key == 'Tree specie':
+            self.suggestion_menu.dismiss()
 
         self.controller.get_input_feature_value(feature_key, feature_value)
-
 
     def initiate_suggestions(self, feature_key, feature_value):
         self.suggestion_menu.dismiss()
@@ -234,11 +237,7 @@ class AddDataScreenView(BaseScreenView):
 
         self.feature_value_len = len(feature_value)
 
-    def on_pre_leave(self, *args):
-        Window.softinput_mode = ''
-
     def on_pre_enter(self, *args):
-        Window.softinput_mode = 'pan'
         self.dataCard.ids.input_field_id.disabled = True
         self.feature_value_len = 0
 
