@@ -1,38 +1,43 @@
-<CameraDemo>:
-    FloatLayout:
-        Label:
-            id: path_label
-            text: 'Working Directory:'
-            pos_hint: {'x': 0.25, 'y': 0.7}
-            size_hint: 0.5, 0.1
-
-        TextInput:
-            id: filename_text
-            text: 'enter_file_name_here.jpg'
-            pos_hint: {'x': 0.25, 'y': .6}
-            size_hint: 0.5, 0.1
-            multiline: False
-
-        Button:
-            text: 'Take picture from camera!'
-            pos_hint: {'x': 0.25, 'y': .3}
-            size_hint: 0.5, 0.2
-            on_press: root.do_capture()
-
-<MsgPopup>:
-    size_hint: .7, .4
-    title: "Attention"
-
+<PhotoScreenView>:
+    id: photo_screen_view_id
     BoxLayout:
-        orientation: 'vertical'
-        padding: 10
-        spacing: 20
+        size_hint: 1, 1
+        id: photo_layout
+        Background:
+            id: pad_end
+        Preview:
+            id: preview
+            aspect_ratio: '16:9'
+            letterbox_color: .4, .4, .3, .7
+        ButtonsLayout1:
+            id: buttons
 
-        Label:
-            id: message_label
-            size_hint_y: 0.4
-            text: "Label"
-        Button:
-            text: 'Dismiss'
-            size_hint_y: 0.4
-            on_press: root.dismiss()
+
+<Background>:
+    canvas:
+        Color:
+            rgba: .4, .4, .3, .7
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+
+<ButtonsLayout1>:
+    id: butt_layou
+    photo_screen_view: self.parent.parent
+    Background:
+
+    Button:
+        id:flash_and_cancel
+        on_release: root.flash() if not root.photo_screen_view.photoReview else root.reject_photo()
+        height: self.width
+        width: self.height
+        background_normal: 'assets/icons/flash-off.png' if not root.photo_screen_view.photoReview else 'assets/icons/icons8-cancel-256.png'
+        background_down:   'assets/icons/flash-off.png' if not root.photo_screen_view.photoReview else 'assets/icons/icons8-cancel-256-red.png'
+    Button:
+        id:photo_and_save
+        on_release: root.photo() if not root.photo_screen_view.photoReview else root.save_photo()
+        height: self.width
+        width: self.height
+        background_normal: 'assets/icons/camera_white.png' if not root.photo_screen_view.photoReview else 'assets/icons/icons8-checkmark-256.png'
+        background_down:   'assets/icons/camera_white.png' if not root.photo_screen_view.photoReview else 'assets/icons/icons8-checkmark-256-green.png'

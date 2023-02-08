@@ -1,3 +1,5 @@
+import platform
+
 from kivy.storage.jsonstore import JsonStore
 
 from View.base_screen import BaseScreenView
@@ -15,6 +17,8 @@ import weakref
 from kivymd.uix.list import IRightBodyTouch
 from kivy.weakproxy import WeakProxy
 from kivy.metrics import dp
+from View.PhotoScreen.components.toast import Toast
+
 
 
 class PreviewRecordedTreeContent(MDBoxLayout):
@@ -192,7 +196,14 @@ class SessionScreenView(BaseScreenView):
 
     def start_photo_for_tree(self, tree_name):
         self.model.send_tree_data_to_photo_screen(self.session_name, tree_name)
-        self.app.go_next_screen("session screen", "photo screen")
+        if platform == 'android':
+            from android import api_version
+            if api_version < 29:
+                Toast().show("Photo disabled.\nAndroid version is lower than 10")
+            else:
+                self.app.go_next_screen("session screen", "photo screen")
+        else:
+            self.app.go_next_screen("session screen", "photo screen")
 
     def close_upload_dialog(self, event):
         self.upload_dialog.dismiss()

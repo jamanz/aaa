@@ -14,6 +14,14 @@ import os
 from kivy.core.window import Window
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
+from kivymd.uix.boxlayout import MDBoxLayout
+from Utility.pdf_generator import generate_pdf
+from kivy.weakproxy import WeakProxy
+
+class PdfDialogContent(MDBoxLayout):
+    chosen_session = StringProperty()
+    list_screen_view = ObjectProperty()
+
 
 class SessionItem(OneLineAvatarIconListItem):
     session_name = StringProperty()
@@ -36,6 +44,12 @@ class SessionItem(OneLineAvatarIconListItem):
             list_sessions_view.send_path_to_session_screen(Path(list_sessions_view.completed_path, session_json_name))
             list_sessions_view.app.go_next_screen('list sessions screen', 'session screen')
 
+
+    def make_pdf_from_session(self, session):
+        #print('make pdf from session ', session)
+        self.sessions_page = self.parent.parent
+        print(self.sessions_page)
+        self.sessions_page.list_sessions_view.make_pdf_for_session(session.session_name, session.session_sid)
 
     def delete_session(self, session):
         self.sessions_page = self.parent.parent
@@ -114,6 +128,26 @@ class ListSessionsScreenView(BaseScreenView):
 
     incomplete_path = Path("assets", "data").resolve()
     completed_path = Path("assets", "data", "completed").resolve()
+    photo_path = Path('photos').resolve()
+    page_num = 0
+
+    def update_pdf_progress(self, page_no):
+        #print("ids: ", self.ids.pdf_dialog_content.ids)
+        val = 100*page_no/self.page_num
+        self.ids.pdf_dialog_content.ids.progress_bar_id.value = int(val)
+        print(val)
+
+    def make_pdf_for_session(self, session_name: str, session_sid: str):
+        images_list = list(self.photo_path.joinpath(session_name).glob('*.jpg'))
+        self.page_num = len(images_list) // 4
+        if len(images_list) % 4 != 0:
+            self.page_num += 1
+
+        self.pdf_dialog.open()
+        print(f"{__name__}: photopath: {self.photo_path}")
+        generate_pdf(image_dir=self.photo_path.joinpath(session_name),
+                     filename=f'session_{session_name}',
+                     progress_func=self.update_pdf_progress)
 
     def delete_session(self, session_sid: str):
         self.model.delete_session(session_sid)
@@ -121,6 +155,22 @@ class ListSessionsScreenView(BaseScreenView):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         Logger.info(f"{__name__}: Inited")
+
+        confirm_pdf_btn = MDFlatButton(text="OK", on_release=self.close_pdf_dialog)
+        self.pdf_content_cls = PdfDialogContent()
+        self.pdf_content_cls.list_screen_view = self
+        self.pdf_dialog = MDDialog(title=f'Making PDF',
+                                      anchor_x="center",
+                                      type="custom",
+                                      content_cls=self.pdf_content_cls,
+                                      buttons=([confirm_pdf_btn])
+                                      )
+        self.ids['pdf_dialog_content'] = WeakProxy(self.pdf_content_cls)
+        #weakref.ref(self.upload_dialog.content_cls)
+        #self.ids['upload_dialog'] = weakref.ref(self.upload_dialog.content_cls)
+
+    def close_pdf_dialog(self, event):
+        self.pdf_dialog.dismiss()
 
     def on_pre_enter(self, *args):
         self.ids.sessions_page.update_sessions(self.current_sessions_list_type)
@@ -132,15 +182,12 @@ class ListSessionsScreenView(BaseScreenView):
         self.ids.sessions_page.update_sessions('incomplete')
         self.ids.sessions_page.list_sessions_view = self
 
-
     def start_completed_sessions(self):
         Logger.info(f"{__name__}: started completed sessions")
         self.current_sessions_list_type = 'completed'
         self.app_bar_title = "Completed sessions"
         self.ids.sessions_page.update_sessions('completed')
         self.ids.sessions_page.list_sessions_view = self
-
-
 
     def send_path_to_session_screen(self, path):
         self.model.send_path_to_session_screen(path)

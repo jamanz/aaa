@@ -10,7 +10,7 @@ from kivymd.uix.button import MDFlatButton, MDRaisedButton
 from kivymd.uix.dialog import MDDialog
 import weakref
 from kivymd.uix.menu import MDDropdownMenu
-from kivy.metrics import dp
+from kivy.metrics import dp, sp
 from kivy.animation import Animation
 from kivy.utils import get_color_from_hex
 from kivymd.uix.textfield import MDTextField
@@ -73,6 +73,7 @@ class SubmitRecordContent(MDBoxLayout):
 
     def raise_window_for_comment(self, *args):
         Window.softinput_mode = 'pan'
+        Logger.info(f'{__name__}: keyboard raised')
 
     def update_values(self, record):
         self.tree_number = str(record.get('Tree Number'))
@@ -113,6 +114,7 @@ class AddDataScreenView(BaseScreenView):
 
     def show_submit_record_dialog(self):
         self.ids.submit_record_dialog.update_values(self.controller.get_record())
+        Window.softinput_mode = 'pan'
         self.submit_dialog.open()
 
     def close_record_preview_dialog(self, event):
@@ -185,7 +187,7 @@ class AddDataScreenView(BaseScreenView):
         self.suggestion_menu.items = []
         menu_items = [
             {
-                "text": f"[size=14]{sugg}[/size]",
+                "text": f"[size={sp(14)}]{sugg}[/size]",
                 "_txt_top_pad": "2dp",
                 "viewclass": "OneLineListItem",
                 "height": dp(56),

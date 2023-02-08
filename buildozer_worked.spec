@@ -49,7 +49,8 @@ requirements = python3,pillow,android,kivy==2.1.0,kivymd==1.0.2,
                googleapis-common-protos==1.57.0,
                google-auth-httplib2==0.1.0,
                google-api-core==2.10.0,
-               google-auth-oauthlib==0.5.3
+               google-auth-oauthlib==0.5.3,
+               reportlab
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes

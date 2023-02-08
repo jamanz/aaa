@@ -17,6 +17,7 @@ import pathlib
 from Utility.google_sheets import get_user_email, check_auth
 from kivy.cache import Cache
 
+
 class GoogleSheetsDialogContent(MDBoxLayout):
     user_email = StringProperty()
 
@@ -98,8 +99,8 @@ class HomeScreenView(BaseScreenView):
         self.cred_path = pathlib.Path('config').resolve()
 
     def open_plyer_camera(self):
-        from View.PhotoScreen.photo_screen import CameraDemo
-        self.cam_demo = CameraDemo()
+        self.app.go_next_screen('home screen', 'photo screen')
+        Logger.info(f"{__name__}: CARMERA DEMO STARTED IN HS")
 
     def on_pre_enter(self, *args):
         self.display_nav_buttons()

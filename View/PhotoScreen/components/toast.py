@@ -15,7 +15,7 @@ if platform == 'android':
         @run_on_ui_thread
         def show(self, msg):
             if msg[0] == '/' or 'DCIM/' in msg:
-                msg = 'Saved as:\n' + msg
+                #msg = 'Saved as:\n' + msg
                 context = PythonActivity.mActivity.getApplicationContext()
                 JToast.makeText(context, JString(msg), JToast.LENGTH_LONG).show()
 

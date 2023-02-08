@@ -3,77 +3,27 @@ from kivy.logger import Logger
 
 from kivy.core.window import Window
 from kivy.lang import Builder
-from kivy.properties import ObjectProperty, StringProperty
+from kivy.properties import ObjectProperty, StringProperty, BooleanProperty
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.utils import platform
 from camera4kivy import Preview
 from View.PhotoScreen.components.toast import Toast
+from kivy.uix.image import Image
+from kivy.uix.label import Label
+from kivy.uix.button import Button
+from functools import partial
+import os
 
-
-
-if platform == 'android':
-    from plyer import camera
-    from os import getcwd
-    from os.path import exists
-    from kivy.uix.floatlayout import FloatLayout
-    from kivy.uix.popup import Popup
-
-
-    class MsgPopup(Popup):
-        def __init__(self, msg):
-            super(MsgPopup, self).__init__()
-            self.ids.message_label.text = msg
-
-    class CameraDemo(FloatLayout):
-        def __init__(self):
-            super(CameraDemo, self).__init__()
-            self.cwd = getcwd() + "/"
-            self.ids.path_label.text = self.cwd
-
-        def do_capture(self):
-            filepath = self.cwd + self.ids.filename_text.text
-
-            if (exists(filepath)):
-                popup = MsgPopup("Picture with this name already exists!")
-                popup.open()
-                return False
-
-            try:
-                camera.take_picture(filename=filepath,
-                                    on_complete=self.camera_callback)
-            except NotImplementedError:
-                popup = MsgPopup(
-                    "This feature has not yet been implemented for this platform.")
-                popup.open()
-
-        def camera_callback(self, filepath):
-            if (exists(filepath)):
-                popup = MsgPopup("Picture saved!")
-                popup.open()
-            else:
-                popup = MsgPopup("Could not save your picture!")
-                popup.open()
-
-
-
-
-
-PS1 = """
-<PhotoScreenView>:
-    photo_preview: photo_layout.ids.preview
-    PhotoLayout1:
-        id:photo_layout
-"""
 
 
 class PhotoScreenView(BaseScreenView):
     session_name = StringProperty()
     tree_name = StringProperty()
     photo_count = 0
+    photoReview = BooleanProperty(False)
 
     def __init__(self, **kwargs):
-        Builder.load_string(PS1)
         super().__init__(**kwargs)
         Logger.info(f"{__name__}: Inited")
 
@@ -84,137 +34,129 @@ class PhotoScreenView(BaseScreenView):
         self.photo_count = 0
         self.session_name = self.model.session_name
         self.tree_name = self.model.tree_name
+        self.ids.preview.connect_camera(filepath_callback=self.capture_path)
 
-        self.photo_preview.connect_camera(filepath_callback=self.capture_path)
 
     def on_pre_leave(self):
-        self.photo_preview.disconnect_camera()
+        self.ids.preview.disconnect_camera()
 
     def capture_path(self, file_path):
         Logger.info(f"{__name__}: Photo maked, path-> {file_path}")
-        Toast().show(file_path)
 
-
-PL1 = """
-<PhotoLayout1>:
-    Background1:
-        id: pad_end
-    Preview:
-        id: preview
-        letterbox_color: .4, .4, .3, .7
-    ButtonsLayout1:
-        id: buttons
-<Background1@Label>:
-    canvas:
-        Color: 
-            rgba: .4, .4, .3, .7
-        Rectangle:
-            pos: self.pos
-            size: self.size
-"""
-
-
-class PhotoLayout1(BoxLayout):
-
-    def __init__(self, **args):
-        Builder.load_string(PL1)
-        super().__init__(**args)
 
     def on_size(self, layout, size):
         if Window.width < Window.height:
-            self.orientation = 'vertical'
-            self.ids.preview.size_hint = (1, .8)
-            self.ids.buttons.size_hint = (1, .2)
+            self.ids.photo_layout.orientation = 'vertical'
+            #self.ids.preview.size_hint = (1, .8)
+            self.ids.preview.size_hint = (1, 1)
+            self.ids.buttons.size_hint = (1, .15)
             self.ids.pad_end.size_hint = (1, .1)
         else:
-            self.orientation = 'horizontal'
+            self.ids.photo_layout.orientation = 'horizontal'
             self.ids.preview.size_hint = (.8, 1)
-            self.ids.buttons.size_hint = (.2, 1)
+            self.ids.buttons.size_hint = (.15, 1)
             self.ids.pad_end.size_hint = (.1, 1)
 
+        if platform in ['android', 'ios']:
+            self.ids.buttons.ids.photo_and_save.min_state_time = 0.3
+        else:
+            self.ids.buttons.ids.photo_and_save.min_state_time = 1
+        if Window.width < Window.height:
+            #self.ids.buttons.ids.other.pos_hint = {'center_x': .2, 'center_y': .5}
+            #self.ids.buttons.ids.other.size_hint = (.2, None)
+            self.ids.buttons.ids.photo_and_save.pos_hint = {'center_x': .25, 'center_y': .5}
+            self.ids.buttons.ids.photo_and_save.size_hint = (.2, None)
+            self.ids.buttons.ids.flash_and_cancel.pos_hint = {'center_x': .75, 'center_y': .5}
+            self.ids.buttons.ids.flash_and_cancel.size_hint = (.2, None)
+        else:
+            #self.ids.buttons.ids.other.pos_hint = {'center_x': .5, 'center_y': .8}
+            #self.ids.buttons.ids.other.size_hint = (None, .2)
+            self.ids.buttons.ids.photo_and_save.pos_hint = {'center_x': .5, 'center_y': .75}
+            self.ids.buttons.ids.photo_and_save.size_hint = (None, .2)
+            self.ids.buttons.ids.flash_and_cancel.pos_hint = {'center_x': .5, 'center_y': .25}
+            self.ids.buttons.ids.flash_and_cancel.size_hint = (None, .2)
 
-BL1 = """
-<ButtonsLayout1>:
-    id: butt_layou
-    Background1:
-    Button:
-        id:other
-        on_press: root.select_camera('toggle')
-        height: self.width
-        width: self.height
-        background_normal: 'assets/icons/camera-flip-outline.png'
-        background_down:   'assets/icons/camera-flip-outline.png'
-    Button:
-        id:flash
-        on_press: root.flash()
-        height: self.width
-        width: self.height
-        background_normal: 'assets/icons/flash-off.png'
-        background_down:   'assets/icons/flash-off.png'
-    Button:
-        id:photo
-        on_press: root.photo()
-        height: self.width
-        width: self.height
-        background_normal: 'assets/icons/camera_white.png'
-        background_down:   'assets/icons/camera_red.png'
-"""
+
+class Background(Label):
+    pass
+
+
+class ButtonsLayout2(RelativeLayout):
+    filename = StringProperty()
+    photo_screen_view = ObjectProperty()
+
+    def __init__(self, **args):
+        super().__init__(**args)
 
 
 class ButtonsLayout1(RelativeLayout):
-    filename = StringProperty()
+    file_path = StringProperty()
+    photo_screen_view = ObjectProperty()
+
     def __init__(self, **args):
-        Builder.load_string(BL1)
         super().__init__(**args)
 
-    def on_size(self, layout, size):
-        if platform in ['android', 'ios']:
-            self.ids.photo.min_state_time = 0.3
-        else:
-            self.ids.photo.min_state_time = 1
-        if Window.width < Window.height:
-            self.ids.other.pos_hint = {'center_x': .2, 'center_y': .5}
-            self.ids.other.size_hint = (.2, None)
-            self.ids.photo.pos_hint = {'center_x': .5, 'center_y': .5}
-            self.ids.photo.size_hint = (.24, None)
-            self.ids.flash.pos_hint = {'center_x': .8, 'center_y': .5}
-            self.ids.flash.size_hint = (.15, None)
-        else:
-            self.ids.other.pos_hint = {'center_x': .5, 'center_y': .8}
-            self.ids.other.size_hint = (None, .2)
-            self.ids.photo.pos_hint = {'center_x': .5, 'center_y': .5}
-            self.ids.photo.size_hint = (None, .24)
-            self.ids.flash.pos_hint = {'center_x': .5, 'center_y': .2}
-            self.ids.flash.size_hint = (None, .15)
-
     def photo(self):
-        tree_name = self.parent.parent.tree_name
-        session_name = self.parent.parent.session_name
-        photo_count = self.parent.parent.photo_count
+        self.photo_screen_view = self.parent.parent
+        tree_name = self.photo_screen_view.tree_name
+        session_name = self.photo_screen_view.session_name
+        photo_count = self.photo_screen_view.photo_count
 
-        Logger.info(f"{__name__:} tree name -> {tree_name}")
+        Logger.info(f"{__name__:} -> {self.parent.parent.ids}")
         if tree_name:
             if photo_count == 0:
-                self.parent.ids.preview.capture_photo(location='photos', subdir=session_name, name=f"{tree_name}")
-                self.parent.parent.photo_count += 1
+                self.photo_screen_view.ids.preview.capture_photo(location='photos', subdir=session_name, name=f"{tree_name}")
+                self.file_path = f'./photos/{session_name}/{tree_name}.jpg'
             else:
-                self.parent.ids.preview.capture_photo(location='photos', subdir=session_name, name=f"{tree_name}_{photo_count}")
-                self.parent.parent.photo_count += 1
+                self.photo_screen_view.ids.preview.capture_photo(location='photos', subdir=session_name,
+                                                      name=f"{tree_name}_{photo_count}")
+                self.file_path = f'./photos/{session_name}/{tree_name}_{photo_count}.jpg'
+
+
+            self.image_preview = Image(source=self.file_path, size_hint=(1, .98))
+            self.photo_screen_view.ids.preview.add_widget(self.image_preview)
+            self.photo_screen_view.photo_count += 1
+            self.photo_screen_view.photoReview = True
 
         else:
-            self.parent.ids.preview.capture_photo()
+            pass
+
+    def save_photo(self):
+        print('Photo saved')
+        self.photo_screen_view.ids.preview.remove_widget(self.image_preview)
+        self.photo_screen_view.photoReview = False
+        Toast().show("Saved as:\n" + self.file_path)
+
+    def reject_photo(self):
+        print('Photo rejected')
+        os.remove(self.file_path)
+        #Toast().show("Photo" + self.file_path)
+        self.photo_screen_view.ids.preview.remove_widget(self.image_preview)
+        #self.photo_screen_view.ids.preview.connect_camera(filepath_callback=self.photo_screen_view.capture_path)
+
+        self.photo_screen_view.photoReview = False
+
+
+
+
+
+
+
+
 
     def flash(self):
-        icon = self.parent.ids.preview.flash()
+        icon = self.photo_screen_view.ids.preview.flash()
         if icon == 'on':
-            self.ids.flash.background_normal = 'assets/icons/flash.png'
-            self.ids.flash.background_down = 'assets/icons/flash.png'
+            self.ids.flash_and_cancel.background_normal = 'assets/icons/flash.png'
+            self.ids.flash_and_cancel.background_down = 'assets/icons/flash.png'
         elif icon == 'auto':
-            self.ids.flash.background_normal = 'assets/icons/flash-auto.png'
-            self.ids.flash.background_down = 'assets/icons/flash-auto.png'
+            self.ids.flash_and_cancel.background_normal = 'assets/icons/flash-auto.png'
+            self.ids.flash_and_cancel.background_down = 'assets/icons/flash-auto.png'
         else:
-            self.ids.flash.background_normal = 'assets/icons/flash-off.png'
-            self.ids.flash.background_down = 'assets/icons/flash-off.png'
+            self.ids.flash_and_cancel.background_normal = 'assets/icons/flash-off.png'
+            self.ids.flash_and_cancel.background_down = 'assets/icons/flash-off.png'
+
+
 
     def select_camera(self, facing):
-        self.parent.ids.preview.select_camera(facing)
+        self.photo_screen_view.ids.preview.select_camera(facing)
