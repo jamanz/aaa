@@ -1,5 +1,3 @@
-from email.mime import image
-
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import cm, inch
 from reportlab.platypus import SimpleDocTemplate, BaseDocTemplate, PageTemplate, Image, FrameBreak, PageBreak, Spacer, Paragraph
