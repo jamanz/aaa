@@ -17,7 +17,7 @@ from kivymd.uix.dialog import MDDialog
 from kivymd.uix.boxlayout import MDBoxLayout
 from Utility.pdf_generator import generate_pdf
 from kivy.weakproxy import WeakProxy
-
+from View.PhotoScreen.components.toast import Toast
 class PdfDialogContent(MDBoxLayout):
     chosen_session = StringProperty()
     list_screen_view = ObjectProperty()
@@ -128,17 +128,24 @@ class ListSessionsScreenView(BaseScreenView):
 
     incomplete_path = Path("assets", "data").resolve()
     completed_path = Path("assets", "data", "completed").resolve()
-    photo_path = Path('photos').resolve()
+    #photo_path = Path('photos').resolve()
     page_num = 0
+    config_json_path = Path('./config/imortant_path.json').resolve()
+
 
     def update_pdf_progress(self, page_no):
         #print("ids: ", self.ids.pdf_dialog_content.ids)
+        from kivymd.uix.progressbar import MDProgressBar
         val = 100*page_no/self.page_num
-        self.ids.pdf_dialog_content.ids.progress_bar_id.value = int(val)
-        print(val)
+        print("pdf_progress val old: ", self.ids.pdf_progress_content.ids.progress_bar_id.value)
+        self.ids.pdf_progress_content.ids.progress_bar_id.value = int(val)
+        print("pdf_progress val new: ", self.ids.pdf_progress_content.ids.progress_bar_id.value)
 
     def make_pdf_for_session(self, session_name: str, session_sid: str):
+        self.photo_path = Path(JsonStore(self.config_json_path).get('camera').get('path'))
+        Logger.info(f"{__name__}: Photo path {self.photo_path}")
         images_list = list(self.photo_path.joinpath(session_name).glob('*.jpg'))
+        Logger.info(f"{__name__}: Image list {images_list}")
         self.page_num = len(images_list) // 4
         if len(images_list) % 4 != 0:
             self.page_num += 1
@@ -146,8 +153,10 @@ class ListSessionsScreenView(BaseScreenView):
         self.pdf_dialog.open()
         print(f"{__name__}: photopath: {self.photo_path}")
         generate_pdf(image_dir=self.photo_path.joinpath(session_name),
+                     dest_path=self.photo_path,
                      filename=f'session_{session_name}',
                      progress_func=self.update_pdf_progress)
+        Toast().show("Saved pdf:\n" + str(self.photo_path))
 
     def delete_session(self, session_sid: str):
         self.model.delete_session(session_sid)
@@ -165,7 +174,7 @@ class ListSessionsScreenView(BaseScreenView):
                                       content_cls=self.pdf_content_cls,
                                       buttons=([confirm_pdf_btn])
                                       )
-        self.ids['pdf_dialog_content'] = WeakProxy(self.pdf_content_cls)
+        self.ids['pdf_progress_content'] = WeakProxy(self.pdf_content_cls)
         #weakref.ref(self.upload_dialog.content_cls)
         #self.ids['upload_dialog'] = weakref.ref(self.upload_dialog.content_cls)
 

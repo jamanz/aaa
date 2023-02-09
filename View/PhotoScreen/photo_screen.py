@@ -1,3 +1,5 @@
+import pathlib
+
 from View.base_screen import BaseScreenView
 from kivy.logger import Logger
 
@@ -14,7 +16,7 @@ from kivy.uix.label import Label
 from kivy.uix.button import Button
 from functools import partial
 import os
-
+from kivy.storage.jsonstore import JsonStore
 
 
 class PhotoScreenView(BaseScreenView):
@@ -23,9 +25,12 @@ class PhotoScreenView(BaseScreenView):
     photo_count = 0
     photoReview = BooleanProperty(False)
 
+    saved_to_path = StringProperty()
+    config_json = ObjectProperty()
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         Logger.info(f"{__name__}: Inited")
+        self.config_json_path = pathlib.Path('./config/imortant_path.json').resolve()
 
     def set_tree_name(self, tree_name):
         self.tree_name = tree_name
@@ -42,7 +47,12 @@ class PhotoScreenView(BaseScreenView):
 
     def capture_path(self, file_path):
         Logger.info(f"{__name__}: Photo maked, path-> {file_path}")
-
+        self.saved_to_path = file_path
+        photos_dir_path = pathlib.Path(file_path).resolve().parent.parent
+        Logger.info(f"{__name__}: config json path: {self.config_json_path}")
+        self.config_json = JsonStore(str(self.config_json_path))
+        self.config_json.put("camera", path=str(photos_dir_path))
+        print("Photo path: ", photos_dir_path)
 
     def on_size(self, layout, size):
         if Window.width < Window.height:
@@ -106,12 +116,13 @@ class ButtonsLayout1(RelativeLayout):
         if tree_name:
             if photo_count == 0:
                 self.photo_screen_view.ids.preview.capture_photo(location='photos', subdir=session_name, name=f"{tree_name}")
-                self.file_path = f'./photos/{session_name}/{tree_name}.jpg'
+                #self.file_path = f'./photos/{session_name}/{tree_name}.jpg'
+                self.file_path = self.photo_screen_view.saved_to_path
             else:
                 self.photo_screen_view.ids.preview.capture_photo(location='photos', subdir=session_name,
                                                       name=f"{tree_name}_{photo_count}")
-                self.file_path = f'./photos/{session_name}/{tree_name}_{photo_count}.jpg'
-
+                #self.file_path = f'./photos/{session_name}/{tree_name}_{photo_count}.jpg'
+                self.file_path = self.photo_screen_view.saved_to_path
 
             self.image_preview = Image(source=self.file_path, size_hint=(1, .98))
             self.photo_screen_view.ids.preview.add_widget(self.image_preview)
@@ -155,8 +166,6 @@ class ButtonsLayout1(RelativeLayout):
         else:
             self.ids.flash_and_cancel.background_normal = 'assets/icons/flash-off.png'
             self.ids.flash_and_cancel.background_down = 'assets/icons/flash-off.png'
-
-
 
     def select_camera(self, facing):
         self.photo_screen_view.ids.preview.select_camera(facing)

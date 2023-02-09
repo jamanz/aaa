@@ -45,7 +45,7 @@ def page_call(page_no):
     print(f"page {page_no} generated")
 
 
-def generate_pdf(image_dir, filename="generated", progress_func=page_call):
+def generate_pdf(image_dir, dest_path, filename="generated", progress_func=page_call):
 
     if 'pdf' not in filename:
         filename = f"{filename}.pdf"
@@ -133,10 +133,11 @@ def generate_pdf(image_dir, filename="generated", progress_func=page_call):
     file_path = pathlib.Path('.').joinpath(filename).resolve()
     print(file_path)
 
-    dest_path = pathlib.Path('./photos/').resolve()
+    dest_path = pathlib.Path(dest_path).resolve()
     print("dest path", dest_path)
     if os.path.exists(dest_path.joinpath(file_path.name)):
         os.remove(dest_path.joinpath(file_path.name))
     shutil.move(file_path, dest_path)
+    print("File move to, ", dest_path)
 
 

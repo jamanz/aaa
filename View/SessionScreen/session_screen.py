@@ -18,7 +18,7 @@ from kivymd.uix.list import IRightBodyTouch
 from kivy.weakproxy import WeakProxy
 from kivy.metrics import dp
 from View.PhotoScreen.components.toast import Toast
-
+import os
 
 
 class PreviewRecordedTreeContent(MDBoxLayout):
@@ -170,9 +170,9 @@ class TreeItemsPage(MDRecycleView):
     def update_items(self, can_delete=True):
         Logger.info(f"{__name__}: items updated")
         self.data = [
-            {'text': f"[size=18]#{record.get('Tree Number')}[/size]",
+            {'text': f"#{record.get('Tree Number')}",
              'tree_name': record.get('Tree Number'),
-             'secondary_text': "[size=12]Photos [b]0/2[/b][/size]",
+             'secondary_text': "Photos [b]0/2[/b]",
              'id': int(i),
              #'_height': dp(30),
 
@@ -199,8 +199,10 @@ class SessionScreenView(BaseScreenView):
         if platform == 'android':
             from android import api_version
             if api_version < 29:
-                Toast().show("Photo disabled.\nAndroid version is lower than 10")
+                Toast().show(f"Photo disabled.\nAndroid version is s{api_version}")
+                Logger.info(f"{__name__}: Api version not enough - {api_version}, toast displayed")
             else:
+                Toast().show("All cool")
                 self.app.go_next_screen("session screen", "photo screen")
         else:
             self.app.go_next_screen("session screen", "photo screen")
@@ -218,6 +220,10 @@ class SessionScreenView(BaseScreenView):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         Logger.info(f"{__name__}: Inited")
+        Logger.info(f"{__name__}: Kivy pathes: "
+                    f"KIVY_DATA_DIR: {os.environ.get('KIVY_DATA_DIR')}\n"
+                    f"KIVY_MODULES_DIR: {os.environ.get('KIVY_MODULES_DIR')}\n"
+                    f"KIVY_HOME: {os.environ.get('KIVY_HOME')}")
 
         # Prepare upload dialog
         close_btn = MDFlatButton(text="Cancel", on_release=self.close_upload_dialog)
