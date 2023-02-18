@@ -18,6 +18,9 @@ if platform == 'android':
                 #msg = 'Saved as:\n' + msg
                 context = PythonActivity.mActivity.getApplicationContext()
                 JToast.makeText(context, JString(msg), JToast.LENGTH_LONG).show()
+            else:
+                context = PythonActivity.mActivity.getApplicationContext()
+                JToast.makeText(context, JString(msg), JToast.LENGTH_LONG).show()
 
 else:
 

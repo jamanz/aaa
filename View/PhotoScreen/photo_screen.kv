@@ -1,3 +1,4 @@
+#: import platform kivy.platform
 <PhotoScreenView>:
     id: photo_screen_view_id
     BoxLayout:
@@ -9,8 +10,16 @@
             id: preview
             aspect_ratio: '16:9'
             letterbox_color: .4, .4, .3, .7
+
+            FloatLayout:
+                id: img_preview
+                size_hint: 1, 1
+                pos_hint: {"center_x": .5, "center_y": .5}
+
+
         ButtonsLayout1:
             id: buttons
+
 
 
 <Background>:
@@ -20,6 +29,22 @@
         Rectangle:
             pos: self.pos
             size: self.size
+
+
+<ImgPrev>:
+    pos_hint: {"center_x": .5, "center_y": .5}
+    #allow_stretch:True
+    #keep_ratio:True
+    #id:image_holder
+    #on_load: root.on_image_load()
+    canvas.before:
+        PushMatrix
+        Rotate:
+            # rotate the widget by -90 if the image was token using front or 90 if using back camera degree only on android
+            angle: (90 if self.source and 'front' in self.source else -90) if platform =='android' else 0
+            origin: self.center
+    canvas.after:
+        PopMatrix
 
 
 <ButtonsLayout1>:

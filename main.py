@@ -112,7 +112,7 @@ import os
 from os.path import abspath, dirname
 from pathlib import Path
 from View.screens import screens
-from kivy import user_home_dir, kivy_home_dir, kivy_base_dir, dirname
+from kivy import user_home_dir, kivy_home_dir, kivy_base_dir, dirname, kivy_data_dir
 from kivy.core.window import Window
 from kivy.utils import platform
 from kivy.utils import get_color_from_hex
@@ -265,8 +265,12 @@ class agroApp3MVC(MDApp):
         Logger.info(f"""{__name__}: APP INITED on platform: {platform} 
                     abs path for app: {self.app_folder}
                     kivy userhomedir: {user_home_dir}
+                    user home dir contains: {os.listdir(user_home_dir)}
                     kivy_home_dir: {kivy_home_dir}
                     kivy_base_dir: {kivy_base_dir} 
+                    kivy_data_dir: {kivy_data_dir}
+                    data dir contains: {os.listdir(kivy_data_dir)}
+                
                     dirname: {dirname}""")
         # This is the screen manager that will contain all the screens of application.
         self.manager_screens = MDScreenManager()

@@ -1,4 +1,4 @@
-import platform
+from kivy.utils import platform
 
 from kivy.storage.jsonstore import JsonStore
 
@@ -196,7 +196,9 @@ class SessionScreenView(BaseScreenView):
 
     def start_photo_for_tree(self, tree_name):
         self.model.send_tree_data_to_photo_screen(self.session_name, tree_name)
+        Logger.info(f"{__name__}: platform {platform}")
         if platform == 'android':
+            Logger.info(f"{__name__}: andoid version {api_version}")
             from android import api_version
             if api_version < 29:
                 Toast().show(f"Photo disabled.\nAndroid version is s{api_version}")
@@ -245,8 +247,9 @@ class SessionScreenView(BaseScreenView):
             self.model.start_record_editing(tree_num)
             self.go_to_add_data_screen()
 
-    def start_upload_dialog(self):
 
+
+    def start_upload_dialog(self):
         num_of_session_rec = self.total_session_records
         if self.model.chosen_worksheet is None:
             self.model.get_util_worksheet()

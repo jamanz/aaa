@@ -18,6 +18,10 @@ from kivymd.uix.boxlayout import MDBoxLayout
 from Utility.pdf_generator import generate_pdf
 from kivy.weakproxy import WeakProxy
 from View.PhotoScreen.components.toast import Toast
+from kivymd.uix.filemanager import MDFileManager
+from kivymd.toast import toast
+from kivy.utils import platform
+
 class PdfDialogContent(MDBoxLayout):
     chosen_session = StringProperty()
     list_screen_view = ObjectProperty()
@@ -131,7 +135,7 @@ class ListSessionsScreenView(BaseScreenView):
     #photo_path = Path('photos').resolve()
     page_num = 0
     config_json_path = Path('./config/imortant_path.json').resolve()
-
+    file_manager_open = False
 
     def update_pdf_progress(self, page_no):
         #print("ids: ", self.ids.pdf_dialog_content.ids)
@@ -141,9 +145,39 @@ class ListSessionsScreenView(BaseScreenView):
         self.ids.pdf_progress_content.ids.progress_bar_id.value = int(val)
         print("pdf_progress val new: ", self.ids.pdf_progress_content.ids.progress_bar_id.value)
 
+    def open_file_manager(self, path):
+        self.file_manager.show(os.path.expanduser(str(path)))  # output manager to the screen
+        self.file_manager_open = True
+
+
+    def select_path(self, path: str):
+        '''
+        It will be called when you click on the file name
+        or the catalog selection button.
+
+        :param path: path to the selected directory or file;
+        '''
+
+        self.exit_manager()
+        if platform == 'android':
+            Toast.show(f'Got path:\n{path} ')
+        else:
+            toast(path)
+
+    def exit_manager(self, *args):
+        '''Called when the user reaches the root of the directory tree.'''
+
+        self.file_manager_open = False
+        self.file_manager.close()
+
     def make_pdf_for_session(self, session_name: str, session_sid: str):
         self.photo_path = Path(JsonStore(self.config_json_path).get('camera').get('path'))
-        Logger.info(f"{__name__}: Photo path {self.photo_path}")
+        #self.photo_path = self.photo_path.parent.parent
+        print("in make pdf for ses from store path:", self.photo_path)
+        self.open_file_manager(self.photo_path)
+
+    def make_pdf_for_session1(self, session_name: str, session_sid: str):
+        self.photo_path = Path(JsonStore(self.config_json_path).get('camera').get('path'))
         images_list = list(self.photo_path.joinpath(session_name).glob('*.jpg'))
         Logger.info(f"{__name__}: Image list {images_list}")
         self.page_num = len(images_list) // 4
@@ -153,7 +187,7 @@ class ListSessionsScreenView(BaseScreenView):
         self.pdf_dialog.open()
         print(f"{__name__}: photopath: {self.photo_path}")
         generate_pdf(image_dir=self.photo_path.joinpath(session_name),
-                     dest_path=self.photo_path,
+                     dest_path=self.photo_path.joinpath(session_name),
                      filename=f'session_{session_name}',
                      progress_func=self.update_pdf_progress)
         Toast().show("Saved pdf:\n" + str(self.photo_path))
@@ -177,6 +211,10 @@ class ListSessionsScreenView(BaseScreenView):
         self.ids['pdf_progress_content'] = WeakProxy(self.pdf_content_cls)
         #weakref.ref(self.upload_dialog.content_cls)
         #self.ids['upload_dialog'] = weakref.ref(self.upload_dialog.content_cls)
+
+        self.file_manager = MDFileManager(
+            exit_manager=self.exit_manager, select_path=self.select_path
+        )
 
     def close_pdf_dialog(self, event):
         self.pdf_dialog.dismiss()
