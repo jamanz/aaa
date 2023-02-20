@@ -1,5 +1,5 @@
 *.apk
 *.txt
-gsheets_key.json
+venv
 testu.py
 

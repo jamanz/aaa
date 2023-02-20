@@ -22,6 +22,11 @@ from kivymd.uix.filemanager import MDFileManager
 from kivymd.toast import toast
 from kivy.utils import platform
 
+if platform == 'android':
+    from jnius import autoclass, cast
+    from android.permissions import request_permissions, Permission
+    from androidstorage4kivy import SharedStorage, Chooser
+
 class PdfDialogContent(MDBoxLayout):
     chosen_session = StringProperty()
     list_screen_view = ObjectProperty()
@@ -35,7 +40,6 @@ class SessionItem(OneLineAvatarIconListItem):
     page_id = NumericProperty()
     sessions_page = ObjectProperty()
 
-
     def callback(self, item):
         session_json_name = f"{self.session_name}_{self.session_sid}.json"
         list_sessions_view = self.parent.parent.parent.parent
@@ -48,9 +52,8 @@ class SessionItem(OneLineAvatarIconListItem):
             list_sessions_view.send_path_to_session_screen(Path(list_sessions_view.completed_path, session_json_name))
             list_sessions_view.app.go_next_screen('list sessions screen', 'session screen')
 
-
     def make_pdf_from_session(self, session):
-        #print('make pdf from session ', session)
+        # print('make pdf from session ', session)
         self.sessions_page = self.parent.parent
         print(self.sessions_page)
         self.sessions_page.list_sessions_view.make_pdf_for_session(session.session_name, session.session_sid)
@@ -77,9 +80,9 @@ class SessionsPage(MDRecycleView):
         close_delete_dialog_btn = MDFlatButton(text="Cancel", on_release=self.close_delete_session_dialog)
         confirm_delete_dialog_btn = MDFlatButton(text="Confirm", on_release=self.confirm_delete_session_dialog)
         self.delete_session_dialog = MDDialog(title="Delete",
-                                      type="alert",
-                                      buttons=(close_delete_dialog_btn, confirm_delete_dialog_btn)
-                                      )
+                                              type="alert",
+                                              buttons=(close_delete_dialog_btn, confirm_delete_dialog_btn)
+                                              )
 
     def close_delete_session_dialog(self, event):
         self.delete_session_dialog.dismiss()
@@ -125,22 +128,20 @@ class SessionsPage(MDRecycleView):
             ]
 
 
-
 class ListSessionsScreenView(BaseScreenView):
     app_bar_title = StringProperty('Default Title')
     current_sessions_list_type = StringProperty()
 
     incomplete_path = Path("assets", "data").resolve()
     completed_path = Path("assets", "data", "completed").resolve()
-    #photo_path = Path('photos').resolve()
+    # photo_path = Path('photos').resolve()
     page_num = 0
     config_json_path = Path('./config/imortant_path.json').resolve()
     file_manager_open = False
 
     def update_pdf_progress(self, page_no):
-        #print("ids: ", self.ids.pdf_dialog_content.ids)
-        from kivymd.uix.progressbar import MDProgressBar
-        val = 100*page_no/self.page_num
+        # print("ids: ", self.ids.pdf_dialog_content.ids)
+        val = 100 * page_no / self.page_num
         print("pdf_progress val old: ", self.ids.pdf_progress_content.ids.progress_bar_id.value)
         self.ids.pdf_progress_content.ids.progress_bar_id.value = int(val)
         print("pdf_progress val new: ", self.ids.pdf_progress_content.ids.progress_bar_id.value)
@@ -148,7 +149,6 @@ class ListSessionsScreenView(BaseScreenView):
     def open_file_manager(self, path):
         self.file_manager.show(os.path.expanduser(str(path)))  # output manager to the screen
         self.file_manager_open = True
-
 
     def select_path(self, path: str):
         '''
@@ -170,13 +170,14 @@ class ListSessionsScreenView(BaseScreenView):
         self.file_manager_open = False
         self.file_manager.close()
 
-    def make_pdf_for_session(self, session_name: str, session_sid: str):
+    def make_pdf_for_session1(self, session_name: str, session_sid: str):
         self.photo_path = Path(JsonStore(self.config_json_path).get('camera').get('path'))
-        #self.photo_path = self.photo_path.parent.parent
+        # self.photo_path = self.photo_path.parent.parent
         print("in make pdf for ses from store path:", self.photo_path)
         self.open_file_manager(self.photo_path)
 
-    def make_pdf_for_session1(self, session_name: str, session_sid: str):
+    def make_pdf_for_session(self, session_name: str, session_sid: str):
+        self.pdf_dialog.open()
         self.photo_path = Path(JsonStore(self.config_json_path).get('camera').get('path'))
         images_list = list(self.photo_path.joinpath(session_name).glob('*.jpg'))
         Logger.info(f"{__name__}: Image list {images_list}")
@@ -184,13 +185,37 @@ class ListSessionsScreenView(BaseScreenView):
         if len(images_list) % 4 != 0:
             self.page_num += 1
 
-        self.pdf_dialog.open()
         print(f"{__name__}: photopath: {self.photo_path}")
-        generate_pdf(image_dir=self.photo_path.joinpath(session_name),
-                     dest_path=self.photo_path.joinpath(session_name),
-                     filename=f'session_{session_name}',
-                     progress_func=self.update_pdf_progress)
-        Toast().show("Saved pdf:\n" + str(self.photo_path))
+        dest_path = generate_pdf(image_dir=self.photo_path.joinpath(session_name),
+                                 dest_path=self.photo_path.joinpath(session_name),
+                                 filename=f'session_{session_name}',
+                                 progress_func=self.update_pdf_progress)
+        Toast().show("Saved pdf:\n" + str(dest_path))
+
+        if platform == 'android':
+            # Request permissions to read external storage
+            request_permissions([Permission.READ_EXTERNAL_STORAGE])
+            ss = SharedStorage()
+
+            # Get the Java classes for Intent and Uri
+            Intent = autoclass('android.content.Intent')
+            Uri = autoclass('android.net.Uri')
+
+            # Set the path to the PDF file you want to open
+            path = str(dest_path)
+            share_path = ss.copy_to_shared(path)
+            print('Sharepath: ', share_path)
+            # Create an Intent to open the PDF file
+            intent = Intent(Intent.ACTION_VIEW)
+            # intent.setDataAndType(Uri.parse(share_path), "application/pdf")
+            intent.setDataAndType(share_path, "application/pdf")
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+
+            # Start the Activity to open the PDF file
+            current_activity = cast('android.app.Activity', autoclass('org.kivy.android.PythonActivity').mActivity)
+            current_activity.startActivity(intent)
+
+
 
     def delete_session(self, session_sid: str):
         self.model.delete_session(session_sid)
@@ -203,14 +228,14 @@ class ListSessionsScreenView(BaseScreenView):
         self.pdf_content_cls = PdfDialogContent()
         self.pdf_content_cls.list_screen_view = self
         self.pdf_dialog = MDDialog(title=f'Making PDF',
-                                      anchor_x="center",
-                                      type="custom",
-                                      content_cls=self.pdf_content_cls,
-                                      buttons=([confirm_pdf_btn])
-                                      )
+                                   anchor_x="center",
+                                   type="custom",
+                                   content_cls=self.pdf_content_cls,
+                                   buttons=([confirm_pdf_btn])
+                                   )
         self.ids['pdf_progress_content'] = WeakProxy(self.pdf_content_cls)
-        #weakref.ref(self.upload_dialog.content_cls)
-        #self.ids['upload_dialog'] = weakref.ref(self.upload_dialog.content_cls)
+        # weakref.ref(self.upload_dialog.content_cls)
+        # self.ids['upload_dialog'] = weakref.ref(self.upload_dialog.content_cls)
 
         self.file_manager = MDFileManager(
             exit_manager=self.exit_manager, select_path=self.select_path

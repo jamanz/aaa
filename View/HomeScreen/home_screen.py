@@ -115,7 +115,8 @@ class HomeScreenView(BaseScreenView):
             self.ids[log_button_id].is_visible = False
         else:
             for button in nav_buttons_ids:
-                self.ids[button].is_visible = False
+                #self.ids[button].is_visible = False
+                self.ids[button].is_visible = True
             self.ids[log_button_id].is_visible = True
 
     def start_new_session_dialog(self):

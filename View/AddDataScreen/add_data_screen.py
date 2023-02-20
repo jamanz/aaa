@@ -181,13 +181,13 @@ class AddDataScreenView(BaseScreenView):
     def save_record_and_back_to_session_screen(self):
         self.controller.write_record_to_json()
         self.app.go_prev_screen()
-    from kivymd.uix.list import OneLineListItem
+
 
     def show_suggestions(self, list_of_suggestions: list[str]):
         self.suggestion_menu.items = []
         menu_items = [
             {
-                "text": f"[size={sp(14)}]{sugg}[/size]",
+                "text": f"[size={14}]{sugg}[/size]",
                 "_txt_top_pad": "2dp",
                 "viewclass": "OneLineListItem",
                 "height": dp(56),

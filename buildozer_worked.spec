@@ -50,18 +50,20 @@ requirements = python3,pillow,android,kivy==2.1.0,kivymd==1.0.2,
                google-auth-httplib2==0.1.0,
                google-api-core==2.10.0,
                google-auth-oauthlib==0.5.3,
-               android
+               android,kvdroid,androidstorage4kivy
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
 # requirements.source.kivy = ../../kivy
 
 # (str) Presplash of the application
-presplash.filename = %(source.dir)s/assets/TREEZ_LOGO_RGB.png
+#presplash.filename = %(source.dir)s/assets/TREEZ_LOGO_RGB.png
+presplash.filename = %(source.dir)s/assets/images/TREEZ-LOGO-BG.png
 #presplash.color =
 
 # (str) Icon of the application
-icon.filename = %(source.dir)s/assets/TREEZ_LOGO_RGB.png
+#icon.filename = %(source.dir)s/assets/TREEZ_LOGO_RGB.png
+icon.filename = %(source.dir)s/assets/images/TREEZ-LOGO-BG.png
 
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
 orientation = portrait
@@ -107,7 +109,7 @@ android.presplash_color = white
 #icon.adaptive_background.filename = %(source.dir)s/assets/Nofim_Logo_Final.png
 
 # (list) Permissions
-android.permissions = INTERNET, CAMERA
+android.permissions = WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE, INTERNET, CAMERA
 
 # (list) features (adds uses-feature -tags to manifest)
 #android.features = android.hardware.usb.host
@@ -128,7 +130,7 @@ android.permissions = INTERNET, CAMERA
 #android.ndk_api = 28
 
 # (bool) Use --private data storage (True) or --dir public storage (False)
-android.private_storage = True
+#android.private_storage = True
 
 # (str) Android NDK directory (if empty, it will be automatically downloaded.)
 #android.ndk_path =

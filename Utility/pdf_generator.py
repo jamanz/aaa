@@ -80,7 +80,7 @@ def generate_pdf(image_dir, dest_path, filename="generated", progress_func=page_
 
     spacer1 = Spacer(width=0, height=30)
     spacer2 = Spacer(width=0, height=5)
-    paragraph_style = ParagraphStyle(name='caption', alignment=TA_CENTER, fontSize=12)
+    paragraph_style = ParagraphStyle(name='caption', alignment=TA_CENTER, fontSize=10)
 
     frames = []
     frameCount = 2
@@ -137,7 +137,7 @@ def generate_pdf(image_dir, dest_path, filename="generated", progress_func=page_
     print("dest path", dest_path)
     if os.path.exists(dest_path.joinpath(file_path.name)):
         os.remove(dest_path.joinpath(file_path.name))
-    shutil.move(file_path, dest_path)
+    #shutil.move(file_path, dest_path)
     print("File move to, ", dest_path)
-
+    return file_path
 

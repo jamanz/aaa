@@ -32,18 +32,14 @@
 
 <HomeScreenView>:
     size_hint: 1, 1
-#    FloatLayout:
-#        orientation: 'vertical'
-
-    #canvas.before:
-    #    Rectangle:
-    #        source: 'assets/images/TREEZ-LOGO-RGB.png'
-    #        size: [self.size[0]/2, self.size[1]/2]
-    #        pos: [root.pos[0], root.pos[1]]
 
     Image:
-        source: 'assets/images/TREEZ-LOGO-BG.png'
-        size: [self.texture_size[0]/1.5, self.texture_size[1]/1.5]
+        #logo without caption
+        #source: 'assets/images/TREEZ-LOGO-BG.png'
+
+        #logo with
+        source: 'assets/TREEZ_LOGO_RGB.png'
+        size: [self.texture_size[0]/0.8, self.texture_size[1]/0.8]
         pos: [root.pos[0], root.pos[1]+90]
 
     BoxLayout:

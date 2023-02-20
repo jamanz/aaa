@@ -198,7 +198,7 @@ class SessionScreenView(BaseScreenView):
         self.model.send_tree_data_to_photo_screen(self.session_name, tree_name)
         Logger.info(f"{__name__}: platform {platform}")
         if platform == 'android':
-            Logger.info(f"{__name__}: andoid version {api_version}")
+            #Logger.info(f"{__name__}: andoid version {api_version}")
             from android import api_version
             if api_version < 29:
                 Toast().show(f"Photo disabled.\nAndroid version is s{api_version}")
