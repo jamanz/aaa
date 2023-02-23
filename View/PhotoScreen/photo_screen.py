@@ -70,8 +70,11 @@ class PhotoScreenView(BaseScreenView):
                         f"READ: {check_permission(Permission.READ_EXTERNAL_STORAGE)}"
                         )
             # todo: change photo count assign
-            self.photo_count = len(list(pathlib.Path(primary_external_storage_path()).joinpath(
-                                    f'DCIM/Treez/{self.session_name}/').glob(f'{self.tree_name}*jpg')))
+            #self.photo_count = len(list(pathlib.Path('.').joinpath(
+            #                        f'DCIM/{self.session_name}/').glob(f'{self.tree_name}*jpg')))
+            #self.photo_count = len(
+            #    list(pathlib.Path(self.app.app_folder).resolve().joinpath(f'DCIM/{self.session_name}/').glob(f'{self.tree_name}*jpg')))
+            self.photo_count = 0
         else:
             self.photo_count = len(
                 list(pathlib.Path(self.app.app_folder).joinpath(self.session_name).glob(f'{self.tree_name}*jpg')))
@@ -190,15 +193,17 @@ class ButtonsLayout1(RelativeLayout):
         # wait for capture_photo callback
         while not self.photo_screen_view.photo_ready:
             continue
-        #Clock.schedule_once(self.show_photo_image, 0.1)
-        self.show_photo_image(0.1)
+        Clock.schedule_once(self.show_photo_image, 0.1)
+        # self.show_photo_image(0.1)
         self.photo_screen_view.photo_ready = False
 
     def show_photo_image(self, dt):
+
         self.file_path = str(self.photo_screen_view.file_basic_path)
         Logger.info(f"{__name__}: show photo image called: file path: {self.file_path}")
 
         self.image_preview = ImgPrev()
+        self.image_preview.remove_from_cache()
         self.image_preview.set_img_source(self.file_path) # self.get_path_from_media_store('kinky')
         self.photo_screen_view.ids.img_preview.add_widget(self.image_preview)
         #Logger.info(f"{__name__}:  path from MediaStore")
@@ -266,7 +271,7 @@ class ButtonsLayout1(RelativeLayout):
             shutil.rmtree(path)  # remove dir and all contains
         else:
             raise ValueError("file {} is not a file or dir.".format(path))
-
+        self.image_preview.remove_from_cache()
         self.photo_screen_view.ids.img_preview.remove_widget(self.image_preview)
         self.photo_screen_view.photoReview = False
 

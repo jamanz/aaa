@@ -82,9 +82,9 @@ class addDataCard(MDCard, RoundedRectangularElevationBehavior): #RectangularElev
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.ids.health_segment.custom_panel_width = "120dp"
+        self.ids.health_segment.custom_panel_width = "110dp"
 
-        self.ids.location_segment.custom_panel_width = "120dp"
+        self.ids.location_segment.custom_panel_width = "110dp"
         self.ids.crown_cone_segment.custom_panel_width = "60dp"
 
     def fill_card_with_record(self, record: dict):

@@ -172,7 +172,8 @@ class TreeItemsPage(MDRecycleView):
         self.data = [
             {'text': f"#{record.get('Tree Number')}",
              'tree_name': record.get('Tree Number'),
-             'secondary_text': "Photos [b]0/2[/b]",
+             #'secondary_text': "Photos [b]0/2[/b]",
+             'secondary_text': f"{record.get('Tree specie')}",
              'id': int(i),
              #'_height': dp(30),
 

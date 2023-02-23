@@ -11,6 +11,22 @@ import glob
 import pathlib
 import sys
 import shutil
+from kivy.utils import platform
+
+
+from reportlab.pdfgen.canvas import Canvas
+class RotatedImage(Image):
+
+    def wrap(self,availWidth, availHeight):
+        h, w = Image.wrap(self,availHeight,availWidth)
+        return w, h
+
+    def draw(self):
+        self.canv.rotate(-90)
+        self.canv.translate(-300, 0)
+        Image.draw(self)
+
+
 
 
 def header(canvas, doc, content):
@@ -41,8 +57,10 @@ def header_and_footer(canvas, doc, header_content, footer_content):
 def get_image_name_from_path(path: str):
     return pathlib.Path(path).stem
 
+
 def page_call(page_no):
     print(f"page {page_no} generated")
+
 
 
 def generate_pdf(image_dir, dest_path, filename="generated", progress_func=page_call):
@@ -72,14 +90,14 @@ def generate_pdf(image_dir, dest_path, filename="generated", progress_func=page_
             bottomMargin = 2.5 * cm)
 
     pdf.setPageCallBack(progress_func)
-    main_frame = Frame(pdf.leftMargin, pdf.bottomMargin, pdf.width, pdf.height, id='normal')
+    #main_frame = Frame(pdf.leftMargin, pdf.bottomMargin, pdf.width, pdf.height, id='normal')
 
     story = []
 
     fot = partial(header_and_footer, header_content=header_content, footer_content=footer_content)
 
-    spacer1 = Spacer(width=0, height=30)
-    spacer2 = Spacer(width=0, height=5)
+    spacer1 = Spacer(width=0, height=20)
+    spacer2 = Spacer(width=0, height=3)
     paragraph_style = ParagraphStyle(name='caption', alignment=TA_CENTER, fontSize=10)
 
     frames = []
@@ -91,8 +109,10 @@ def generate_pdf(image_dir, dest_path, filename="generated", progress_func=page_
     if len(images) % 4 != 0:
         pages_count += 1
     for page_ind in range(pages_count):
-        imgs = [Image(f"{i}", width=180, height=300) for i in list(row_generation(images))[page_ind]]
-        print('img ', imgs)
+        if platform == 'android':
+            imgs = [RotatedImage(f"{i}", width=300, height=180) for i in list(row_generation(images))[page_ind]]
+        else:
+            imgs = [Image(f"{i}", width=300, height=180) for i in list(row_generation(images))[page_ind]]
 
         captions = [
             Paragraph(get_image_name_from_path(i.filename), paragraph_style) for i in imgs
@@ -118,9 +138,13 @@ def generate_pdf(image_dir, dest_path, filename="generated", progress_func=page_
                         ])
 
         frames.extend([
-                Frame(pdf.leftMargin, pdf.topMargin - 10, 200, frameHeight, id=f'normal1_{page_ind}'),
-                Frame(pdf.leftMargin + 200 + 150, pdf.topMargin - 10, frameWidth - 200, frameHeight, id=f'normal2_{page_ind}'),
+                Frame(pdf.leftMargin, 0, 200, frameHeight, id=f'normal1_{page_ind}'),
+                Frame(pdf.leftMargin + 200 + 150, 0, frameWidth - 200, frameHeight, id=f'normal2_{page_ind}'),
             ])
+        # frames.extend([
+        #         Frame(pdf.leftMargin, pdf.topMargin - 10, 200, frameHeight, id=f'normal1_{page_ind}'),
+        #         Frame(pdf.leftMargin + 200 + 150, pdf.topMargin - 10, frameWidth - 200, frameHeight, id=f'normal2_{page_ind}'),
+        #     ])
 
     pdf.addPageTemplates([
         PageTemplate(id='id1', frames=frames[:2], onPage=fot),

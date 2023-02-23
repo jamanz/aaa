@@ -185,9 +185,10 @@ class AddDataScreenView(BaseScreenView):
 
     def show_suggestions(self, list_of_suggestions: list[str]):
         self.suggestion_menu.items = []
+        size = "14sp"
         menu_items = [
             {
-                "text": f"[size={14}]{sugg}[/size]",
+                "text": f"[size={size}]{sugg}[/size]",
                 "_txt_top_pad": "2dp",
                 "viewclass": "OneLineListItem",
                 "height": dp(56),
@@ -240,12 +241,14 @@ class AddDataScreenView(BaseScreenView):
         self.feature_value_len = len(feature_value)
 
     def on_pre_enter(self, *args):
+        Logger.info(f"{__name__}: on_pre_enter")
         self.dataCard.ids.input_field_id.disabled = True
         self.feature_value_len = 0
-
+        Window.softinput_mode = ''
         self.dataCard.ids.input_field_id.text = ''
         self.dataCard.ids.input_field_id.hint_text = "Chose feature to input"
         self.dataCard.ids.input_field_id.helper_text = ''
+        self.ids.submit_record_dialog.ids.comments_id.text = ''
 
         self.feature_button_instance_map = { 'Tree Number': None,
                                         'Tree specie': None,
