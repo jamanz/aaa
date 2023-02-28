@@ -16,7 +16,7 @@ from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from functools import partial
-
+from androidstorage4kivy import SharedStorage
 import os, shutil
 from kivy.storage.jsonstore import JsonStore
 from kivy import user_home_dir, kivy_home_dir, kivy_base_dir, dirname, kivy_data_dir
@@ -26,12 +26,14 @@ from kivy.graphics import Rectangle
 from kivy.uix.image import AsyncImage, Image
 
 
+
 if platform == 'android':
     from jnius import autoclass, cast
     from android.storage import primary_external_storage_path
     from android import mActivity
     from android.permissions import request_permissions, Permission, check_permission
     from kvdroid.tools.path import sdcard
+    Environment = autoclass('android.os.Environment')
 
 class PhotoScreenView(BaseScreenView):
     session_name = StringProperty()
@@ -46,11 +48,9 @@ class PhotoScreenView(BaseScreenView):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         Logger.info(f"{__name__}: Inited")
-        self.config_json_path = pathlib.Path('./config/imortant_path.json').resolve()
+        #self.config_json_path = pathlib.Path('./config/imortant_path.json').resolve()
+        self.ss = SharedStorage()
         self.file_basic_path = ''
-
-    def set_tree_name(self, tree_name):
-        self.tree_name = tree_name
 
     def on_pre_enter(self, *args):
         self.ids.preview.connect_camera(filepath_callback=self.capture_path)
@@ -89,17 +89,18 @@ class PhotoScreenView(BaseScreenView):
 
     def capture_path(self, file_path):
         self.file_basic_path = pathlib.Path(file_path).resolve()
-        file_name = self.file_basic_path.stem
+        self.file_name = self.file_basic_path.stem
         suf = self.file_basic_path.suffix
-        session_name = self.file_basic_path.parent.name
+        self.session_name = self.file_basic_path.parent.name
 
         Logger.info(
             f"{__name__}: Photo maked, file callback, "
             f"basic path-> {self.file_basic_path}, "
-            f"session name: {session_name},"
-            f" filename: {file_name}")
+            f"session name: {self.session_name},"
+            f" filename: {self.file_name}")
 
-        self.saved_filename = self.file_basic_path.name
+        #self.saved_filename = self.file_basic_path.name
+
 
         # file path shaping for shared storage !Does not work on Android > 10
         # if platform == 'android':
@@ -114,8 +115,8 @@ class PhotoScreenView(BaseScreenView):
             f"{__name__}: capture path ended with default fp: {self.file_basic_path}, saved fn: {self.saved_filename}")
 
         # Write default image path for use in list_session_screen
-        self.config_json = JsonStore(str(self.config_json_path))
-        self.config_json.put("camera", path=str(self.file_basic_path.parent.parent))
+        #self.config_json = JsonStore(str(self.config_json_path))
+        #self.config_json.put("camera", path=str(self.file_basic_path.parent.parent))
 
     def on_size(self, layout, size):
         if Window.width < Window.height:
@@ -176,28 +177,30 @@ class ButtonsLayout1(RelativeLayout):
     def photo(self):
         # first function that called when photo button is clicked
         self.photo_screen_view = self.parent.parent
-        tree_name = self.photo_screen_view.tree_name
-        session_name = self.photo_screen_view.session_name
+        self.tree_name = self.photo_screen_view.tree_name
+        self.session_name = self.photo_screen_view.session_name
         photo_count = self.photo_screen_view.photo_count
 
         #Logger.info(f"{__name__:} -> {self.parent.parent.ids}")
         Logger.info(f"{__name__}: self.photo assigned from file basic path, filepath {self.file_path}")
-        if photo_count == 0:
-            name = f"{tree_name}"
-        else:
-            name = f"{tree_name}_{photo_count}"
+        #if photo_count == 0:
+        #    name = f"{tree_name}"
+        #else:
+        #    name = f"{tree_name}_{photo_count}"
 
         # location "private" is app_path/... "shared" is storage/emulated/0/DCIM/appname/
-        self.photo_screen_view.ids.preview.capture_photo(location='private', subdir=session_name, name=name)
+        self.photo_screen_view.ids.preview.capture_photo(location='private',
+                                                         subdir=self.session_name,
+                                                         name=self.tree_name)
 
         # wait for capture_photo callback
         while not self.photo_screen_view.photo_ready:
             continue
-        Clock.schedule_once(self.show_photo_image, 0.1)
-        # self.show_photo_image(0.1)
+        self.show_photo_image()
+
         self.photo_screen_view.photo_ready = False
 
-    def show_photo_image(self, dt):
+    def show_photo_image(self):
 
         self.file_path = str(self.photo_screen_view.file_basic_path)
         Logger.info(f"{__name__}: show photo image called: file path: {self.file_path}")
@@ -259,18 +262,30 @@ class ButtonsLayout1(RelativeLayout):
         self.image_preview.reload()
         self.photo_screen_view.ids.img_preview.remove_widget(self.image_preview)
         self.photo_screen_view.photoReview = False
+
+        self.shared_path = self.ss.copy_to_shared(self.file_path,
+                                                  collection=Environment.DIRECTORY_DCIM,
+                                                  filepath=f'{self.session_name}/{self.file_name}')
+        Logger.info(f"{__name__}: shared path is {self.shared_path}, uri is {self.ss._get_uri(self.shared_path)}")
+
+        self.remove_photo_from_private_storage(self.file_path)
+
         Toast().show("Saved as:\n" + self.file_path)
 
-    def reject_photo(self):
-        Logger.info(f"{__name__}: Photo {self.file_path} rejected")
-
-        path = self.file_path
+    def remove_photo_from_private_storage(self, path):
         if os.path.isfile(path) or os.path.islink(path):
             os.remove(path)  # remove the file
         elif os.path.isdir(path):
             shutil.rmtree(path)  # remove dir and all contains
         else:
             raise ValueError("file {} is not a file or dir.".format(path))
+        return True
+
+    def reject_photo(self):
+        Logger.info(f"{__name__}: Photo {self.file_path} rejected")
+
+        self.remove_photo_from_private_storage(self.file_path)
+
         self.image_preview.remove_from_cache()
         self.photo_screen_view.ids.img_preview.remove_widget(self.image_preview)
         self.photo_screen_view.photoReview = False

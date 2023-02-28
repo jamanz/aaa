@@ -27,6 +27,8 @@ if platform == 'android':
     from jnius import autoclass, cast
     from android.permissions import request_permissions, Permission
     from androidstorage4kivy import SharedStorage, Chooser
+    Environment = autoclass('android.os.Environment')
+    ss = SharedStorage()
 
 
 class PdfDialogContent(MDBoxLayout):
@@ -80,6 +82,7 @@ class PdfDialogContent(MDBoxLayout):
                 current_activity.startActivity(intent)
             self.ids.progress_bar_id.value = 10
             self.list_screen_view.pdf_dialog.dismiss()
+
 
 class SessionItem(OneLineAvatarIconListItem):
     session_name = StringProperty()
@@ -190,42 +193,49 @@ class ListSessionsScreenView(BaseScreenView):
 
 
 
-    def open_file_manager(self, path):
-        self.file_manager.show(os.path.expanduser(str(path)))  # output manager to the screen
-        self.file_manager_open = True
+    # def open_file_manager(self, path):
+    #     self.file_manager.show(os.path.expanduser(str(path)))  # output manager to the screen
+    #     self.file_manager_open = True
 
-    def select_path(self, path: str):
-        '''
-        It will be called when you click on the file name
-        or the catalog selection button.
+    # def select_path(self, path: str):
+    #     '''
+    #     It will be called when you click on the file name
+    #     or the catalog selection button.
+    #
+    #     :param path: path to the selected directory or file;
+    #     '''
+    #
+    #     self.exit_manager()
+    #     if platform == 'android':
+    #         Toast.show(f'Got path:\n{path} ')
+    #     else:
+    #         toast(path)
+    #
+    # def exit_manager(self, *args):
+    #     '''Called when the user reaches the root of the directory tree.'''
+    #
+    #     self.file_manager_open = False
+    #     self.file_manager.close()
 
-        :param path: path to the selected directory or file;
-        '''
 
-        self.exit_manager()
-        if platform == 'android':
-            Toast.show(f'Got path:\n{path} ')
-        else:
-            toast(path)
-
-    def exit_manager(self, *args):
-        '''Called when the user reaches the root of the directory tree.'''
-
-        self.file_manager_open = False
-        self.file_manager.close()
-
-    def make_pdf_for_session1(self, session_name: str, session_sid: str):
-        self.photo_path = Path(JsonStore(self.config_json_path).get('camera').get('path'))
-        # self.photo_path = self.photo_path.parent.parent
-        print("in make pdf for ses from store path:", self.photo_path)
-        self.open_file_manager(self.photo_path)
+    # def make_pdf_for_session1(self, session_name: str, session_sid: str):
+    #     self.photo_path = Path(JsonStore(self.config_json_path).get('camera').get('path'))
+    #     # self.photo_path = self.photo_path.parent.parent
+    #     print("in make pdf for ses from store path:", self.photo_path)
+    #     self.open_file_manager(self.photo_path)
 
     def make_pdf_for_session(self, session_name: str, session_sid: str):
-
-        self.photo_path = Path(JsonStore(self.config_json_path).get('camera').get('path'))
-
+        # self.photo_path = Path(JsonStore(self.config_json_path).get('camera').get('path'))
+        self.photo_path = Path(Environment.DIRECTORY_DCIM).joinpath(f"Treez")
         images_list = list(self.photo_path.joinpath(session_name).glob('*.jpg'))
         Logger.info(f"{__name__}: Image list {images_list}")
+        Logger.info(f"{__name__}: cache dir: {ss.get_cache_dir()}")
+        private_paths = []
+        for image in images_list:
+            private_paths.append(ss.copy_from_shared(image))
+
+        Logger.info(f"{__name__}: cache dir after: {ss.get_cache_dir()}, pp: {private_paths}")
+
         self.page_num = len(images_list) // 4
         if len(images_list) % 4 != 0:
             self.page_num += 1

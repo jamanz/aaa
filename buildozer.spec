@@ -109,7 +109,8 @@ android.presplash_color = white
 #icon.adaptive_background.filename = %(source.dir)s/assets/Nofim_Logo_Final.png
 
 # (list) Permissions
-android.permissions = WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE, INTERNET, CAMERA
+android.permissions = READ_MEDIA_IMAGES, ACCESS_MEDIA_LOCATION, WRITE_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE, MANAGE_EXTERNAL_STORAGE, INTERNET, CAMERA
+
 
 # (list) features (adds uses-feature -tags to manifest)
 #android.features = android.hardware.usb.host
