@@ -71,13 +71,12 @@
 
         MDFillRoundFlatButton:
             id: login_btn
-            text: "Auth in Google"
+            text: "Google login" if self.is_visible else "Google logout"
             is_visible: True
-            opacity: 1 if self.is_visible else 0
-            disabled: not self.is_visible
+            #opacity: 1 if self.is_visible else 0
+            #disabled: not self.is_visible
             size_hint: 1, .2
-            on_press:
-                root.start_login()
+            on_press: root.start_login() if self.is_visible else root.start_logout()
 
 
 <NavigationButton>:

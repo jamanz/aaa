@@ -96,9 +96,9 @@ def generate_pdf(image_dir, dest_path, filename="generated", progress_func=page_
 
     fot = partial(header_and_footer, header_content=header_content, footer_content=footer_content)
 
-    spacer1 = Spacer(width=0, height=20)
-    spacer2 = Spacer(width=0, height=3)
-    paragraph_style = ParagraphStyle(name='caption', alignment=TA_CENTER, fontSize=10)
+    spacer1 = Spacer(width=0, height=12)
+    spacer2 = Spacer(width=0, height=1)
+    paragraph_style = ParagraphStyle(name='caption', alignment=TA_CENTER, fontSize=7)
 
     frames = []
     frameCount = 2

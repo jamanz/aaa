@@ -16,7 +16,7 @@ from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from functools import partial
-from androidstorage4kivy import SharedStorage
+
 import os, shutil
 from kivy.storage.jsonstore import JsonStore
 from kivy import user_home_dir, kivy_home_dir, kivy_base_dir, dirname, kivy_data_dir
@@ -33,6 +33,7 @@ if platform == 'android':
     from android import mActivity
     from android.permissions import request_permissions, Permission, check_permission
     from kvdroid.tools.path import sdcard
+    from androidstorage4kivy import SharedStorage
     Environment = autoclass('android.os.Environment')
 
 class PhotoScreenView(BaseScreenView):
@@ -49,8 +50,12 @@ class PhotoScreenView(BaseScreenView):
         super().__init__(**kwargs)
         Logger.info(f"{__name__}: Inited")
         #self.config_json_path = pathlib.Path('./config/imortant_path.json').resolve()
-        self.ss = SharedStorage()
+        if platform == 'android':
+            self.ss = SharedStorage()
         self.file_basic_path = ''
+
+    def set_tree_name(self, tree_name):
+        self.tree_name = tree_name
 
     def on_pre_enter(self, *args):
         self.ids.preview.connect_camera(filepath_callback=self.capture_path)
@@ -259,18 +264,20 @@ class ButtonsLayout1(RelativeLayout):
     def save_photo(self):
         Logger.info(f"{__name__}: Photo {self.file_path} saved")
         self.photo_screen_view.photo_count += 1
-        self.image_preview.reload()
-        self.photo_screen_view.ids.img_preview.remove_widget(self.image_preview)
-        self.photo_screen_view.photoReview = False
 
-        self.shared_path = self.ss.copy_to_shared(self.file_path,
+        #self.image_preview.reload()
+
+        self.shared_path = self.photo_screen_view.ss.copy_to_shared(self.file_path,
                                                   collection=Environment.DIRECTORY_DCIM,
-                                                  filepath=f'{self.session_name}/{self.file_name}')
-        Logger.info(f"{__name__}: shared path is {self.shared_path}, uri is {self.ss._get_uri(self.shared_path)}")
-
+                                                  filepath=f'{self.session_name}/{self.photo_screen_view.file_name}')
+        Logger.info(f"{__name__}: shared path is {self.shared_path}, uri is {self.photo_screen_view.ss._get_uri(self.shared_path)}")
         self.remove_photo_from_private_storage(self.file_path)
+        Logger.info(f"{__name__}: Photo in private path is removed {self.file_path} ")
+        self.image_preview.remove_from_cache()
+        self.photo_screen_view.ids.img_preview.remove_widget(self.image_preview)
 
-        Toast().show("Saved as:\n" + self.file_path)
+        Toast().show("Photo saved")
+        self.photo_screen_view.photoReview = False
 
     def remove_photo_from_private_storage(self, path):
         if os.path.isfile(path) or os.path.islink(path):

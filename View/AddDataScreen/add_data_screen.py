@@ -103,9 +103,11 @@ class AddDataScreenView(BaseScreenView):
 
     def close_submit_dialog(self, event):
         self.submit_dialog.dismiss()
+        Window.softinput_mode = ''
 
     def ok_submit_dialog(self, event):
-        self.ids.submit_record_dialog.set_comment(self.ids.submit_record_dialog.ids.comments_id.text)
+        if self.ids.submit_record_dialog.ids.comments_id.text:
+            self.ids.submit_record_dialog.set_comment(self.ids.submit_record_dialog.ids.comments_id.text)
         self.save_record_and_back_to_session_screen()
         self.submit_dialog.dismiss()
 
@@ -119,6 +121,7 @@ class AddDataScreenView(BaseScreenView):
 
     def close_record_preview_dialog(self, event):
         self.record_preview_dialog.dismiss()
+
 
     def show_preview(self):
         self.ids.preview_dialog.update_values(self.controller.get_record())
@@ -179,7 +182,9 @@ class AddDataScreenView(BaseScreenView):
                 self.dataCard.ids[k].md_bg_color = self.app.theme_cls.accent_color
 
     def save_record_and_back_to_session_screen(self):
-        self.controller.write_record_to_json()
+        if self.controller.new_record_dict.get('Tree Number'):
+            self.controller.write_record_to_json()
+        self.controller.clear_record()
         self.app.go_prev_screen()
 
 

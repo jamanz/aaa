@@ -14,7 +14,7 @@ import time
 import calendar
 from Utility.google_sheets import (next_available_row, features_name_to_sheets_columns_map,
                                    auth_in_gsheets, receive_client_sheet_by_id, get_g_sheet_client_sheet_list,
-                                   make_oauth, get_worksheet)
+                                   make_oauth, get_worksheet, logout)
 from kivy.clock import Clock
 
 class HomeScreenModel(BaseScreenModel):
@@ -47,6 +47,9 @@ class HomeScreenModel(BaseScreenModel):
             if observer.name == "session screen":
                 self.get_worksheet()
                 observer.model.receive_worksheet(self.chosen_worksheet)
+
+    def logout_in_google(self):
+        logout()
 
     def auth_in_google(self):
         self.google_client = make_oauth()

@@ -11,6 +11,8 @@ from kivy.clock import Clock
 from functools import partial
 from kivymd.uix.recycleview import MDRecycleView
 import os
+from os.path import exists
+import shutil
 from kivy.core.window import Window
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
@@ -50,8 +52,8 @@ class PdfDialogContent(MDBoxLayout):
 
 
     def on_pdf_dialog_open(self, *args):
-        dest_path = generate_pdf(image_dir=self.list_screen_view.photo_path.joinpath(self.session_name),
-                                 dest_path=self.list_screen_view.photo_path.joinpath(self.session_name),
+        dest_path = generate_pdf(image_dir=self.list_screen_view.photo_path,
+                                 dest_path=self.list_screen_view.photo_path,
                                  filename=f'session_{self.session_name}',
                                  progress_func=self.update_pdf_progress)
         Toast().show("Saved pdf:\n" + str(dest_path))
@@ -61,8 +63,6 @@ class PdfDialogContent(MDBoxLayout):
             if platform == 'android':
                 # Request permissions to read external storage
                 request_permissions([Permission.READ_EXTERNAL_STORAGE])
-                ss = SharedStorage()
-
                 # Get the Java classes for Intent and Uri
                 Intent = autoclass('android.content.Intent')
                 Uri = autoclass('android.net.Uri')
@@ -82,7 +82,7 @@ class PdfDialogContent(MDBoxLayout):
                 current_activity.startActivity(intent)
             self.ids.progress_bar_id.value = 10
             self.list_screen_view.pdf_dialog.dismiss()
-
+            self.list_screen_view.clean_cache_after_generation()
 
 class SessionItem(OneLineAvatarIconListItem):
     session_name = StringProperty()
@@ -193,29 +193,29 @@ class ListSessionsScreenView(BaseScreenView):
 
 
 
-    # def open_file_manager(self, path):
-    #     self.file_manager.show(os.path.expanduser(str(path)))  # output manager to the screen
-    #     self.file_manager_open = True
+    def open_file_manager(self, path):
+        self.file_manager.show(os.path.expanduser(str(path)))  # output manager to the screen
+        self.file_manager_open = True
 
-    # def select_path(self, path: str):
-    #     '''
-    #     It will be called when you click on the file name
-    #     or the catalog selection button.
-    #
-    #     :param path: path to the selected directory or file;
-    #     '''
-    #
-    #     self.exit_manager()
-    #     if platform == 'android':
-    #         Toast.show(f'Got path:\n{path} ')
-    #     else:
-    #         toast(path)
-    #
-    # def exit_manager(self, *args):
-    #     '''Called when the user reaches the root of the directory tree.'''
-    #
-    #     self.file_manager_open = False
-    #     self.file_manager.close()
+    def select_path(self, path: str):
+        '''
+        It will be called when you click on the file name
+        or the catalog selection button.
+
+        :param path: path to the selected directory or file;
+        '''
+
+        self.exit_manager()
+        if platform == 'android':
+            Toast.show(f'Got path:\n{path} ')
+        else:
+            toast(path)
+
+    def exit_manager(self, *args):
+        '''Called when the user reaches the root of the directory tree.'''
+
+        self.file_manager_open = False
+        self.file_manager.close()
 
 
     # def make_pdf_for_session1(self, session_name: str, session_sid: str):
@@ -224,22 +224,83 @@ class ListSessionsScreenView(BaseScreenView):
     #     print("in make pdf for ses from store path:", self.photo_path)
     #     self.open_file_manager(self.photo_path)
 
+
+    def clean_cache_after_generation(self):
+        temp = ss.get_cache_dir()
+        if temp and exists(temp):
+            shutil.rmtree(temp)
+        Logger.info(f"{__name__}: Cache cleared")
+
+
+    def get_path_from_media_store(self, ses_name):
+        if platform == 'android':
+            # Request permissions to read external storage
+            request_permissions([Permission.READ_EXTERNAL_STORAGE])
+
+            # Get the Java class for MediaStore and its sub-classes
+            Environment = autoclass('android.os.Environment')
+            MediaStore = autoclass('android.provider.MediaStore')
+            Images = autoclass('android.provider.MediaStore$Images')
+            MediaStoreImagesMedia = autoclass('android.provider.MediaStore$Images$Media')
+
+            # Set the image directory you want to scan
+            path = Environment.getExternalStoragePublicDirectory(
+            Environment.DIRECTORY_DCIM).getPath() + "/Treez" + f"/{ses_name}"
+
+            # Get the content resolver
+            content_resolver = cast('android.content.ContextWrapper',
+                                autoclass('org.kivy.android.PythonActivity').mActivity).getContentResolver()
+
+            # Define the columns to retrieve
+            projection = [MediaStoreImagesMedia._ID, MediaStoreImagesMedia.DATA]
+
+            # Query the MediaStore for images in the specified directory
+            cursor = content_resolver.query(
+                                MediaStoreImagesMedia.EXTERNAL_CONTENT_URI,
+                                projection,
+                                MediaStoreImagesMedia.DATA + " like ? ",
+                                ["%" + path + "%"],
+                                MediaStoreImagesMedia.DEFAULT_SORT_ORDER
+            )
+            pth_list = []
+            # Print the image paths
+            if cursor is not None and cursor.moveToFirst():
+                while not cursor.isAfterLast():
+                    image_path = cursor.getString(cursor.getColumnIndexOrThrow(MediaStoreImagesMedia.DATA))
+                    pth_list.append(image_path)
+                    print(image_path)
+                    cursor.moveToNext()
+
+                cursor.close()
+            return pth_list
+
     def make_pdf_for_session(self, session_name: str, session_sid: str):
         # self.photo_path = Path(JsonStore(self.config_json_path).get('camera').get('path'))
         self.photo_path = Path(Environment.DIRECTORY_DCIM).joinpath(f"Treez")
-        images_list = list(self.photo_path.joinpath(session_name).glob('*.jpg'))
-        Logger.info(f"{__name__}: Image list {images_list}")
+        #images_list = list(self.photo_path.joinpath(session_name).glob('*.jpg'))
+        images_list = self.get_path_from_media_store(session_name)
+        Logger.info(f"{__name__}: Image list from mediastore {images_list}")
         Logger.info(f"{__name__}: cache dir: {ss.get_cache_dir()}")
         private_paths = []
         for image in images_list:
-            private_paths.append(ss.copy_from_shared(image))
+            image_file_name = str(Path(image).name)
+            image_path = self.photo_path.joinpath(f"{session_name}/{image_file_name}")
+            Logger.info(f"{__name__}: current image path is: {image_path}")
+            private_paths.append(ss.copy_from_shared(str(image_path)))
 
-        Logger.info(f"{__name__}: cache dir after: {ss.get_cache_dir()}, pp: {private_paths}")
+        images_list = private_paths
+        try:
+            Logger.info(f"{__name__}: cache dir after: {ss.get_cache_dir()}, pp: {private_paths} "
+                        f"os.dir DCIM: {os.listdir('./DCIM')}"
+                        f"os.dir .: {os.listdir('.')}")
+        except:
+            Logger.info(f"{__name__}: cache dir after: {ss.get_cache_dir()}, , pp: {private_paths}, os.dir gen: {os.listdir('.')}")
 
         self.page_num = len(images_list) // 4
         if len(images_list) % 4 != 0:
             self.page_num += 1
         self.ids.pdf_progress_content.set_pdf_data(images_list, self.page_num, session_name)
+        self.photo_path = ss.get_cache_dir()
         self.pdf_dialog.open()
         print(f"{__name__}: pdf dialog open photopath: {self.photo_path}")
 

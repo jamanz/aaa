@@ -112,12 +112,16 @@ class HomeScreenView(BaseScreenView):
         if check_auth():
             for button in nav_buttons_ids:
                 self.ids[button].is_visible = True
+            # self.ids[log_button_id].text = 'Google logout'
+            # self.ids[log_button_id].on_press = self.start_logout
             self.ids[log_button_id].is_visible = False
         else:
             for button in nav_buttons_ids:
-                #self.ids[button].is_visible = False
-                self.ids[button].is_visible = True
+                self.ids[button].is_visible = False
+
             self.ids[log_button_id].is_visible = True
+            # self.ids[log_button_id].text = 'Google login'
+            # self.ids[log_button_id].on_press = self.start_login
 
     def start_new_session_dialog(self):
 
@@ -178,6 +182,10 @@ class HomeScreenView(BaseScreenView):
         # cc
         # self.ids['worksheet_choice_dialog'] = WeakProxy(self.worksheet_choice_dialog.content_cls)
         self.auth_dialog.open()
+
+    def start_logout(self):
+        self.model.logout_in_google()
+        self.display_nav_buttons()
 
     def start_login(self):
         # self.app.gl_login()

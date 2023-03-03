@@ -1,3 +1,5 @@
+import shutil
+
 import gspread
 from google.oauth2.service_account import Credentials
 
@@ -92,8 +94,14 @@ def apply_template_to_ws(ws: gspread.Worksheet):
     ws.update("A2:02", [cols_heb])
 
 
+def logout():
+    user_path = cred_path.joinpath('authorized_user.json')
+    if os.path.exists(str(user_path)):
+        os.remove(str(user_path))
+    Logger.info(f'{__name__}: logout successful')
+
 def check_auth():
-    print("CREDPATH: ", cred_path)
+
     if os.path.exists(str(cred_path.joinpath('authorized_user.json'))):
         return True
     return False
@@ -120,7 +128,8 @@ def get_worksheet(client: gspread.Client, ws_name: str):
     except gspread.exceptions.SpreadsheetNotFound:
         client.create(DEFAULT_SPREADSHEET_NAME)
         ss = client.open(DEFAULT_SPREADSHEET_NAME)
-        ss.sheet1.title = ws_name
+        # ss.get_worksheet(0).title = ws_name
+        ss.add_worksheet(title=ws_name, rows=200, cols=20)
         apply_template_to_ws(ss.worksheet(ws_name))
         return ss.worksheet(ws_name)
 
