@@ -1,0 +1,4 @@
+#: home_screen.kv:56
+msgid "Create new session"
+msgstr "צור הפעלה חדשה"
+

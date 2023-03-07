@@ -80,9 +80,12 @@ class PdfDialogContent(MDBoxLayout):
                 # Start the Activity to open the PDF file
                 current_activity = cast('android.app.Activity', autoclass('org.kivy.android.PythonActivity').mActivity)
                 current_activity.startActivity(intent)
+
+                self.list_screen_view.clean_cache_after_generation()
+
             self.ids.progress_bar_id.value = 10
             self.list_screen_view.pdf_dialog.dismiss()
-            self.list_screen_view.clean_cache_after_generation()
+
 
 class SessionItem(OneLineAvatarIconListItem):
     session_name = StringProperty()
@@ -276,31 +279,44 @@ class ListSessionsScreenView(BaseScreenView):
 
     def make_pdf_for_session(self, session_name: str, session_sid: str):
         # self.photo_path = Path(JsonStore(self.config_json_path).get('camera').get('path'))
-        self.photo_path = Path(Environment.DIRECTORY_DCIM).joinpath(f"Treez")
-        #images_list = list(self.photo_path.joinpath(session_name).glob('*.jpg'))
-        images_list = self.get_path_from_media_store(session_name)
-        Logger.info(f"{__name__}: Image list from mediastore {images_list}")
-        Logger.info(f"{__name__}: cache dir: {ss.get_cache_dir()}")
-        private_paths = []
-        for image in images_list:
-            image_file_name = str(Path(image).name)
-            image_path = self.photo_path.joinpath(f"{session_name}/{image_file_name}")
-            Logger.info(f"{__name__}: current image path is: {image_path}")
-            private_paths.append(ss.copy_from_shared(str(image_path)))
+        if platform == 'android':
 
-        images_list = private_paths
-        try:
-            Logger.info(f"{__name__}: cache dir after: {ss.get_cache_dir()}, pp: {private_paths} "
-                        f"os.dir DCIM: {os.listdir('./DCIM')}"
-                        f"os.dir .: {os.listdir('.')}")
-        except:
-            Logger.info(f"{__name__}: cache dir after: {ss.get_cache_dir()}, , pp: {private_paths}, os.dir gen: {os.listdir('.')}")
+            self.photo_path = Path(Environment.DIRECTORY_DCIM).joinpath(f"Treez")
+             #images_list = list(self.photo_path.joinpath(session_name).glob('*.jpg'))
+            images_list = self.get_path_from_media_store(session_name)
+            Logger.info(f"{__name__}: Image list from mediastore {images_list}")
+            Logger.info(f"{__name__}: cache dir: {ss.get_cache_dir()}")
+
+            private_paths = []
+            for image in images_list:
+                image_file_name = str(Path(image).name)
+                image_path = self.photo_path.joinpath(f"{session_name}/{image_file_name}")
+                Logger.info(f"{__name__}: current image path is: {image_path}")
+                private_paths.append(ss.copy_from_shared(str(image_path)))
+
+            try:
+                Logger.info(f"{__name__}: cache dir after: {ss.get_cache_dir()}, pp: {private_paths} "
+                            f"os.dir DCIM: {os.listdir('./DCIM')}"
+                            f"os.dir .: {os.listdir('.')}")
+            except:
+                Logger.info(f"{__name__}: cache dir after: {ss.get_cache_dir()}, , pp: {private_paths}, os.dir gen: {os.listdir('.')}")
+
+            self.photo_path = ss.get_cache_dir()
+            images_list = private_paths
+        else:
+            images_list = []
+            session_photo_dir = Path(f'./{session_name}/')
+            self.photo_path = session_photo_dir
+
+            for image in session_photo_dir.glob('*jpg'):
+                Logger.info(f"{__name__}: image {image}")
+                images_list.append(image)
 
         self.page_num = len(images_list) // 4
         if len(images_list) % 4 != 0:
             self.page_num += 1
         self.ids.pdf_progress_content.set_pdf_data(images_list, self.page_num, session_name)
-        self.photo_path = ss.get_cache_dir()
+
         self.pdf_dialog.open()
         print(f"{__name__}: pdf dialog open photopath: {self.photo_path}")
 

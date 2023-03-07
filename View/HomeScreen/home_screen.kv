@@ -1,9 +1,10 @@
+
 <GoogleSheetsDialogContent>:
     id: gsheet_dialog
     orientation: "vertical"
     spacing: "20dp"
     MDLabel:
-        text: f"You logged in as :\n{root.user_email}"
+        text: str(_("You logged in as")[::-1]) + f"{root.user_email}" if app.lang == 'he' else str(_("You logged in as")) + f"{root.user_email}"
         #text: f"You logged in"
 
 
@@ -53,25 +54,29 @@
 
         NavigationButton:
             id: new_ses_btn
-            text: "Start new session"
+            text: _("Create new session")[::-1] if app.lang == 'he' else _("Create new session")
+            font_name: "Arimo"
             on_press:
                 root.start_new_session_dialog()
 
         NavigationButton:
             id: incomplete_ses_btn
-            text: "Incomplete sessions"
+            text: _("Incomplete sessions")[::-1] if app.lang == 'he' else _("Incomplete sessions")
+            font_name: "Arimo"
             on_press:
                 root.start_incomplete_sessions()
 
         NavigationButton:
             id: completed_ses_btn
-            text: "Recorded sessions"
+            font_name: "Arimo"
+            text: _("Recorded sessions")[::-1] if app.lang == 'he' else _("Recorded sessions")
             on_press:
                 root.start_recorded_sessions()
 
         MDFillRoundFlatButton:
             id: login_btn
-            text: "Google login" if self.is_visible else "Google logout"
+            font_name: "Arimo"
+            text: "Google " + str(_("login")[::-1]) if self.is_visible else "Google " + str(_("logout")[::-1])
             is_visible: True
             #opacity: 1 if self.is_visible else 0
             #disabled: not self.is_visible
@@ -95,7 +100,7 @@
 
     MDTextField:
         id: session_name
-        hint_text: "Session Name"
+        hint_text: _("Session Name")[::-1] if app.lang == 'he' else "Session Name"
         required: False
 
     MDRaisedButton:

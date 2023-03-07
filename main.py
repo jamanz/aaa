@@ -105,14 +105,23 @@ DEBUG=1 python main.py
 # https://en.wikip  edia.org/wiki/Model–view–controller
 # """
 #
+from pathlib import Path
+from kivy.config import Config
+Config.set('kivy', 'default_font', ['Arimo', './assets/fonts/Arimo-Regular.ttf',
+                                             './assets/fonts/Arimo-Italic.ttf',
+                                             './assets/fonts/Arimo-Bold.ttf',
+                                             './assets/fonts/Arimo-BoldItalic.ttf',
+                                            ])
+Config.write()
 from kivy import Logger
 from kivymd.app import MDApp
 from kivymd.uix.screenmanager import MDScreenManager
 import os
 from os.path import abspath, dirname
-from pathlib import Path
+
 from View.screens import screens
-from kivy import user_home_dir, kivy_home_dir, kivy_base_dir, dirname, kivy_data_dir
+from kivy import user_home_dir, kivy_home_dir, kivy_base_dir, kivy_data_dir
+
 from kivy.core.window import Window
 from kivy.utils import platform
 from kivy.utils import get_color_from_hex
@@ -126,12 +135,27 @@ from kivyauth.google_auth import initialize_google, login_google, logout_google
 from kivyauth.utils import stop_login
 from kivyauth.utils import login_providers, auto_login
 
-from kivy.config import Config
+
 # Config.set('graphics', 'width', '360')
 # Config.set('graphics', 'height', '740')
 #Config.set('modules', 'monitor', '')
 
 #load_dotenv()
+from kivy.core.text import LabelBase
+
+import gettext
+he = gettext.translation('home_screen', localedir='locales', languages=['he'])
+he.install()
+
+import os
+
+
+
+# Logger.info(f"{__name__} conf {Config.get('kivy', 'default_font')}")
+# Config.write()
+
+LabelBase.register(name="Arimo", fn_regular="assets/fonts/Arimo-Regular.ttf", fn_bold="assets/fonts/Arimo-Bold.ttf")
+#print(f"!!!!! {LabelBase.get_system_fonts_dir()}")
 
 
 if platform == 'android':
@@ -194,12 +218,6 @@ colors = {
 
 
     "Green": {
-        # "A200": "#628038",
-        # "A500": "#628038",
-        # "A700": "#628038",
-        # "200": "#628038",
-        # "500": "#628038",
-        # "700": "#628038",
         "A200": "#76944C",
         "A500": "#76944C",
         "A700": "#76944C",
@@ -237,7 +255,6 @@ colors = {
     },
 }
 
-## todo: after photo screen add data cleans repair
 
 class agroApp3MVC(MDApp):
     app_folder = os.path.dirname(os.path.abspath(__file__))
@@ -247,15 +264,17 @@ class agroApp3MVC(MDApp):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
+        self.lang = 'he'
         self.theme_cls.colors = colors
         self.theme_cls.theme_style = "Light"#"#53565A"
 
         self.theme_cls.primary_palette = 'Green'#get_color_from_hex("#628038")#"Orange"
         self.theme_cls.accent_palette = "BlueGray"
         self.theme_cls.material_style = "M3"
+
         print("type M: ", self.theme_cls.material_style)
 
+        #self.theme_cls.font_styles =
         #self.theme_cls.
         # self.user_data_dir
         self.load_all_kv_files(self.directory)

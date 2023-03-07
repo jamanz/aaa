@@ -184,7 +184,7 @@ class ButtonsLayout1(RelativeLayout):
         self.photo_screen_view = self.parent.parent
         self.tree_name = self.photo_screen_view.tree_name
         self.session_name = self.photo_screen_view.session_name
-        photo_count = self.photo_screen_view.photo_count
+        self.photo_count = self.photo_screen_view.photo_count
 
         #Logger.info(f"{__name__:} -> {self.parent.parent.ids}")
         Logger.info(f"{__name__}: self.photo assigned from file basic path, filepath {self.file_path}")
@@ -194,11 +194,19 @@ class ButtonsLayout1(RelativeLayout):
         #    name = f"{tree_name}_{photo_count}"
 
         # location "private" is app_path/... "shared" is storage/emulated/0/DCIM/appname/
-        self.photo_screen_view.ids.preview.capture_photo(location='private',
-                                                         subdir=self.session_name,
-                                                         name=self.tree_name)
-
-        # wait for capture_photo callback
+        if platform == 'android':
+            self.photo_screen_view.ids.preview.capture_photo(location='private',
+                                                             subdir=self.session_name,
+                                                             name=self.tree_name)
+        else:
+            if self.photo_count == 0:
+                increment_name = f"{self.tree_name}"
+            else:
+                increment_name = f"{self.tree_name} ({self.photo_count})"
+            self.photo_screen_view.ids.preview.capture_photo(location='private',
+                                                             subdir=self.session_name,
+                                                             name=increment_name)
+        #wait for capture_photo callback
         while not self.photo_screen_view.photo_ready:
             continue
         self.show_photo_image()
@@ -266,13 +274,13 @@ class ButtonsLayout1(RelativeLayout):
         self.photo_screen_view.photo_count += 1
 
         #self.image_preview.reload()
-
-        self.shared_path = self.photo_screen_view.ss.copy_to_shared(self.file_path,
+        if platform == 'android':
+            self.shared_path = self.photo_screen_view.ss.copy_to_shared(self.file_path,
                                                   collection=Environment.DIRECTORY_DCIM,
                                                   filepath=f'{self.session_name}/{self.photo_screen_view.file_name}')
-        Logger.info(f"{__name__}: shared path is {self.shared_path}, uri is {self.photo_screen_view.ss._get_uri(self.shared_path)}")
-        self.remove_photo_from_private_storage(self.file_path)
-        Logger.info(f"{__name__}: Photo in private path is removed {self.file_path} ")
+            Logger.info(f"{__name__}: shared path is {self.shared_path}, uri is {self.photo_screen_view.ss._get_uri(self.shared_path)}")
+            self.remove_photo_from_private_storage(self.file_path)
+            Logger.info(f"{__name__}: Photo in private path is removed {self.file_path} ")
         self.image_preview.remove_from_cache()
         self.photo_screen_view.ids.img_preview.remove_widget(self.image_preview)
 

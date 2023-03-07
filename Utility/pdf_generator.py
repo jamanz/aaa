@@ -2,9 +2,10 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import cm, inch
 from reportlab.platypus import SimpleDocTemplate, BaseDocTemplate, PageTemplate, Image, FrameBreak, PageBreak, Spacer, Paragraph
 from reportlab.platypus.frames import Frame
-from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
+from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY, TA_RIGHT
 from reportlab.lib import pagesizes
 from reportlab.platypus.paragraph import Paragraph, ParagraphStyle
+from reportlab.platypus.flowables import Image
 from functools import partial
 import os
 import glob
@@ -98,21 +99,22 @@ def generate_pdf(image_dir, dest_path, filename="generated", progress_func=page_
 
     spacer1 = Spacer(width=0, height=12)
     spacer2 = Spacer(width=0, height=1)
-    paragraph_style = ParagraphStyle(name='caption', alignment=TA_CENTER, fontSize=7)
+    paragraph_style = ParagraphStyle(name='caption', alignment=TA_RIGHT, fontSize=12, rightIndent=20)
 
     frames = []
     frameCount = 2
     frameWidth = (pdf.width) / frameCount
     frameHeight = pdf.height - .05 * cm
 
-    pages_count = len(images)//4
+    full_pages_count = len(images)//4
     if len(images) % 4 != 0:
-        pages_count += 1
-    for page_ind in range(pages_count):
+        full_pages_count += 1
+
+    for page_ind in range(full_pages_count):
         if platform == 'android':
             imgs = [RotatedImage(f"{i}", width=300, height=180) for i in list(row_generation(images))[page_ind]]
         else:
-            imgs = [Image(f"{i}", width=300, height=180) for i in list(row_generation(images))[page_ind]]
+            imgs = [Image(f"{i}", width=180, height=300) for i in list(row_generation(images))[page_ind]]
 
         captions = [
             Paragraph(get_image_name_from_path(i.filename), paragraph_style) for i in imgs
@@ -138,8 +140,8 @@ def generate_pdf(image_dir, dest_path, filename="generated", progress_func=page_
                         ])
 
         frames.extend([
-                Frame(pdf.leftMargin, 0, 200, frameHeight, id=f'normal1_{page_ind}'),
-                Frame(pdf.leftMargin + 200 + 150, 0, frameWidth - 200, frameHeight, id=f'normal2_{page_ind}'),
+                Frame(pdf.leftMargin,             0, frameWidth, frameHeight, id=f'normal1_{page_ind}'),
+                Frame(pdf.leftMargin + frameWidth, 0, frameWidth, frameHeight, id=f'normal2_{page_ind}'),
             ])
         # frames.extend([
         #         Frame(pdf.leftMargin, pdf.topMargin - 10, 200, frameHeight, id=f'normal1_{page_ind}'),

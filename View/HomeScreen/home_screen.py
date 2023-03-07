@@ -16,17 +16,21 @@ import os
 import pathlib
 from Utility.google_sheets import get_user_email, check_auth
 from kivy.cache import Cache
+from gettext import gettext as _
+
+def rtl(heb_str):
+    return heb_str[::-1]
 
 
 class GoogleSheetsDialogContent(MDBoxLayout):
     user_email = StringProperty()
 
-
+# unused
 class CustomWorkSheetButton(MDRectangleFlatIconButton):
     item_id = StringProperty()
     icon_name = StringProperty()
 
-
+# unused
 class WorksheetChoiceDialogContent(MDBoxLayout):
     chosen_worksheet = StringProperty()
     last_picked_id = StringProperty()
@@ -59,7 +63,7 @@ class WorksheetChoiceDialogContent(MDBoxLayout):
 
 
 class DialogContent(MDBoxLayout):
-    date = StringProperty('Pick date')
+    date = StringProperty(rtl('בחר תאריך')) # pick date
 
     def show_date_picker(self):
         date_dialog = MDDatePicker()
@@ -112,16 +116,12 @@ class HomeScreenView(BaseScreenView):
         if check_auth():
             for button in nav_buttons_ids:
                 self.ids[button].is_visible = True
-            # self.ids[log_button_id].text = 'Google logout'
-            # self.ids[log_button_id].on_press = self.start_logout
             self.ids[log_button_id].is_visible = False
         else:
             for button in nav_buttons_ids:
                 self.ids[button].is_visible = False
 
             self.ids[log_button_id].is_visible = True
-            # self.ids[log_button_id].text = 'Google login'
-            # self.ids[log_button_id].on_press = self.start_login
 
     def start_new_session_dialog(self):
 
@@ -130,9 +130,10 @@ class HomeScreenView(BaseScreenView):
 
         def confirm_dialog(event):
 
-            if self.ids.new_ses_dialog.ids.date_picker.text == 'Pick date':
+            pick_date_text = rtl('בחר תאריך') #pick date
+            print("Print date text: ", pick_date_text)
+            if self.ids.new_ses_dialog.ids.date_picker.text == str(pick_date_text):
                 self.ids.new_ses_dialog.date = '1011-11-11'
-
             if not self.ids.new_ses_dialog.ids.session_name.text:
                 self.ids.new_ses_dialog.ids.session_name.required = True
                 self.ids.new_ses_dialog.ids.session_name.focus = True
@@ -146,17 +147,21 @@ class HomeScreenView(BaseScreenView):
                 self.app.go_next_screen('home screen', 'session screen')
                 self.dialog.dismiss()
 
-        close_btn = MDFlatButton(text="Cancel", on_release=close_dialog)
-        confirm_btn = MDFlatButton(text="Confirm", on_release=confirm_dialog)
+        close_btn = MDFlatButton(text=rtl("ביטול"), font_name='Arimo', on_release=close_dialog)
+        confirm_btn = MDFlatButton(text=rtl("אישור"), font_name='Arimo', on_release=confirm_dialog)
 
-        self.dialog = MDDialog(title='Create new session',
+        self.dialog = MDDialog(title=rtl('יצירת סקר חדש'),
                                size_hint=(.7, .5),
                                type="custom",
                                md_bg_color=self.app.theme_cls.accent_color,
                                content_cls=DialogContent(),
                                buttons=(close_btn, confirm_btn)
                                )
+
         self.ids['new_ses_dialog'] = weakref.ref(self.dialog.content_cls)
+        print(f"dialog ids: {self.dialog.ids}")
+        self.dialog.ids.title.font_name = "Arimo"
+        self.ids.new_ses_dialog.ids.date_picker.font_name = "Arimo"
         self.dialog.open()
 
     def start_authorized_dialog(self):
