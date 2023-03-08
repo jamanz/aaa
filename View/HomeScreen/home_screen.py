@@ -17,6 +17,8 @@ import pathlib
 from Utility.google_sheets import get_user_email, check_auth
 from kivy.cache import Cache
 from gettext import gettext as _
+from kivymd.uix.textfield import MDTextField
+import unicodedata
 
 def rtl(heb_str):
     return heb_str[::-1]
@@ -61,9 +63,57 @@ class WorksheetChoiceDialogContent(MDBoxLayout):
                 ws_button
             )
 
+class HebrewTextField(MDTextField):
+    #font_name_hint_text = "Arimo"
+    #font_name = "Arimo"
+
+    def check_hebrew(self, term):
+        for i in set(term):
+            if 'HEBREW' in unicodedata.name(i):
+                return True
+        return False
+
+    def keyboard_on_key_down(self, window, keycode, text, modifiers):
+        if keycode[1] == "backspace":
+            if len(self.text) > 0:
+                if self.check_hebrew(self.text):
+                    self.text = self.text[1:]
+                    self.cursor = (0, 0)
+                else:
+                    self.text = self.text[:-1]
+
+    def insert_text(self, theText, from_undo=False):
+        if len(self.text) > 0:
+            if theText == ' ':
+                if self.check_hebrew(self.text):
+                    self.text = theText + self.text
+                    self.cursor = (0, 0)
+                    return
+            if self.check_hebrew(theText):
+                self.cursor = (0, 0)
+                self.text = theText + self.text
+                self.cursor = (0, 0)
+
+            else:
+                self.text = self.text + theText
+        else:
+            self.text = self.text + theText
 
 class DialogContent(MDBoxLayout):
     date = StringProperty(rtl('בחר תאריך')) # pick date
+
+
+
+
+
+    # def on_text_input(self, input_text):
+    #     if len(input_text) > 0:
+    #         if self.check_hebrew(input_text):
+    #             reverted_input = input_text[::-1]
+    #             print('Heb revert, ', reverted_input)
+    #             self.ids.session_name.text = reverted_input
+
+
 
     def show_date_picker(self):
         date_dialog = MDDatePicker()

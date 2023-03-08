@@ -19,7 +19,7 @@ from kivy.weakproxy import WeakProxy
 from kivy.metrics import dp
 from View.PhotoScreen.components.toast import Toast
 import os
-
+from kivy.clock import Clock
 
 class PreviewRecordedTreeContent(MDBoxLayout):
     tree_number = StringProperty()
@@ -72,6 +72,7 @@ class TreeItem(TwoLineAvatarIconListItem):
     item = ObjectProperty()
     tree_name = StringProperty()
     preview_record_dialog = ObjectProperty()
+
 
     def show_tree_preview(self, item):
         self.item = item
@@ -170,7 +171,7 @@ class TreeItemsPage(MDRecycleView):
     def update_items(self, can_delete=True):
         Logger.info(f"{__name__}: items updated")
         self.data = [
-            {'text': f"#{record.get('Tree Number')}",
+            {'text': f"[font=Arimo]#{record.get('Tree Number')}[/font]",
              'tree_name': record.get('Tree Number'),
              #'secondary_text': "Photos [b]0/2[/b]",
              'secondary_text': f"{record.get('Tree specie')}",
@@ -219,6 +220,8 @@ class SessionScreenView(BaseScreenView):
         self.upload_dialog.dismiss()
         self.app.go_prev_screen()
 
+    def set_topappbar_font(self, dt):
+        self.ids.topappbar.ids.label_title.font_name = 'Arimo'
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -240,6 +243,7 @@ class SessionScreenView(BaseScreenView):
                                       buttons=(close_btn, confirm_btn)
                                       )
         self.ids['upload_dialog'] = weakref.ref(self.upload_dialog.content_cls)
+        Clock.schedule_once(self.set_topappbar_font)
 
     def start_record_editing(self, tree_item: TreeItem):
         Logger.info(f"{__name__}: data of tree item to edit - {tree_item.record_data}")

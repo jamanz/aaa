@@ -183,6 +183,21 @@ In forums was point to switch ```p4a.branch = develop``` but it worked without i
  - Sign application with Keystore
  - Face issue "loopback flow has been blocked" when trying to auth from app
 
+## 55-70 Pomo
+- Added Photo confirmation preview in photo_screen. 
+- At first stored photos in app private storage. Shared or private storage save could be specified on camerax_preview.capture_photo([]) 
+- After couple hours of attempts to get photos from shared storage directly by path it was detected that after android api > 29 it doest work
+- I have tried to get access photo though using Android MediaStore api pyjnius wrappers. 
+- With MediaStore  I could retrieve photo path that could be transformed to uri, or even fetch bytes but instead I find androidstorage4kivy package
+- androidstorage4kivy package is ready-to-use abstraction over MediaStore that allow user copy to shared storage, and copy from it to apps cache 
+
+- Now after I can save to shared storage and copy to private apps cache PDF Generation fetch could be added
+- I just whole copy reportlib package to my app local folder from python site-packages because it would fail on buildozer build. Package direct copy works without modifying builddozer.spec in contradistinction to camerax case
+- Also photos in android should be rotated -90 when adding to pdf
+- Pdf gen Progress callback runs in different thread so at now I cant update kivy progressbar value from it
+
+- Add .po/pot .mo localization files from i18n utility 
+- It works for kv files but not for python 
 
 When we use Desktop app after successful auth and retrieve of auth_user.json we got:
 01-31 19:22:22.759 23285 23325 I python  :    File "/content/aaa/.buildozer/android/platform/build-arm64-v8a_armeabi-v7a/build/python-installs/Treez/arm64-v8a/googleapiclient/discovery.py", line 566, in build_from_document

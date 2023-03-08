@@ -10,22 +10,38 @@
         value: 10
         orientation: "horizontal"
 
+
+
+<CustomSnackbar>:
+    bg_color: app.theme_cls.primary_color
+
 <SessionItem>:
-    text: root.session_name
-    on_press: root.callback(self)
-    md_bg_color: utils.get_color_from_hex('#a1211f')
+    text: f"[font=Arimo]{root.session_name}[/font]"
+    on_release: root.callback(self)
+    #md_bg_color: utils.get_color_from_hex('#a1211f')
     #size_hint: 1, .2
-    font_size: "13sp"
-    _txt_left_pad: "15dp"
+    #font_size: "20sp"
+    _txt_left_pad: "75dp"
 
-    IconRightWidget:
-        size_hint: .1, .5
-        pos_hint: {"x": .95, "center_y": .4}
-        opacity: 1 #if root.can_delete else 0
-        #disabled: not root.can_delete
-        icon: 'delete' if root.can_delete else 'file-pdf-box'
-        on_press: root.delete_session(root) if root.can_delete else root.make_pdf_from_session(root)
+    #IconRightWidget:
 
+
+    #SessionItemIconContainer:
+    #    spacing: "30dp"
+    #    MDIconButton:
+    #        size_hint: .1, .5
+    #        pos_hint: {"x": .95, "center_y": .4}
+    #        opacity: 1 #if root.can_delete else 0
+    #        #disabled: not root.can_delete
+    #        icon: 'file-pdf-box'
+    #        on_release: root.delete_session(root) if root.can_delete else root.make_pdf_from_session(root)
+    #    MDIconButton:
+    #        size_hint: .1, .5
+    #        pos_hint: {"x": .95, "center_y": .4}
+    #        opacity: 1 #if root.can_delete else 0
+    #        #disabled: not root.can_delete
+    #        icon: 'delete' if root.can_delete else 'file-pdf-box'
+    #        on_release: root.delete_session(root) if root.can_delete else root.make_pdf_from_session(root)
 
 <SessionsPage>:
     viewclass: "SessionItem"
@@ -54,8 +70,11 @@
 
 
         MDTopAppBar:
+            id: topappbar
             #size_hint: 1, .2
-            title: root.app_bar_title
+            #font_name: "Arimo"
+            #title: root.app_bar_title
+            title: "לגקגק"
             elevation: 2
             anchor_title: "left"
             left_action_items: [["arrow-left", lambda x: root.app.go_prev_screen()]]

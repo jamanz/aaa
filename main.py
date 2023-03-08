@@ -105,15 +105,19 @@ DEBUG=1 python main.py
 # https://en.wikip  edia.org/wiki/Model–view–controller
 # """
 #
-from pathlib import Path
-from kivy.config import Config
-Config.set('kivy', 'default_font', ['Arimo', './assets/fonts/Arimo-Regular.ttf',
-                                             './assets/fonts/Arimo-Italic.ttf',
-                                             './assets/fonts/Arimo-Bold.ttf',
-                                             './assets/fonts/Arimo-BoldItalic.ttf',
-                                            ])
-Config.write()
 from kivy import Logger
+from kivymd._version import __version__
+Logger.info(f"{__name__}: app code enter, kivymd ver == {__version__}")
+
+from pathlib import Path
+# from kivy.config import Config
+# Config.set('kivy', 'default_font', ['Arimo', './assets/fonts/Arimo-Regular.ttf',
+#                                              './assets/fonts/Arimo-Italic.ttf',
+#                                              './assets/fonts/Arimo-Bold.ttf',
+#                                              './assets/fonts/Arimo-BoldItalic.ttf',
+#                                             ])
+# Config.write()
+
 from kivymd.app import MDApp
 from kivymd.uix.screenmanager import MDScreenManager
 import os
@@ -144,8 +148,11 @@ from kivyauth.utils import login_providers, auto_login
 from kivy.core.text import LabelBase
 
 import gettext
-he = gettext.translation('home_screen', localedir='locales', languages=['he'])
-he.install()
+
+he_home_screen = gettext.translation('home_screen', localedir='locales', languages=['he'])
+# he_list_sessions_screen = gettext.translation('list_sessions_screen', localedir='locales', languages=['he'])
+he_home_screen.install()
+# he_list_sessions_screen.install()
 
 import os
 

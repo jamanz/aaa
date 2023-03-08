@@ -7,13 +7,18 @@ import glob
 # todo: remove hint text on enter addDataScreen
 
 class ListSessionsScreenModel(BaseScreenModel):
-    json_storage_path = Path("assets", "data").resolve()
+    incomplete_sessions_path = Path("assets", "data").resolve()
+    completed_sessions_path = Path("assets", "data", "completed").resolve()
 
-    def delete_session(self, session_sid):
+    def delete_session(self, session_type, session_sid):
+        if session_type == 'completed':
+            print(list(self.completed_sessions_path.glob('*.json')))
+            ses_path = self.completed_sessions_path
+        elif session_type == 'incomplete':
+            print(list(self.incomplete_sessions_path.glob('*.json')))
+            ses_path = self.incomplete_sessions_path
 
-        print(list(self.json_storage_path.glob('*.json')))
-        for session_path in self.json_storage_path.glob('*.json'):
-
+        for session_path in ses_path.glob('*.json'):
             if session_sid in session_path.name:
                 os.remove(session_path)
 

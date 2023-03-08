@@ -1,5 +1,5 @@
 from kivy.logger import Logger
-
+from kivy import app
 from View.base_screen import BaseScreenView
 from pathlib import Path
 from kivymd.uix.list import OneLineListItem
@@ -7,8 +7,11 @@ from kivy.storage.jsonstore import JsonStore
 from kivymd.uix.toolbar import MDTopAppBar
 from kivy.properties import StringProperty, ListProperty, BooleanProperty, NumericProperty, ObjectProperty
 from kivymd.uix.list import OneLineAvatarIconListItem
+from kivymd.uix.behaviors import TouchBehavior
 from kivy.clock import Clock
 from functools import partial
+from kivymd.uix.toolbar import MDTopAppBar
+from kivymd.uix.list import IRightBodyTouch
 from kivymd.uix.recycleview import MDRecycleView
 import os
 from os.path import exists
@@ -24,6 +27,8 @@ from kivymd.uix.filemanager import MDFileManager
 from kivymd.toast import toast
 from kivy.utils import platform
 from kivy.clock import mainthread
+from kivy.metrics import dp
+from kivymd.uix.snackbar import Snackbar
 
 if platform == 'android':
     from jnius import autoclass, cast
@@ -41,9 +46,8 @@ class PdfDialogContent(MDBoxLayout):
     def update_pdf_progress(self, page_no):
         # print("ids: ", self.ids.pdf_dialog_content.ids)
         val = 100 * page_no / self.page_num
-        print("pdf_progress val old: ", self.ids.progress_bar_id.value)
         self.ids.progress_bar_id.value = int(val)
-        print("pdf_progress val new: ", self.ids.progress_bar_id.value)
+        Logger(f"{__name__}: pdf progres val updated in mainthread: ", self.ids.progress_bar_id.value)
 
     def set_pdf_data(self, image_list, page_num, session_name):
         self.image_list = image_list
@@ -87,37 +91,66 @@ class PdfDialogContent(MDBoxLayout):
             self.list_screen_view.pdf_dialog.dismiss()
 
 
-class SessionItem(OneLineAvatarIconListItem):
+class SessionItemIconContainer(IRightBodyTouch, MDBoxLayout):
+    adaptive_width = True
+
+
+class SessionItem(OneLineAvatarIconListItem, TouchBehavior):
     session_name = StringProperty()
     session_sid = StringProperty()
 
     can_delete = BooleanProperty(False)
     page_id = NumericProperty()
     sessions_page = ObjectProperty()
+    duration_long_touch = NumericProperty(0.6)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def on_long_touch(self, *args):
+        self.sessions_page = self.parent.parent
+        self.sessions_page.snackbar.open()
+        self.sessions_page.long_touch = True
+        print("on long touch args: ", *args)
+
+    def set_chosen_session_for_snackbar(self, session):
+        self.sessions_page = self.parent.parent
 
     def callback(self, item):
-        session_json_name = f"{self.session_name}_{self.session_sid}.json"
-        list_sessions_view = self.parent.parent.parent.parent
+        self.sessions_page = self.parent.parent
+        if not self.sessions_page.long_touch:
+            session_json_name = f"{self.session_name}_{self.session_sid}.json"
+            list_sessions_view = self.parent.parent.parent.parent
 
-        if list_sessions_view.current_sessions_list_type == 'incomplete':
-            list_sessions_view.send_path_to_session_screen(Path(list_sessions_view.incomplete_path, session_json_name))
-            list_sessions_view.app.go_next_screen('list sessions screen', 'session screen')
+            if list_sessions_view.current_sessions_list_type == 'incomplete':
+                list_sessions_view.send_path_to_session_screen(Path(list_sessions_view.incomplete_path, session_json_name))
+                list_sessions_view.app.go_next_screen('list sessions screen', 'session screen')
 
-        elif list_sessions_view.current_sessions_list_type == 'completed':
-            list_sessions_view.send_path_to_session_screen(Path(list_sessions_view.completed_path, session_json_name))
-            list_sessions_view.app.go_next_screen('list sessions screen', 'session screen')
+            elif list_sessions_view.current_sessions_list_type == 'completed':
+                list_sessions_view.send_path_to_session_screen(Path(list_sessions_view.completed_path, session_json_name))
+                list_sessions_view.app.go_next_screen('list sessions screen', 'session screen')
+        else:
+            self.sessions_page.chosen_session_item = item
 
+    ## function for old IconRight widget interface
     def make_pdf_from_session(self, session):
         # print('make pdf from session ', session)
         self.sessions_page = self.parent.parent
         print(self.sessions_page)
         self.sessions_page.list_sessions_view.make_pdf_for_session(session.session_name, session.session_sid)
 
+    ## function for old IconRight widget interface
     def delete_session(self, session):
         self.sessions_page = self.parent.parent
         Logger.info(f"{__name__}: session: {session},  gonna be deleted")
         self.sessions_page.delete_session(session)
 
+
+class CustomSnackbar(Snackbar):
+    snackbar_x = dp(10)
+    snackbar_y = dp(10)
+    duration = 2
+    size_hint_x = (Window.width - (dp(10) * 2)) / Window.width
 
 class SessionsPage(MDRecycleView):
     incomplete_path = Path("assets", "data").resolve()
@@ -130,6 +163,10 @@ class SessionsPage(MDRecycleView):
     delete_session_name = StringProperty()
     delete_session_sid = StringProperty()
 
+    long_touch = False
+    chosen_session_item = ObjectProperty()
+    session_type = StringProperty()
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         close_delete_dialog_btn = MDFlatButton(text="Cancel", on_release=self.close_delete_session_dialog)
@@ -138,22 +175,67 @@ class SessionsPage(MDRecycleView):
                                               type="alert",
                                               buttons=(close_delete_dialog_btn, confirm_delete_dialog_btn)
                                               )
+        self.snackbar = CustomSnackbar()
+            # text="This is a snackbar!",
+        self.snackbar.buttons = [
+            MDFlatButton(
+                text="MAKE PDF",
+                font_name='Arimo',
+                # text_color=(1, 1, 1, 1),
+                on_release=self.make_pdf_from_session,
+            ),
+
+            MDFlatButton(
+                text="DELETE SESSION",
+                font_name='Arimo',
+                # text_color=(1, 1, 1, 1),
+                on_release=self.delete_session,
+            ),
+        ]
+        self.snackbar.bind(on_dismiss=self.on_snack_dismiss)
+
+
+
+    # def delete_session(self, session_item):
+    #     Logger.info(f"{__name__}: session: {session_item},  gonna be deleted")
+    #     self.sessions_page.delete_session(session_item)
+    #
+
+
+
+    def make_pdf_from_session(self, *args):
+        self.list_sessions_view.make_pdf_for_session(self.chosen_session_item.session_name, self.chosen_session_item.session_sid)
+
+    def on_snack_dismiss(self, *args):
+        self.long_touch = False
 
     def close_delete_session_dialog(self, event):
         self.delete_session_dialog.dismiss()
 
     def confirm_delete_session_dialog(self, event):
         self.sessions_list.pop(self.delete_session_index)
-        self.list_sessions_view.delete_session(self.delete_session_sid)
-        self.update_sessions('incomplete')
+        self.list_sessions_view.delete_session(self.session_type, self.delete_session_sid)
+        self.update_sessions(self.session_type)
         self.delete_session_dialog.dismiss()
 
-    def delete_session(self, session):
+    # updated func, adeed path handler for json session
+    def delete_session(self, *args):
+        session = self.chosen_session_item
         self.delete_session_index = session.page_id
         self.delete_session_name = session.session_name
         self.delete_session_sid = session.session_sid
-        ses_path = self.incomplete_path.joinpath(f'{session.session_name}_{session.session_sid}.json')
+
+        print('SES INFO,', self.session_type, self.delete_session_name, self.delete_session_sid)
+        if self.session_type == 'incomplete':
+            ses_path = self.incomplete_path.joinpath(f'{session.session_name}_{session.session_sid}.json')
+        elif self.session_type == 'completed':
+            ses_path = self.completed_path.joinpath(f'{session.session_name}_{session.session_sid}.json')
+        else:
+            raise ValueError('Session type must be incomplete or completed ')
+
         ses_num_of_records = len(JsonStore(ses_path).get('data').get('records'))
+
+        #    ses_num_of_records = len(JsonStore(ses_path).get('data').get('records'))
 
         self.delete_session_dialog.title = "Delete Session"
         self.delete_session_dialog.text = f"You sure you want delete [b]{self.delete_session_name}[/b] with [b]{ses_num_of_records}[/b] records?"
@@ -194,11 +276,13 @@ class ListSessionsScreenView(BaseScreenView):
     config_json_path = Path('./config/imortant_path.json').resolve()
     file_manager_open = False
 
-
+    def set_topappbar_font(self, dt):
+        self.ids.topappbar.ids.label_title.font_name = 'Arimo'
 
     def open_file_manager(self, path):
         self.file_manager.show(os.path.expanduser(str(path)))  # output manager to the screen
         self.file_manager_open = True
+
 
     def select_path(self, path: str):
         '''
@@ -321,8 +405,8 @@ class ListSessionsScreenView(BaseScreenView):
         print(f"{__name__}: pdf dialog open photopath: {self.photo_path}")
 
 
-    def delete_session(self, session_sid: str):
-        self.model.delete_session(session_sid)
+    def delete_session(self, session_type: str, session_sid: str):
+        self.model.delete_session(session_type, session_sid)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -345,6 +429,7 @@ class ListSessionsScreenView(BaseScreenView):
         self.file_manager = MDFileManager(
             exit_manager=self.exit_manager, select_path=self.select_path
         )
+        Clock.schedule_once(self.set_topappbar_font)
 
     def close_pdf_dialog(self, event):
         self.pdf_dialog.dismiss()
@@ -357,6 +442,7 @@ class ListSessionsScreenView(BaseScreenView):
         self.current_sessions_list_type = 'incomplete'
         self.app_bar_title = "Incomplete sessions"
         self.ids.sessions_page.update_sessions('incomplete')
+        self.ids.sessions_page.session_type = 'incomplete'
         self.ids.sessions_page.list_sessions_view = self
 
     def start_completed_sessions(self):
@@ -364,6 +450,7 @@ class ListSessionsScreenView(BaseScreenView):
         self.current_sessions_list_type = 'completed'
         self.app_bar_title = "Completed sessions"
         self.ids.sessions_page.update_sessions('completed')
+        self.ids.sessions_page.session_type = 'completed'
         self.ids.sessions_page.list_sessions_view = self
 
     def send_path_to_session_screen(self, path):

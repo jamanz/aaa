@@ -4,7 +4,8 @@
     orientation: "vertical"
     spacing: "20dp"
     MDLabel:
-        text: str(_("You logged in as")[::-1]) + f"{root.user_email}" if app.lang == 'he' else str(_("You logged in as")) + f"{root.user_email}"
+        font_name: "Arimo"
+        text: f"{root.user_email}" + str(_("You logged in as")[::-1]) if app.lang == 'he' else str(_("You logged in as")) + f"{root.user_email}"
         #text: f"You logged in"
 
 
@@ -90,6 +91,10 @@
     opacity: 1 if root.is_visible else 0
     disabled: not root.is_visible
 
+<HebrewTextField>
+
+
+
 <DialogContent>
     id: dialog
     orientation: "vertical"
@@ -98,8 +103,9 @@
     height: "80dp"
     width: "80dp"
 
-    MDTextField:
+    HebrewTextField:
         id: session_name
+        #on_text: root.on_text_input(self.text)
         hint_text: _("Session Name")[::-1] if app.lang == 'he' else "Session Name"
         required: False
 
