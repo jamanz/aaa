@@ -85,8 +85,6 @@ class AddDataScreenController:
 
 
     def write_record_to_json(self):
-
-
         self.model.write_record_to_json(self, self.new_record_dict, record_edited=self.is_record_edited)
         self.new_record_dict.clear()
         self.is_record_edited = False

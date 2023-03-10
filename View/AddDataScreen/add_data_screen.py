@@ -175,9 +175,9 @@ class AddDataScreenView(BaseScreenView):
         self.submit_dialog.dismiss()
 
     def ok_submit_dialog(self, event):
-        if self.ids.submit_record_dialog.ids.comments_id.text:
+        # if self.ids.submit_record_dialog.ids.comments_id.text:
             #self.ids.submit_record_dialog.set_comment(self.ids.submit_record_dialog.ids.comments_id.text)
-            self.ids.submit_record_dialog.ids.comments_id.on_text_validate(self.ids.submit_record_dialog.ids.comments_id.text)
+            # self.ids.submit_record_dialog.ids.comments_id.on_text_validate(self.ids.submit_record_dialog.ids.comments_id.text)
         self.submit_dialog.dismiss()
         self.save_record_and_back_to_session_screen()
 
@@ -186,13 +186,19 @@ class AddDataScreenView(BaseScreenView):
         print('submit dissmised pre Window is ', Window.softinput_mode)
         Window.softinput_mode = ''
         print('submit dissmised after Window is ', Window.softinput_mode)
+
+    def on_submit_open(self):
+        print('submit open pre Window is ', Window.softinput_mode)
+        Window.softinput_mode = 'pan'
+        print('submit open after Window is ', Window.softinput_mode)
+
     def make_photo_for_tree(self):
         self.app.go_next_screen("add data screen", "photo screen")
 
     def show_submit_record_dialog(self):
         self.ids.submit_record_dialog.update_values(self.controller.get_record())
         self.submit_dialog.open()
-        Window.softinput_mode = 'pan'
+
 
 
     def close_record_preview_dialog(self, event):
@@ -246,6 +252,7 @@ class AddDataScreenView(BaseScreenView):
                                  buttons=(close_btn, ok_btn),
                                  )
         self.submit_dialog.on_dismiss = self.on_submit_dismiss
+        self.submit_dialog.on_open = self.on_submit_open
         self.ids['submit_record_dialog'] = weakref.ref(self.submit_dialog.content_cls)
         self.ids.submit_record_dialog.add_data_view = self
 
@@ -404,4 +411,4 @@ class AddDataScreenView(BaseScreenView):
                 self.feature_segment_instance_map[new_feature].segment_color = self.app.theme_cls.accent_color
 
 
-        Logger.info(f"{__name__}: on_pre_enter fired ,ids: {self.ids.box_layout.ids}")
+        Logger.info(f"{__name__}: on_pre_enter, softmode: {Window.softinput_mode}")
