@@ -48,8 +48,11 @@ class PdfDialogContent(MDBoxLayout):
     @mainthread
     def update_pdf_progress(self, page_no):
         # print("ids: ", self.ids.pdf_dialog_content.ids)
-        val = 100 * page_no / self.page_num
-        self.ids.progress_bar_id.value = int(val)
+        try:
+            val = 100 * page_no / self.page_num
+            self.ids.progress_bar_id.value = int(val)
+        except ZeroDivisionError:
+            pass
         #Logger.info(f"{__name__}: pdf progres val updated in mainthread: ", self.ids.progress_bar_id.value)
 
     def set_pdf_data(self, image_list, page_num, session_name):
@@ -111,15 +114,18 @@ class SessionItem(OneLineAvatarIconListItem, TouchBehavior):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
+
     def on_long_touch(self, *args):
         self.sessions_page = self.parent.parent
-        self.sessions_page.snackbar.buttons = []
-        if self.sessions_page.session_type == 'incomplete':
-            self.sessions_page.snackbar.buttons = self.sessions_page.incomplete_buttons
-        elif self.sessions_page.session_type == 'completed':
-            self.sessions_page.snackbar.buttons = self.sessions_page.completed_buttons
 
-        self.sessions_page.snackbar.open()
+        if self.sessions_page.session_type == 'incomplete':
+            self.sessions_page.incomplete_snackbar.open()
+        elif self.sessions_page.session_type == 'completed':
+            self.sessions_page.completed_snackbar.open()
+
+
+
+
 
         self.sessions_page.long_touch = True
         print("on long touch args: ", *args)
@@ -176,7 +182,7 @@ class SessionsPage(MDRecycleView):
 
     long_touch = False
     chosen_session_item = ObjectProperty()
-    session_type = StringProperty()
+    session_type = StringProperty('incomplete')
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -186,33 +192,29 @@ class SessionsPage(MDRecycleView):
                                               type="alert",
                                               buttons=(close_delete_dialog_btn, confirm_delete_dialog_btn)
                                               )
-        self.snackbar = CustomSnackbar()
-            # text="This is a snackbar!",
-        self.completed_buttons = [
-            MDFlatButton(
-                text="PDF " + rtl("צור"),
-                font_name='Arimo',
-                # text_color=(1, 1, 1, 1),
-                on_release=self.make_pdf_from_session,
-            ),
+        self.incomplete_snackbar = CustomSnackbar(buttons=[MDFlatButton(
+                                                            text=rtl("מחק הפעלה"),
+                                                            font_name='Arimo',
+                                                            # text_color=(1, 1, 1, 1),
+                                                            on_release=self.delete_session)])
 
-            MDFlatButton(
-                text=rtl("מחק הפעלה"),
-                font_name='Arimo',
-                # text_color=(1, 1, 1, 1),
-                on_release=self.delete_session,
-            ),
-        ]
+        self.completed_snackbar = CustomSnackbar(buttons=[
+                                                    MDFlatButton(
+                                                        text="PDF " + rtl("צור"),
+                                                        font_name='Arimo',
+                                                        # text_color=(1, 1, 1, 1),
+                                                        on_release=self.make_pdf_from_session,
+                                                    ),
 
-        self.incomplete_buttons = [
-            MDFlatButton(
-                text=rtl("מחק הפעלה"),
-                font_name='Arimo',
-                # text_color=(1, 1, 1, 1),
-                on_release=self.delete_session,
-            ),
-        ]
-        self.snackbar.bind(on_dismiss=self.on_snack_dismiss)
+                                                    MDFlatButton(
+                                                        text=rtl("מחק הפעלה"),
+                                                        font_name='Arimo',
+                                                        # text_color=(1, 1, 1, 1),
+                                                        on_release=self.delete_session,
+                                                    )])
+
+        self.incomplete_snackbar.bind(on_dismiss=self.on_snack_dismiss)
+        self.completed_snackbar.bind(on_dismiss=self.on_snack_dismiss)
 
 
 

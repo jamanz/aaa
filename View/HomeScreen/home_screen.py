@@ -99,6 +99,8 @@ class HebrewTextField(MDTextField):
                 else:
                     return super().keyboard_on_key_down(window, keycode, text, modifiers)
                     #self.text = self.text[:-1]
+        elif keycode[1] == 'enter':
+            self.focus = False
 
     def insert_text1(self, theText, from_undo=False):
         print("base dir , text ", self.base_direction, self.text)
