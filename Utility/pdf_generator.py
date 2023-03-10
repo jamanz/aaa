@@ -63,6 +63,7 @@ def page_call(page_no):
     print(f"page {page_no} generated")
 
 
+from kivy.clock import mainthread
 
 def generate_pdf(image_dir, dest_path, filename="generated", progress_func=page_call):
 
@@ -90,7 +91,7 @@ def generate_pdf(image_dir, dest_path, filename="generated", progress_func=page_
             topMargin = 1.5 * cm,
             bottomMargin = 2.5 * cm)
 
-    pdf.setPageCallBack(progress_func)
+    #pdf.setPageCallBack(progress_func)
     #main_frame = Frame(pdf.leftMargin, pdf.bottomMargin, pdf.width, pdf.height, id='normal')
 
     story = []

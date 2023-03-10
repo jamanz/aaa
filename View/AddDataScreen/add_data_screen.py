@@ -186,7 +186,7 @@ class AddDataScreenView(BaseScreenView):
     def show_submit_record_dialog(self):
         self.ids.submit_record_dialog.update_values(self.controller.get_record())
         self.submit_dialog.open()
-        Window.softinput_mode = 'pan'
+
 
     def close_record_preview_dialog(self, event):
         self.record_preview_dialog.dismiss()

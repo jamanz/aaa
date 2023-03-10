@@ -45,12 +45,12 @@ class PdfDialogContent(MDBoxLayout):
     chosen_session = StringProperty()
     list_screen_view = ObjectProperty()
 
-    #@mainthread
+    @mainthread
     def update_pdf_progress(self, page_no):
         # print("ids: ", self.ids.pdf_dialog_content.ids)
         val = 100 * page_no / self.page_num
         self.ids.progress_bar_id.value = int(val)
-        Logger.info(f"{__name__}: pdf progres val updated in mainthread: ", self.ids.progress_bar_id.value)
+        #Logger.info(f"{__name__}: pdf progres val updated in mainthread: ", self.ids.progress_bar_id.value)
 
     def set_pdf_data(self, image_list, page_num, session_name):
         self.image_list = image_list
@@ -90,7 +90,7 @@ class PdfDialogContent(MDBoxLayout):
 
                 self.list_screen_view.clean_cache_after_generation()
 
-            self.ids.progress_bar_id.value = 10
+            self.update_pdf_progress(1)
             self.list_screen_view.pdf_dialog.dismiss()
             Logger.info("pdf intent ended")
 
@@ -113,6 +113,7 @@ class SessionItem(OneLineAvatarIconListItem, TouchBehavior):
 
     def on_long_touch(self, *args):
         self.sessions_page = self.parent.parent
+        self.sessions_page.snackbar.buttons = []
         if self.sessions_page.session_type == 'incomplete':
             self.sessions_page.snackbar.buttons = self.sessions_page.incomplete_buttons
         elif self.sessions_page.session_type == 'completed':
