@@ -177,8 +177,9 @@ class AddDataScreenView(BaseScreenView):
     def ok_submit_dialog(self, event):
         if self.ids.submit_record_dialog.ids.comments_id.text:
             self.ids.submit_record_dialog.set_comment(self.ids.submit_record_dialog.ids.comments_id.text)
-        self.save_record_and_back_to_session_screen()
         self.submit_dialog.dismiss()
+        self.save_record_and_back_to_session_screen()
+
 
     def on_submit_dismiss(self):
         print('submit dissmised pre Window is ', Window.softinput_mode)
