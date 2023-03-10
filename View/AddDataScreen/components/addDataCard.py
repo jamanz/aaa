@@ -157,14 +157,14 @@ class addDataCard(MDCard, RoundedRectangularElevationBehavior): #RectangularElev
 
 
     def set_segments(self, dt):
-        self.ids.health_segment.custom_panel_width = 250
-        self.ids.health_segment.ids.segment_switch.width = self.ids.health_segment.custom_panel_width / 7.6
+        self.ids.health_segment.custom_panel_width = dp(250)
+        self.ids.health_segment.ids.segment_switch.width = dp(int(250 / 7.6))
 
-        self.ids.location_segment.custom_panel_width = 250
-        self.ids.location_segment.ids.segment_switch.width = self.ids.location_segment.custom_panel_width/7.6
+        self.ids.location_segment.custom_panel_width = dp(250)
+        self.ids.location_segment.ids.segment_switch.width = dp(int(250 / 7.6))
 
-        self.ids.crown_cone_segment.custom_panel_width = 100
-        self.ids.crown_cone_segment.ids.segment_switch.width = self.ids.crown_cone_segment.custom_panel_width/2.5
+        self.ids.crown_cone_segment.custom_panel_width = dp(100)
+        self.ids.crown_cone_segment.ids.segment_switch.width = dp(int(100/2.5))
 
     def fill_card_with_record(self, record: dict):
         self.add_data_view.controller.update_record(record)

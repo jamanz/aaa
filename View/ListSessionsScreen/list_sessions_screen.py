@@ -50,7 +50,7 @@ class PdfDialogContent(MDBoxLayout):
         # print("ids: ", self.ids.pdf_dialog_content.ids)
         val = 100 * page_no / self.page_num
         self.ids.progress_bar_id.value = int(val)
-        Logger(f"{__name__}: pdf progres val updated in mainthread: ", self.ids.progress_bar_id.value)
+        Logger.info(f"{__name__}: pdf progres val updated in mainthread: ", self.ids.progress_bar_id.value)
 
     def set_pdf_data(self, image_list, page_num, session_name):
         self.image_list = image_list
