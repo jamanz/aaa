@@ -20,7 +20,7 @@ class AddDataScreenController:
     the view to control its actions.
     """
     tree_values_path = pathlib.Path("assets", "tree_values.csv").resolve()
-    tree_suggestions_df = pd.read_csv(tree_values_path, index_col=False)[['value', 'latin_name']]
+    tree_suggestions_df = pd.read_csv(tree_values_path, index_col=False)[['value', 'latin_name', 'heb_name']]
     # columns = defaultdict(list)
     # tree_suggestions = None
     is_record_edited = False
@@ -71,11 +71,18 @@ class AddDataScreenController:
             value = -1
         return value
 
-    def find_suggestions(self, text: str)->list[str]:
+    def find_eng_suggestions(self, text: str)->list[str]:
         out_df = self.tree_suggestions_df[self.tree_suggestions_df['latin_name'].str.contains(text)]
         # print("out df: ", out_df['latin_name'].tolist())
         # return list(filter(lambda sugg: sugg.lower().startswith(text.lower()), self.tree_suggestions_df))
         return out_df['latin_name'].tolist()
+
+    def find_heb_suggestions(self, text: str)->list[str]:
+        out_df = self.tree_suggestions_df[self.tree_suggestions_df['heb_name'].str.contains(text)]
+        # print("out df: ", out_df['latin_name'].tolist())
+        # return list(filter(lambda sugg: sugg.lower().startswith(text.lower()), self.tree_suggestions_df))
+        return out_df['heb_name'].tolist()
+
 
     def write_record_to_json(self):
 

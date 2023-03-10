@@ -107,11 +107,11 @@
         font_name: "Arimo"
         font_name_hint_text: "Arimo"
         id: comments_id
-        hint_text: "Additional comments " + "הערות נוספות"[::-1]
+        hint_text: "Comments"
         multiline: False
 
         on_text: root.raise_window_for_comment()
-        on_text_validate: root.set_comment(self.text)
+        #on_text_validate: root.set_comment(self.text)
 
 
 <PreviewContent>

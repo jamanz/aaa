@@ -375,7 +375,7 @@ class agroApp3MVC(MDApp):
         #     hex_color = '#%02x%02x%02x' % (
         #     int(primary_clr[0] * 200), int(primary_clr[1] * 200), int(primary_clr[2] * 200))
         #     set_statusbar_color()
-        Window.release_all_keyboards()
+        #Window.release_all_keyboards()
 
     #new_s
     def gl_login(self, *args):

@@ -92,6 +92,7 @@ class PdfDialogContent(MDBoxLayout):
 
             self.ids.progress_bar_id.value = 10
             self.list_screen_view.pdf_dialog.dismiss()
+            Logger.info("pdf intent ended")
 
 
 class SessionItemIconContainer(IRightBodyTouch, MDBoxLayout):

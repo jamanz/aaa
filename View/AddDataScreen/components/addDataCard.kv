@@ -123,38 +123,49 @@
             FeatureButton:
                 id: tree_number_btn
                 on_release: root.choose_feature(self)
-                text: "Tree Number"
+                feature_key: "Tree Number"
+                font_name: "Arimo"
+                text: "מספר העץ"[::-1]
                 pos_hint: {'x': 0, 'top': 1}
 
             FeatureButton:
                 id: tree_specie_btn
                 on_release: root.choose_feature(self)
                 pos_hint: {'x': .33, 'top': 1}
-                text: "Tree specie"
-
+                feature_key: "Tree specie"
+                font_name: "Arimo"
+                text: "סוג עץ"[::-1]
             FeatureButton:
                 id: stem_number_btn
                 on_release: root.choose_feature(self)
                 pos_hint: {'x': 0.66, 'top': 1}
-                text: "Stem number"
+                feature_key: "Stem number"
+                font_name: "Arimo"
+                text: "כמות גזעים"[::-1]
 
             FeatureButton:
                 id: tree_diameter_btn
                 on_release: root.choose_feature(self)
-                text: "Tree diameter"
+                feature_key: "Tree diameter"
                 pos_hint: {'x': 0, 'bot': 1}
+                font_name: "Arimo"
+                text: "קוטר גזע"[::-1]
 
             FeatureButton:
                 id: crown_diameter_btn
                 on_release: root.choose_feature(self)
-                text: "Crown diameter"
+                feature_key: "Crown diameter"
                 pos_hint: {'x': .33, 'bot': 1}
+                font_name: "Arimo"
+                text: "רוחב נוף"[::-1]
 
             FeatureButton:
                 id: height_btn
                 on_release: root.choose_feature(self)
-                text: "Tree height"
+                feature_key: "Tree height"
                 pos_hint: {'x': .66, 'bot': 1}
+                font_name: "Arimo"
+                text: "גובה העץ"[::-1]
 
         MDSeparator:
 

@@ -83,11 +83,18 @@ class SubmitRecordContent(MDBoxLayout):
         self.basic_keyboard_on_key_down = self.ids.comments_id.keyboard_on_key_down
         self.ids.comments_id.keyboard_on_key_down = self.keyboard_on_key_down
 
+        self.ids.comments_id.on_text_validate = self.set_comment
 
     def set_comment(self, comment_str):
+        print("comment set")
         self.comment = comment_str
         self.add_data_view.get_input_feature_value('Comment', comment_str)
+        self.ids.comments_id.focus = False
         Window.softinput_mode = ''
+
+        self.ids.comments_id.base_direction = 'ltr'
+        self.ids.comments_id.cursor = (0, 0)
+        print('Window.softinput_mode after set comment', Window.softinput_mode)
 
     def raise_window_for_comment(self, *args):
         if Window.softinput_mode != 'pan':
@@ -102,6 +109,10 @@ class SubmitRecordContent(MDBoxLayout):
                     self.ids.comments_id.cursor = (0, 0)
                 else:
                     return self.basic_keyboard_on_key_down(window, keycode, text, modifiers)
+        elif keycode[1] == 'enter':
+            self.set_comment(self.ids.comments_id.text)
+
+
 
     def comments_field_hebrew(self, inserted_text, from_undo=False):
         print('commets field heb called')
@@ -231,6 +242,8 @@ class AddDataScreenView(BaseScreenView):
         self.ids['submit_record_dialog'] = weakref.ref(self.submit_dialog.content_cls)
         self.ids.submit_record_dialog.add_data_view = self
 
+
+
     def cancel_record(self):
         self.controller.clear_record()
         self.app.go_prev_screen()
@@ -290,6 +303,19 @@ class AddDataScreenView(BaseScreenView):
 
         self.controller.get_input_feature_value(feature_key, feature_value)
 
+    def check_hebrew(self, term):
+        for i in set(term):
+            if 'HEBREW' in unicodedata.name(i):
+                return True
+        return False
+
+    def transform_heb_sugg(self, sugg):
+        res = []
+        for term in sugg.split():
+            res.append(term[::-1])
+        return ' '.join(res)
+
+
     def initiate_suggestions(self, feature_key, feature_value):
         self.suggestion_menu.dismiss()
         if feature_key == 'Tree specie' and len(feature_value) > 2:
@@ -297,7 +323,14 @@ class AddDataScreenView(BaseScreenView):
             if len(feature_value) - self.feature_value_len > 1:
                 self.suggestion_menu.dismiss()
             else:
-                suggests = self.controller.find_suggestions(feature_value)
+                if self.check_hebrew(feature_value):
+                    print('heb suggs :', feature_value)
+                    suggests = self.controller.find_heb_suggestions(feature_value[::-1])
+                    suggests = list(map(self.transform_heb_sugg, suggests))
+
+                else:
+
+                    suggests = self.controller.find_eng_suggestions(feature_value)
                 if len(suggests) < 1:
                     suggests.append(feature_value)
                 self.show_suggestions(suggests)
@@ -308,9 +341,9 @@ class AddDataScreenView(BaseScreenView):
         Logger.info(f"{__name__}: on_pre_enter")
         self.dataCard.ids.input_field_id.disabled = True
         self.feature_value_len = 0
-        Window.softinput_mode = ''
+        #Window.softinput_mode = ''
         self.dataCard.ids.input_field_id.text = ''
-        self.dataCard.ids.input_field_id.hint_text = "Chose feature to input " + rtl('בחר פרמטר')
+        self.dataCard.ids.input_field_id.hint_text = "Chose feature"
 
         self.dataCard.ids.input_field_id.helper_text = ''
         self.ids.submit_record_dialog.ids.comments_id.text = ''
@@ -329,7 +362,7 @@ class AddDataScreenView(BaseScreenView):
         # map features
         for k in self.dataCard.ids.keys():
             if '_btn' in k:
-                self.feature_button_instance_map[self.dataCard.ids[k].text] = self.dataCard.ids[k]
+                self.feature_button_instance_map[self.dataCard.ids[k].feature_key] = self.dataCard.ids[k]
             if 'segment' in k:
                 self.feature_segment_instance_map[self.dataCard.ids[k].control_type] = self.dataCard.ids[k]
 
@@ -344,6 +377,8 @@ class AddDataScreenView(BaseScreenView):
         # color features
         # colors for buttons and segment positions for existed record
         if self.controller.is_record_edited:
+            print(self.ids.submit_record_dialog.ids)
+            self.ids.submit_record_dialog.ids.comments_id.text = self.controller.new_record_dict.get('Comment', '')
             for record_feature in self.controller.new_record_dict.keys():
 
                 if record_feature in self.feature_button_instance_map.keys():

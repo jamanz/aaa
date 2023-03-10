@@ -21,6 +21,7 @@ from kivymd.uix.textfield import MDTextField
 from kivy.uix.textinput import TextInput
 import unicodedata
 from kivy.clock import Clock
+from kivy.core.window import Window
 def rtl(heb_str):
     return heb_str[::-1]
 
@@ -76,7 +77,7 @@ class HebrewTextField(MDTextField):
         print("font heb before in HebTextFIED", self.font_name_hint_text)
         #self.font_name_hint_text = "Arimo"
         print("set font heb adter HebTextFIED: ", self.font_name_hint_text)
-        self.hint_text = 'Session name ' + rtl('שם הסקר')
+        self.hint_text = 'Session name'
         print("hint text set: ", self.hint_text)
         from kivy.core.text import LabelBase
         print("Baseditection is ", LabelBase.find_base_direction(self.text))
@@ -183,6 +184,7 @@ class HomeScreenView(BaseScreenView):
     def on_pre_enter(self, *args):
         self.display_nav_buttons()
         print('Cache: ', Cache.print_usage())
+        print('Window softinput: ', Window.softinput_mode)
 
     def display_nav_buttons(self):
         nav_buttons_ids = ['new_ses_btn', 'incomplete_ses_btn', 'completed_ses_btn']
@@ -252,7 +254,7 @@ class HomeScreenView(BaseScreenView):
         def confirm_dialog(event):
             self.auth_dialog.dismiss()
 
-        confirm_btn = MDFlatButton(text="Confirm", on_release=confirm_dialog)
+        confirm_btn = MDFlatButton(text=rtl("אישור"), font_name='Arimo', on_release=confirm_dialog)
 
         # content_cls = WorksheetChoiceDialogContent()
         content_cls = GoogleSheetsDialogContent()

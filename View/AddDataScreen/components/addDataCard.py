@@ -22,6 +22,18 @@ from kivy.metrics import dp
 from kivymd.uix.recycleview import MDRecycleView
 from kivy.app import App
 
+def rtl(heb_str):
+    return heb_str[::-1]
+
+feature_heb_map = {
+    rtl('מספר העץ'): 'Tree Number',
+    rtl('סוג עץ'): 'Tree specie',
+    rtl('כמות גזעים'): 'Stem number',
+    rtl('קוטר גזע'): 'Tree diameter',
+    rtl('רוחב נוף'): 'Crown diameter',
+    rtl('גובה העץ'): 'Tree height'
+}
+
 
 class MySegmentedControl(MDSegmentedControl):
     custom_panel_width = NumericProperty(25)
@@ -111,6 +123,7 @@ class addDataCard(MDCard, RoundedRectangularElevationBehavior): #RectangularElev
                     self.ids.input_field_id.cursor = (0, 0)
                 else:
                     return self.basic_keyboard_on_key_down(window, keycode, text, modifiers)
+        # elif keycode[1] == 'enter':
         elif keycode[1] == 'enter':
             self.add_data_view.get_input_feature_value(self.chosen_feature, self.ids.input_field_id.text)
             self.ids.input_field_id.focus = False
@@ -123,10 +136,10 @@ class addDataCard(MDCard, RoundedRectangularElevationBehavior): #RectangularElev
                     self.ids.input_field_id.cursor = (0, 0)
                     return
             if self.check_hebrew(inserted_text):
-                self.ids.input_field_id.base_direction = 'rtl'
+                #self.ids.input_field_id.base_direction = 'rtl'
                 self.ids.input_field_id.text = inserted_text + self.ids.input_field_id.text
                 self.ids.input_field_id.cursor = (0, 0)
-
+                return
             else:
                 #self.ids.comments_id.text = self.ids.comments_id.text + inserted_text
                 self.basic_insert_text_func(inserted_text, from_undo=False)
@@ -176,10 +189,12 @@ class addDataCard(MDCard, RoundedRectangularElevationBehavior): #RectangularElev
 
 
     def choose_feature(self, instance):
+        heb_feature_btn_text = instance.text
+        feature_key = feature_heb_map.get(heb_feature_btn_text)
         self.ids.input_field_id.addDataCard = self
         Logger.info(f"{__name__}: pressed - {instance.text}")
         self.ids.input_field_id.disabled = False
-        feature_value = self.add_data_view.controller.new_record_dict.get(instance.text)
+        feature_value = self.add_data_view.controller.new_record_dict.get(feature_key)
         if feature_value:
             self.ids.input_field_id.text = feature_value
         else:
@@ -187,17 +202,17 @@ class addDataCard(MDCard, RoundedRectangularElevationBehavior): #RectangularElev
 
         self.ids.input_field_id.helper_text = ''
 
-        self.ids.input_field_id.hint_text = instance.text
-        if instance.text == 'Tree diameter':
+        self.ids.input_field_id.hint_text = feature_key
+        if feature_key == 'Tree diameter':
             m_units = 'cm'
             self.ids.input_field_id.helper_text = f"Measurement units: [{m_units}]"
-        elif instance.text == 'Crown diameter' or instance.text == 'Tree height':
+        elif feature_key == 'Crown diameter' or feature_key == 'Tree height':
             m_units = 'm'
             self.ids.input_field_id.helper_text = f"Measurement units: [{m_units}]"
         else:
             self.ids.input_field_id.helper_text = ''
 
-        self.chosen_feature = instance.text
+        self.chosen_feature = feature_key
         self.chosen_feature_instance = instance
 
         self.feature_input.focus = True
