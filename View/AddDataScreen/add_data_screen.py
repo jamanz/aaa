@@ -252,7 +252,8 @@ class AddDataScreenView(BaseScreenView):
                                  buttons=(close_btn, ok_btn),
                                  )
         self.submit_dialog.on_dismiss = self.on_submit_dismiss
-        self.submit_dialog.on_open = self.on_submit_open
+        self.submit_dialog.on_pre_open = self.on_submit_open
+        #self.submit_dialog.on
         self.ids['submit_record_dialog'] = weakref.ref(self.submit_dialog.content_cls)
         self.ids.submit_record_dialog.add_data_view = self
 
