@@ -45,7 +45,7 @@ class PdfDialogContent(MDBoxLayout):
     chosen_session = StringProperty()
     list_screen_view = ObjectProperty()
 
-    @mainthread
+    #@mainthread
     def update_pdf_progress(self, page_no):
         # print("ids: ", self.ids.pdf_dialog_content.ids)
         val = 100 * page_no / self.page_num

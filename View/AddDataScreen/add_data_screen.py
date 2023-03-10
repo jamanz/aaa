@@ -69,6 +69,7 @@ class SubmitRecordContent(MDBoxLayout):
     comment = StringProperty()
     add_data_view = ObjectProperty()
 
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.basic_insert_text_func = None
@@ -171,11 +172,11 @@ class AddDataScreenView(BaseScreenView):
 
     def close_submit_dialog(self, event):
         self.submit_dialog.dismiss()
-        Window.softinput_mode = ''
 
     def ok_submit_dialog(self, event):
         if self.ids.submit_record_dialog.ids.comments_id.text:
             self.ids.submit_record_dialog.set_comment(self.ids.submit_record_dialog.ids.comments_id.text)
+        Window.softinput_mode = ''
         self.save_record_and_back_to_session_screen()
         self.submit_dialog.dismiss()
 
@@ -338,7 +339,7 @@ class AddDataScreenView(BaseScreenView):
         self.feature_value_len = len(feature_value)
 
     def on_pre_enter(self, *args):
-        Logger.info(f"{__name__}: on_pre_enter")
+        Logger.info(f"{__name__}: on_pre_enter, softmode: {Window.softinput_mode}")
         self.dataCard.ids.input_field_id.disabled = True
         self.feature_value_len = 0
         #Window.softinput_mode = ''
