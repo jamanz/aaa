@@ -390,7 +390,11 @@ class ListSessionsScreenView(BaseScreenView):
 
             self.photo_path = Path(Environment.DIRECTORY_DCIM).joinpath(f"Treez")
              #images_list = list(self.photo_path.joinpath(session_name).glob('*.jpg'))
-            images_list = self.get_path_from_media_store(session_name)
+            try:
+                images_list = self.get_path_from_media_store(session_name)
+            except:
+                Toast.show("No pdf without photos")
+                return
             Logger.info(f"{__name__}: Image list from mediastore {images_list}")
             Logger.info(f"{__name__}: cache dir: {ss.get_cache_dir()}")
 

@@ -177,10 +177,13 @@ class AddDataScreenView(BaseScreenView):
     def ok_submit_dialog(self, event):
         if self.ids.submit_record_dialog.ids.comments_id.text:
             self.ids.submit_record_dialog.set_comment(self.ids.submit_record_dialog.ids.comments_id.text)
-        Window.softinput_mode = ''
         self.save_record_and_back_to_session_screen()
         self.submit_dialog.dismiss()
 
+    def on_submit_dismiss(self):
+        print('submit dissmised pre Window is ', Window.softinput_mode)
+        Window.softinput_mode = ''
+        print('submit dissmised after Window is ', Window.softinput_mode)
     def make_photo_for_tree(self):
         self.app.go_next_screen("add data screen", "photo screen")
 
@@ -239,9 +242,8 @@ class AddDataScreenView(BaseScreenView):
                                  type="custom",
                                  content_cls=SubmitRecordContent(),
                                  buttons=(close_btn, ok_btn),
-
                                  )
-
+        self.submit_dialog.on_dismiss = self.on_submit_dismiss
         self.ids['submit_record_dialog'] = weakref.ref(self.submit_dialog.content_cls)
         self.ids.submit_record_dialog.add_data_view = self
 
@@ -344,7 +346,7 @@ class AddDataScreenView(BaseScreenView):
         Logger.info(f"{__name__}: on_pre_enter, softmode: {Window.softinput_mode}")
         self.dataCard.ids.input_field_id.disabled = True
         self.feature_value_len = 0
-        #Window.softinput_mode = ''
+        Window.softinput_mode = ''
         self.dataCard.ids.input_field_id.text = ''
         self.dataCard.ids.input_field_id.hint_text = "Chose feature"
 
