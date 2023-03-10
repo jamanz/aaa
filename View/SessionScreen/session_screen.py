@@ -21,6 +21,9 @@ from View.PhotoScreen.components.toast import Toast
 import os
 from kivy.clock import Clock
 
+def rtl(heb_str):
+    return heb_str[::-1]
+
 class PreviewRecordedTreeContent(MDBoxLayout):
     tree_number = StringProperty()
     tree_specie = StringProperty()
@@ -126,20 +129,20 @@ class TreeItemsPage(MDRecycleView):
         super().__init__(**kwargs)
         Logger.info(f"{__name__}: inited")
 
-        self.tree_preview_close_btn = MDFlatButton(text="Cancel", on_release=self.close_dialog)
-        self.tree_preview_edit_btn = MDFlatButton(text="Edit", on_release=self.edit_dialog)
-        self.tree_preview_ok_btn = MDFlatButton(text="OK", on_release=self.close_dialog)
+        self.tree_preview_close_btn = MDFlatButton(text=f"[font=Arimo]{rtl('ביטול')}[/font]", on_release=self.close_dialog)
+        self.tree_preview_edit_btn = MDFlatButton(text=f"[font=Arimo]{rtl('לערוך')}[/font]", on_release=self.edit_dialog)
+        self.tree_preview_ok_btn = MDFlatButton(text=f"[font=Arimo]{rtl('אישור')}[/font]", on_release=self.close_dialog)
 
-        self.preview_record_dialog = MDDialog(title='Recorded Tree Values',
+        self.preview_record_dialog = MDDialog(title=f"[font=Arimo]{rtl('עץ רשום')}[/font]",
                                               size_hint=(.7, None),
                                               type="custom",
                                               content_cls=PreviewRecordedTreeContent(),
                                               buttons=[self.tree_preview_ok_btn]
                                               )
 
-        close_delete_dialog_btn = MDFlatButton(text="Cancel", on_release=self.close_delete_dialog)
-        confirm_delete_dialog_btn = MDFlatButton(text="Confirm", on_release=self.confirm_delete_dialog)
-        self.delete_dialog = MDDialog(title="Delete",
+        close_delete_dialog_btn = MDFlatButton(text=rtl("ביטול"), font_name='Arimo', on_release=self.close_delete_dialog)
+        confirm_delete_dialog_btn = MDFlatButton(text=rtl("אישור"), font_name='Arimo', on_release=self.confirm_delete_dialog)
+        self.delete_dialog = MDDialog(title=f"[font=Arimo]{rtl('למחוק ')}[/font]",
                                       type="alert",
                                       buttons=(close_delete_dialog_btn, confirm_delete_dialog_btn)
                                       )
@@ -165,7 +168,7 @@ class TreeItemsPage(MDRecycleView):
     def delete_item(self, item):
         self.delete_item_index = item.id
         self.delete_item_title = item.text
-        self.delete_dialog.title = f"Delete tree {self.delete_item_title}?"
+        self.delete_dialog.title = f"[font=Arimo]{self.delete_item_title + rtl('למחוק עץ ')}[/font]"
         self.delete_dialog.open()
 
     def update_items(self, can_delete=True):
@@ -174,7 +177,7 @@ class TreeItemsPage(MDRecycleView):
             {'text': f"[font=Arimo]#{record.get('Tree Number')}[/font]",
              'tree_name': record.get('Tree Number'),
              #'secondary_text': "Photos [b]0/2[/b]",
-             'secondary_text': f"{record.get('Tree specie')}",
+             'secondary_text': f"[font=Arimo]{record.get('Tree specie')}[/font]",
              'id': int(i),
              #'_height': dp(30),
 
@@ -206,7 +209,7 @@ class SessionScreenView(BaseScreenView):
                 Toast().show(f"Photo disabled.\nAndroid version is s{api_version}")
                 Logger.info(f"{__name__}: Api version not enough - {api_version}, toast displayed")
             else:
-                Toast().show("All cool")
+                #Toast().show("All cool")
                 self.app.go_next_screen("session screen", "photo screen")
         else:
             self.app.go_next_screen("session screen", "photo screen")
@@ -232,11 +235,12 @@ class SessionScreenView(BaseScreenView):
                     f"KIVY_HOME: {os.environ.get('KIVY_HOME')}")
 
         # Prepare upload dialog
-        close_btn = MDFlatButton(text="Cancel", on_release=self.close_upload_dialog)
-        confirm_btn = MDFlatButton(text="Confirm", on_release=self.confirm_upload_dialog)
+        close_btn = MDFlatButton(text=f"[font=Arimo]{rtl('ביטול')}[/font]", on_release=self.close_upload_dialog)
+        confirm_btn = MDFlatButton(text=f"[font=Arimo]{rtl('אישור')}[/font]", on_release=self.confirm_upload_dialog)
         self.upload_content_cls = PreUploadDialogContent()
         self.upload_content_cls.screen_view = self
-        self.upload_dialog = MDDialog(title=f'Upload Session',
+        self.upload_dialog = MDDialog(title=f"[font=Arimo]{rtl('העלאת הסקר')}[/font]",
+
                                       anchor_x="center",
                                       type="custom",
                                       content_cls=self.upload_content_cls,

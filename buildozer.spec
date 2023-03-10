@@ -42,7 +42,7 @@ requirements = python3,pillow,android,kivy==2.1.0,kivymd==1.0.2,
                oauth2client,urllib3,chardet,gspread,cachetools,idna,
                numpy,pandas==1.0.3,camera4kivy,gestures4kivy,gspread_formatting,
                pyparsing,uritemplate,
-               flask==2.0.3, werkzeug==2.0.3,kivyauth,python-dotenv,i18n
+               flask==2.0.3, werkzeug==2.0.3,kivyauth,python-dotenv,i18n,sdl2_ttf,
 
                google-api-python-client==2.70.0,
                google-auth==2.15.0,

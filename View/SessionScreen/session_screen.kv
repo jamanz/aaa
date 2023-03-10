@@ -14,7 +14,8 @@
         id: tree_number
         #spacing: "10dp"
         font_size: "13sp"
-        text: f"Tree Number: [b]{root.tree_number}[/b]\nTree Specie: [b]{root.tree_specie}[/b]\nSpecie value: [b]{root.specie_value}[/b]"
+        font_name: "Arimo"
+        text: f"מספר העץ"[::-1] + f": [b]{root.tree_number}[/b]\n" + "סוג עץ"[::-1] + f": [b]{root.tree_specie}[/b]\n" + "ערך נקוב"[::-1] + f": [b]{root.specie_value}[/b]"
 
     MDSeparator:
 
@@ -23,7 +24,9 @@
         id: stem_number
         size_hint: .9, 0.1
         font_size: "13sp"
-        text: f"Stem Number: [b]{root.stem_number}[/b]\nTree Diameter: [b]{root.tree_diameter}[/b]"
+        font_name: 'Arimo'
+        #text: f"Stem Number" + f": [b]{root.stem_number}[/b]\nTree Diameter: [b]{root.tree_diameter}[/b]"
+        text: f"כמות גזעים"[::-1] + f": [b]{root.stem_number}[/b]\n" + "קוטר גזע"[::-1] + f": [b]{root.tree_diameter}[/b]"
 
     MDSeparator:
 
@@ -32,7 +35,9 @@
         id: stem_number
         size_hint: .9, 0.1
         font_size: "13sp"
-        text: f"Crown Diameter: [b]{root.crown_diameter}[/b]\nTree Height: [b]{root.tree_height}[/b]"
+        font_name: 'Arimo'
+        #text: f"Crown Diameter"[::-1] + ": [b]{root.crown_diameter}[/b]\nTree Height: [b]{root.tree_height}[/b]"
+        text: f"רוחב נוף"[::-1] + f": [b]{root.crown_diameter}[/b]\n" + "גובה העץ"[::-1] + f": [b]{root.tree_height}[/b]"
 
     MDSeparator:
 
@@ -42,7 +47,9 @@
         id: health_condition
         size_hint: .9, 0.1
         font_size: "13sp"
-        text: f"Health condition: [b]{root.health_condition}[/b]\nTree location: [b]{root.tree_location}[/b]\nCrown Cone: [b]{root.crown_cone}[/b]\nCrown value: [b]{root.crown_value}[/b]"
+        #text: f"Health condition: [b]{root.health_condition}[/b]\nTree location: [b]{root.tree_location}[/b]\nCrown Cone: [b]{root.crown_cone}[/b]\nCrown value: [b]{root.crown_value}[/b]"
+        font_name: 'Arimo'
+        text: f"מצב בריאותי"[::-1] + f": [b]{root.health_condition}[/b]\n" + "מיקום העץ"[::-1] + f": [b]{root.tree_location}[/b]\n" + "עץ צריפי"[::-1] + f": [b]{root.crown_cone}[/b]\n" + "ערך הכתר"[::-1] + f": [b]{root.crown_value}[/b]"
 
 
 
@@ -58,7 +65,8 @@
 
         markup: True
         #size_hint: 0.8, 0.8
-        text: f"[b]{root.num_of_rec}[/b] records will be uploaded to [b]{root.chosen_title}[/b] worksheet"
+        font_name: "Arimo"
+        text: f"[b]{root.num_of_rec}[/b] " + "רשומות יועלו לגליון עבודה "[::-1] + f" [b]{root.chosen_title}[/b]"
         font_size: "12sp"
         #text: "def text"
 
@@ -144,13 +152,15 @@
 
             MDFillRoundFlatButton:
                 id: new_record_btn
-                text: "New Record"
+                font_name: "Arimo"
+                text: "רשומה חדשה"[::-1]
                 size_hint: .4, .5
                 on_release: root.go_to_add_data_screen()
 
             MDFillRoundFlatButton:
                 id: upload_session_btn
-                text: "Upload Session"
+                font_name: "Arimo"
+                text: "העלאת הסקר"[::-1]
                 size_hint: .4, .5
                 on_release: root.start_upload_dialog()
 

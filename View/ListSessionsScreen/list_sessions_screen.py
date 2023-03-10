@@ -38,6 +38,9 @@ if platform == 'android':
     ss = SharedStorage()
 
 
+def rtl(heb_str):
+    return heb_str[::-1]
+
 class PdfDialogContent(MDBoxLayout):
     chosen_session = StringProperty()
     list_screen_view = ObjectProperty()
@@ -109,7 +112,13 @@ class SessionItem(OneLineAvatarIconListItem, TouchBehavior):
 
     def on_long_touch(self, *args):
         self.sessions_page = self.parent.parent
+        if self.sessions_page.session_type == 'incomplete':
+            self.sessions_page.snackbar.buttons = self.sessions_page.incomplete_buttons
+        elif self.sessions_page.session_type == 'completed':
+            self.sessions_page.snackbar.buttons = self.sessions_page.completed_buttons
+
         self.sessions_page.snackbar.open()
+
         self.sessions_page.long_touch = True
         print("on long touch args: ", *args)
 
@@ -169,24 +178,33 @@ class SessionsPage(MDRecycleView):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        close_delete_dialog_btn = MDFlatButton(text="Cancel", on_release=self.close_delete_session_dialog)
-        confirm_delete_dialog_btn = MDFlatButton(text="Confirm", on_release=self.confirm_delete_session_dialog)
-        self.delete_session_dialog = MDDialog(title="Delete",
+        close_delete_dialog_btn = MDFlatButton(text=f"[font=Arimo]{rtl('ביטול')}[/font]", on_release=self.close_delete_session_dialog)
+        confirm_delete_dialog_btn = MDFlatButton(text=f"[font=Arimo]{rtl('אישור')}[/font]", on_release=self.confirm_delete_session_dialog)
+        self.delete_session_dialog = MDDialog(title=f"[font=Arimo]{rtl('למחוק')}[/font]",
                                               type="alert",
                                               buttons=(close_delete_dialog_btn, confirm_delete_dialog_btn)
                                               )
         self.snackbar = CustomSnackbar()
             # text="This is a snackbar!",
-        self.snackbar.buttons = [
+        self.completed_buttons = [
             MDFlatButton(
-                text="MAKE PDF",
+                text="PDF " + rtl("צור"),
                 font_name='Arimo',
                 # text_color=(1, 1, 1, 1),
                 on_release=self.make_pdf_from_session,
             ),
 
             MDFlatButton(
-                text="DELETE SESSION",
+                text=rtl("מחק הפעלה"),
+                font_name='Arimo',
+                # text_color=(1, 1, 1, 1),
+                on_release=self.delete_session,
+            ),
+        ]
+
+        self.incomplete_buttons = [
+            MDFlatButton(
+                text=rtl("מחק הפעלה"),
                 font_name='Arimo',
                 # text_color=(1, 1, 1, 1),
                 on_release=self.delete_session,
@@ -237,8 +255,9 @@ class SessionsPage(MDRecycleView):
 
         #    ses_num_of_records = len(JsonStore(ses_path).get('data').get('records'))
 
-        self.delete_session_dialog.title = "Delete Session"
-        self.delete_session_dialog.text = f"You sure you want delete [b]{self.delete_session_name}[/b] with [b]{ses_num_of_records}[/b] records?"
+        self.delete_session_dialog.title = f"[font=Arimo]{rtl('מחק הפעלה')}[/font]"
+        #self.delete_session_dialog.text = f"You sure you want delete [b]{self.delete_session_name}[/b] with [b]{ses_num_of_records}[/b] records?"
+        self.delete_session_dialog.text = f"[font=Arimo]{rtl('רשומות?')}[/font] " + f"[b]{ses_num_of_records}[/b]" + f"[font=Arimo] {rtl('עם')} [b]{self.delete_session_name} [/b][/font]" + f"[font=Arimo]{rtl('אתה בטוח שאתה רוצה למחוק')}[/font]"
         self.delete_session_dialog.open()
 
     def update_sessions(self, session_type):

@@ -18,7 +18,10 @@ from kivy.uix.camera import Camera
 from kivy.clock import Clock
 from functools import partial
 from kivy.core.window import Window
+import unicodedata
 
+def rtl(heb_str):
+    return heb_str[::-1]
 
 class PreviewContent(MDBoxLayout):
     tree_number = StringProperty()
@@ -66,14 +69,65 @@ class SubmitRecordContent(MDBoxLayout):
     comment = StringProperty()
     add_data_view = ObjectProperty()
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.basic_insert_text_func = None
+        self.basic_keyboard_on_key_down = None
+
+        Clock.schedule_once(self.set_heb_input)
+
+    def set_heb_input(self, dt):
+        self.basic_insert_text_func = self.ids.comments_id.insert_text
+        self.ids.comments_id.insert_text = self.comments_field_hebrew
+
+        self.basic_keyboard_on_key_down = self.ids.comments_id.keyboard_on_key_down
+        self.ids.comments_id.keyboard_on_key_down = self.keyboard_on_key_down
+
+
     def set_comment(self, comment_str):
         self.comment = comment_str
         self.add_data_view.get_input_feature_value('Comment', comment_str)
         Window.softinput_mode = ''
 
     def raise_window_for_comment(self, *args):
-        Window.softinput_mode = 'pan'
+        if Window.softinput_mode != 'pan':
+            Window.softinput_mode = 'pan'
         Logger.info(f'{__name__}: keyboard raised')
+
+    def keyboard_on_key_down(self, window, keycode, text, modifiers):
+        if keycode[1] == "backspace":
+            if len(self.ids.comments_id.text) > 0:
+                if self.check_hebrew(self.ids.comments_id.text):
+                    self.ids.comments_id.text = self.ids.comments_id.text[1:]
+                    self.ids.comments_id.cursor = (0, 0)
+                else:
+                    return self.basic_keyboard_on_key_down(window, keycode, text, modifiers)
+
+    def comments_field_hebrew(self, inserted_text, from_undo=False):
+        print('commets field heb called')
+        if len(self.ids.comments_id.text) > 0:
+            if inserted_text == ' ':
+                if self.check_hebrew(self.ids.comments_id.text):
+                    self.ids.comments_id.text = inserted_text + self.ids.comments_id.text
+                    self.ids.comments_id.cursor = (0, 0)
+                    return
+            if self.check_hebrew(inserted_text):
+                self.ids.comments_id.base_direction = 'rtl'
+                self.ids.comments_id.text = inserted_text + self.ids.comments_id.text
+                self.ids.comments_id.cursor = (0, 0)
+
+            else:
+                #self.ids.comments_id.text = self.ids.comments_id.text + inserted_text
+                self.basic_insert_text_func(inserted_text, from_undo=False)
+        else:
+            self.ids.comments_id.text = self.ids.comments_id.text + inserted_text
+
+
+    def check_hebrew(self, term):
+        for i in set(term):
+            if 'HEBREW' in unicodedata.name(i):
+                return True
+        return False
 
     def update_values(self, record):
         self.tree_number = str(record.get('Tree Number'))
@@ -92,9 +146,12 @@ class SubmitRecordContent(MDBoxLayout):
         self.comment = record.get('Comment', '')
 
 
+
+
+
 # todo: disable submit if tree num not set
 class AddDataScreenView(BaseScreenView):
-    app_bar_title = StringProperty('New Tree')
+    app_bar_title = StringProperty('רשומה חדשה'[::-1])
     suggestion_is_selected = BooleanProperty(False)
     feature_value_len = NumericProperty(0)
     data_card = ObjectProperty()
@@ -116,8 +173,8 @@ class AddDataScreenView(BaseScreenView):
 
     def show_submit_record_dialog(self):
         self.ids.submit_record_dialog.update_values(self.controller.get_record())
-        Window.softinput_mode = 'pan'
         self.submit_dialog.open()
+        Window.softinput_mode = 'pan'
 
     def close_record_preview_dialog(self, event):
         self.record_preview_dialog.dismiss()
@@ -126,6 +183,8 @@ class AddDataScreenView(BaseScreenView):
     def show_preview(self):
         self.ids.preview_dialog.update_values(self.controller.get_record())
         self.record_preview_dialog.open()
+
+
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -146,8 +205,8 @@ class AddDataScreenView(BaseScreenView):
         )
 
         # Prepare record preview dialog
-        close_preview_btn = MDFlatButton(text="Ok", on_release=self.close_record_preview_dialog)
-        self.record_preview_dialog = MDDialog(title='Preview',
+        close_preview_btn = MDFlatButton(text=f"[font=Arimo]{rtl('אישור')}[/font]", on_release=self.close_record_preview_dialog)
+        self.record_preview_dialog = MDDialog(title=f"[font=Arimo]{rtl('תצוגה מקדימה ')}[/font]",
                                               size_hint=(.7, None),
                                               md_bg_color=self.app.theme_cls.accent_color,
                                               type="custom",
@@ -158,9 +217,9 @@ class AddDataScreenView(BaseScreenView):
 
 
         # Prepare record submission dialog
-        close_btn = MDFlatButton(text="Back", on_release=self.close_submit_dialog)
-        ok_btn = MDRaisedButton(text="Ok", on_release=self.ok_submit_dialog, elevation=1)
-        self.submit_dialog = MDDialog(title='Submit record',
+        close_btn = MDFlatButton(text=f"[font=Arimo]{rtl('חזור')}[/font]", on_release=self.close_submit_dialog)
+        ok_btn = MDRaisedButton(text=f"[font=Arimo]{rtl('אישור')}[/font]", on_release=self.ok_submit_dialog, elevation=1)
+        self.submit_dialog = MDDialog(title=f"[font=Arimo]{rtl('שלח רשומה')}[/font]",
                                  size_hint=(.7, None),
                                  md_bg_color=self.app.theme_cls.accent_color,
                                  type="custom",
@@ -193,7 +252,7 @@ class AddDataScreenView(BaseScreenView):
         size = "14sp"
         menu_items = [
             {
-                "text": f"[size={size}]{sugg}[/size]",
+                "text": f"[font=Arimo][size={size}]{sugg}[/size][/font]",
                 "_txt_top_pad": "2dp",
                 "viewclass": "OneLineListItem",
                 "height": dp(56),
@@ -251,7 +310,8 @@ class AddDataScreenView(BaseScreenView):
         self.feature_value_len = 0
         Window.softinput_mode = ''
         self.dataCard.ids.input_field_id.text = ''
-        self.dataCard.ids.input_field_id.hint_text = "Chose feature to input"
+        self.dataCard.ids.input_field_id.hint_text = "Chose feature to input " + rtl('בחר פרמטר')
+
         self.dataCard.ids.input_field_id.helper_text = ''
         self.ids.submit_record_dialog.ids.comments_id.text = ''
 

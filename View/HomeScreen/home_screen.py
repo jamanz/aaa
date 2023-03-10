@@ -1,7 +1,7 @@
 from View.base_screen import BaseScreenView
 from kivy.storage.jsonstore import JsonStore
 import secrets
-from kivy.properties import StringProperty, ObjectProperty, BooleanProperty
+from kivy.properties import StringProperty, ObjectProperty, BooleanProperty, ListProperty
 from kivy import Logger
 from kivymd.uix.floatlayout import MDFloatLayout
 from kivymd.uix.boxlayout import MDBoxLayout
@@ -18,8 +18,9 @@ from Utility.google_sheets import get_user_email, check_auth
 from kivy.cache import Cache
 from gettext import gettext as _
 from kivymd.uix.textfield import MDTextField
+from kivy.uix.textinput import TextInput
 import unicodedata
-
+from kivy.clock import Clock
 def rtl(heb_str):
     return heb_str[::-1]
 
@@ -67,6 +68,21 @@ class HebrewTextField(MDTextField):
     #font_name_hint_text = "Arimo"
     #font_name = "Arimo"
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        Clock.schedule_once(self.set_heb_font)
+
+    def set_heb_font(self, dt):
+        print("font heb before in HebTextFIED", self.font_name_hint_text)
+        #self.font_name_hint_text = "Arimo"
+        print("set font heb adter HebTextFIED: ", self.font_name_hint_text)
+        self.hint_text = 'Session name ' + rtl('שם הסקר')
+        print("hint text set: ", self.hint_text)
+        from kivy.core.text import LabelBase
+        print("Baseditection is ", LabelBase.find_base_direction(self.text))
+
+        print("Baseditection is ", LabelBase.find_base_direction(self.text))
+
     def check_hebrew(self, term):
         for i in set(term):
             if 'HEBREW' in unicodedata.name(i):
@@ -80,9 +96,15 @@ class HebrewTextField(MDTextField):
                     self.text = self.text[1:]
                     self.cursor = (0, 0)
                 else:
-                    self.text = self.text[:-1]
+                    return super().keyboard_on_key_down(window, keycode, text, modifiers)
+                    #self.text = self.text[:-1]
+
+    def insert_text1(self, theText, from_undo=False):
+        print("base dir , text ", self.base_direction, self.text)
+        return super().insert_text(theText, from_undo=False)
 
     def insert_text(self, theText, from_undo=False):
+        print('self insert helper', self.font_name_hint_text)
         if len(self.text) > 0:
             if theText == ' ':
                 if self.check_hebrew(self.text):
@@ -90,18 +112,21 @@ class HebrewTextField(MDTextField):
                     self.cursor = (0, 0)
                     return
             if self.check_hebrew(theText):
-                self.cursor = (0, 0)
+                self.base_direction = 'rtl'
                 self.text = theText + self.text
                 self.cursor = (0, 0)
 
             else:
-                self.text = self.text + theText
+                #self.text = self.text + theText
+                super().insert_text(theText, from_undo=False)
         else:
             self.text = self.text + theText
 
+
 class DialogContent(MDBoxLayout):
     date = StringProperty(rtl('בחר תאריך')) # pick date
-
+    primary_color = ListProperty()
+    accent_color = ListProperty()
 
 
 
@@ -116,7 +141,10 @@ class DialogContent(MDBoxLayout):
 
 
     def show_date_picker(self):
-        date_dialog = MDDatePicker()
+        print('colors: ', self.primary_color, self.accent_color)
+        from kivy.utils import get_color_from_hex
+        date_dialog = MDDatePicker(
+        )
         date_dialog.bind(on_save=self.save_date, on_cancel=self.cancel_date)
         date_dialog.open()
 
@@ -151,10 +179,6 @@ class HomeScreenView(BaseScreenView):
         super(HomeScreenView, self).__init__(**kwargs)
         Logger.info(f"{__name__}: Inited")
         self.cred_path = pathlib.Path('config').resolve()
-
-    def open_plyer_camera(self):
-        self.app.go_next_screen('home screen', 'photo screen')
-        Logger.info(f"{__name__}: CARMERA DEMO STARTED IN HS")
 
     def on_pre_enter(self, *args):
         self.display_nav_buttons()
@@ -209,10 +233,20 @@ class HomeScreenView(BaseScreenView):
                                )
 
         self.ids['new_ses_dialog'] = weakref.ref(self.dialog.content_cls)
+        self.dialog.content_cls.primary_color = self.app.theme_cls.primary_color
+        self.dialog.content_cls.accent_color = self.app.theme_cls.accent_color
+
         print(f"dialog ids: {self.dialog.ids}")
+        Clock.schedule_once(self.set_heb_font_in_textfield)
+        self.dialog.open()
+
+    def set_heb_font_in_textfield(self, dt):
         self.dialog.ids.title.font_name = "Arimo"
         self.ids.new_ses_dialog.ids.date_picker.font_name = "Arimo"
-        self.dialog.open()
+        print("font heb before cahnge ", self.ids.new_ses_dialog.ids.session_name.font_name_hint_text)
+        #self.ids.new_ses_dialog.ids.session_name.font_name_hint_text = "Arimo"
+
+        print("set font heb adter textfield: ", self.ids.new_ses_dialog.ids.session_name.font_name_hint_text)
 
     def start_authorized_dialog(self):
         def confirm_dialog(event):
@@ -261,39 +295,7 @@ class HomeScreenView(BaseScreenView):
     def set_worksheet_in_model(self, worksheet_title):
         self.model.set_chosen_worksheet(worksheet_title)
 
-    def start_worksheet_choice_dialog(self):
 
-        def close_dialog(event):
-            self.worksheet_choice_dialog.dismiss()
-
-        def confirm_dialog(event):
-            # self.chosen_worksheet was set from the dialog class
-            Logger.info(f"{__name__}: Chosen worksheet: {self.chosen_worksheet}")
-            if self.chosen_worksheet == '':
-                Logger.info(f"{__name__}: self.chosen_worksheet is empty")
-            else:
-                self.set_worksheet_in_model(self.chosen_worksheet)
-                self.worksheet_choice_dialog.dismiss()
-
-        close_btn = MDFlatButton(text="Cancel", on_release=close_dialog)
-        confirm_btn = MDFlatButton(text="Confirm", on_release=confirm_dialog)
-
-        # content_cls = WorksheetChoiceDialogContent()
-        content_cls = GoogleSheetsDialogContent()
-        content_cls.screen_view = self
-        # list_of_available_worksheets = self.model.get_list_of_available_worksheets_to_view()
-        # content_cls.populate_with_available_ws_buttons(list_of_available_worksheets)
-
-        self.worksheet_choice_dialog = MDDialog(title='Login to Google Sheets',
-                                               size_hint=(.6, .5),
-                                               md_bg_color=self.app.theme_cls.accent_color,
-                                               type="custom",
-                                               content_cls=content_cls,
-                                               buttons=(close_btn, confirm_btn)
-                                                )
-        # cc
-        self.ids['worksheet_choice_dialog'] = WeakProxy(self.worksheet_choice_dialog.content_cls)
-        self.worksheet_choice_dialog.open()
 
 
     def start_recorded_sessions(self):

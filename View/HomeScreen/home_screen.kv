@@ -92,7 +92,18 @@
     disabled: not root.is_visible
 
 <HebrewTextField>
+    #font_name: "Arimo"
+    #font_name_hint_text: "Arimo"
+    #font_name_helper_text: "Arimo"
+    #font_name_max_length: "Arimo"
+    font_size: 20
+    text_size: self.size
+    valign: 'middle'
+    #halign: 'right'
 
+
+    #hint_text: _("Session Name")[::-1] if app.lang == 'he' else "Session Name"
+    markup: True
 
 
 <DialogContent>
@@ -106,8 +117,8 @@
     HebrewTextField:
         id: session_name
         #on_text: root.on_text_input(self.text)
-        hint_text: _("Session Name")[::-1] if app.lang == 'he' else "Session Name"
-        required: False
+
+        #required: False
 
     MDRaisedButton:
         id: date_picker

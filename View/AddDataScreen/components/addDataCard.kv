@@ -72,6 +72,10 @@
         text: 'No'
         font_size: f"13sp"
 
+<HebrewTextField>
+    font_size: 20
+    text_size: self.size
+    valign: 'middle'
 
 
 
@@ -91,16 +95,16 @@
         #md_bg_color: utils.get_color_from_hex('#c1c72f')
 
         MDTextField:
-            size_hint_x: .95
-            #add_data_screen: root.parent.parent.parent
-            pos_hint: {"center_x": 0.5, "center_y": 0.9}
             id: input_field_id
+            font_name_hint_text: "Arimo"
+            font_name: "Arimo"
+            size_hint_x: .95
+            pos_hint: {"center_x": 0.5, "center_y": 0.9}
+
             multiline: False
-            hint_text: "Chose feature to input"
+
+            hint_text: "Chose feature to input " + f"[font=Arimo]{'בחר פרמטר'[::-1]}[/font]"
             focus: True
-
-
-            #helper_text: "This will disappear when you click off"
             helper_text_mode: "on_focus"
 
             on_text_validate: root.add_data_view.get_input_feature_value(root.chosen_feature, self.text)
@@ -164,7 +168,10 @@
             MDLabel:
                 size_hint: 1, 0.2
                 pos_hint: {"center_x": 0.5, "top": 0.9}
-                text: "Health Condition"
+                font_name: 'Arimo'
+                text: "מצב בריאותי"[::-1]
+                #text: "Health Condition"
+
                 font_size: "13sp"
                 halign: "center"
             HealthConditionControl:
@@ -184,7 +191,9 @@
                 size_hint: 1, 0.2
                 pos_hint: {"center_x": 0.5, "top": 0.9}
                 font_size: "13sp"
-                text: "Tree Location"
+                #text: "Tree Location"
+                font_name: "Arimo"
+                text: "מיקום העץ"[::-1]
                 halign: "center"
 
             LocationControl:
@@ -202,7 +211,9 @@
                 size_hint: 1, 0.2
                 pos_hint: {"center_x": 0.5, "top": 0.9}
                 font_size: "13sp"
-                text: "Crown is Cone"
+                #text: "Crown is Cone"
+                font_name: "Arimo"
+                text: "עץ צריפי"[::-1]
                 halign: "center"
             CrownConeControl:
                 id: crown_cone_segment

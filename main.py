@@ -214,6 +214,7 @@ if platform == 'android':
 
 
 colors = {
+
     "Red": {
         "A200": "#AA4A44",
         "A500": "#AA4A44",
@@ -260,6 +261,16 @@ colors = {
         "Dialog": "#DBE2E9",
         "FlatButtonDown": "#DBE2E9",
     },
+
+    "Dark": {
+        "StatusBar": "#DBE2E9",
+        "AppBar": "#628038",
+        "Background": "#DBE2E9",
+
+        "Dialog": "#DBE2E9",
+        "FlatButtonDown": "#DBE2E9",
+    },
+
 }
 
 
@@ -278,6 +289,8 @@ class agroApp3MVC(MDApp):
         self.theme_cls.primary_palette = 'Green'#get_color_from_hex("#628038")#"Orange"
         self.theme_cls.accent_palette = "BlueGray"
         self.theme_cls.material_style = "M3"
+
+
 
         print("type M: ", self.theme_cls.material_style)
 

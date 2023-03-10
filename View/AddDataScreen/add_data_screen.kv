@@ -10,7 +10,7 @@
         #md_bg_color: utils.get_color_from_hex('#c1c72f')
 
         MDTopAppBar:
-            title: root.app_bar_title
+            title: f"[font=Arimo]{root.app_bar_title}[/font]"
             elevation: 2
             anchor_title: "left"
             left_action_items: [["arrow-left", lambda x: root.cancel_record()]]
@@ -34,12 +34,16 @@
                 #on_release: root.make_photo_for_tree()
 
             MDFillRoundFlatIconButton:
-                text: "Preview"
+                font_name: "Arimo"
+                #text: "Preview"[::-1]
+                text: "תצוגה מקדימה "[::-1]
                 icon: "account-eye"
                 size_hint: .45, None
                 on_release: root.show_preview()
             MDFillRoundFlatIconButton:
-                text: "Confirm"
+                font_name: "Arimo"
+                #text: "Confirm"
+                text: "אישור"[::-1]
                 icon: "check-circle"
                 size_hint: .45, None
                 on_release: root.show_submit_record_dialog()
@@ -60,7 +64,9 @@
         id: tree_number
         #spacing: "10dp"
         font_size: "13sp"
-        text: f"Tree Number: [b]{root.tree_number}[/b]\nTree Specie: [b]{root.tree_specie}[/b]\nSpecie value: [b]{root.specie_value}[/b]"
+        font_name: "Arimo"
+        text: f"מספר העץ"[::-1] + f": [b]{root.tree_number}[/b]\n" + "סוג עץ"[::-1] + f": [b]{root.tree_specie}[/b]\n" + "ערך נקוב"[::-1] + f": [b]{root.specie_value}[/b]"
+
 
     MDSeparator:
 
@@ -69,7 +75,9 @@
         id: stem_number
         size_hint: .9, 0.1
         font_size: "13sp"
-        text: f"Stem Number: [b]{root.stem_number}[/b]\nTree Diameter: [b]{root.tree_diameter}[/b]"
+        font_name: 'Arimo'
+        #text: f"Stem Number" + f": [b]{root.stem_number}[/b]\nTree Diameter: [b]{root.tree_diameter}[/b]"
+        text: f"כמות גזעים"[::-1] + f": [b]{root.stem_number}[/b]\n" + "קוטר גזע"[::-1] + f": [b]{root.tree_diameter}[/b]"
 
     MDSeparator:
 
@@ -78,7 +86,9 @@
         id: stem_number
         size_hint: .9, 0.1
         font_size: "13sp"
-        text: f"Crown Diameter: [b]{root.crown_diameter}[/b]\nTree Height: [b]{root.tree_height}[/b]"
+        font_name: 'Arimo'
+        #text: f"Crown Diameter"[::-1] + ": [b]{root.crown_diameter}[/b]\nTree Height: [b]{root.tree_height}[/b]"
+        text: f"רוחב נוף"[::-1] + f": [b]{root.crown_diameter}[/b]\n" + "גובה העץ"[::-1] + f": [b]{root.tree_height}[/b]"
 
     MDSeparator:
 
@@ -88,13 +98,18 @@
         id: health_condition
         size_hint: .9, 0.1
         font_size: "13sp"
-        text: f"Health condition: [b]{root.health_condition}[/b]\nTree location: [b]{root.tree_location}[/b]\nCrown Cone: [b]{root.crown_cone}[/b]\nCrown value: [b]{root.crown_value}[/b]"
+        #text: f"Health condition: [b]{root.health_condition}[/b]\nTree location: [b]{root.tree_location}[/b]\nCrown Cone: [b]{root.crown_cone}[/b]\nCrown value: [b]{root.crown_value}[/b]"
+        font_name: 'Arimo'
+        text: f"מצב בריאותי"[::-1] + f": [b]{root.health_condition}[/b]\n" + "מיקום העץ"[::-1] + f": [b]{root.tree_location}[/b]\n" + "עץ צריפי"[::-1] + f": [b]{root.crown_cone}[/b]\n" + "ערך הכתר"[::-1] + f": [b]{root.crown_value}[/b]"
 
     MDTextField:
         font_size: "13sp"
+        font_name: "Arimo"
+        font_name_hint_text: "Arimo"
         id: comments_id
-        hint_text: "Additional comments"
-        multiline: True
+        hint_text: "Additional comments " + "הערות נוספות"[::-1]
+        multiline: False
+
         on_text: root.raise_window_for_comment()
         on_text_validate: root.set_comment(self.text)
 
@@ -114,7 +129,8 @@
         id: tree_number
         #spacing: "10dp"
         font_size: "13sp"
-        text: f"Tree Number: [b]{root.tree_number}[/b]\nTree Specie: [b]{root.tree_specie}[/b]\nSpecie value: [b]{root.specie_value}[/b]"
+        font_name: "Arimo"
+        text: f"מספר העץ"[::-1] + f": [b]{root.tree_number}[/b]\n" + "סוג עץ"[::-1] + f": [b]{root.tree_specie}[/b]\n" + "ערך נקוב"[::-1] + f": [b]{root.specie_value}[/b]"
 
 
 
@@ -125,7 +141,9 @@
         id: stem_number
         size_hint: .9, 0.1
         font_size: "13sp"
-        text: f"Stem Number: [b]{root.stem_number}[/b]\nTree Diameter: [b]{root.tree_diameter}[/b]"
+        font_name: 'Arimo'
+        #text: f"Stem Number" + f": [b]{root.stem_number}[/b]\nTree Diameter: [b]{root.tree_diameter}[/b]"
+        text: f"כמות גזעים"[::-1] + f": [b]{root.stem_number}[/b]\n" + "קוטר גזע"[::-1] + f": [b]{root.tree_diameter}[/b]"
 
     MDSeparator:
 
@@ -134,7 +152,9 @@
         id: stem_number
         size_hint: .9, 0.1
         font_size: "13sp"
-        text: f"Crown Diameter: [b]{root.crown_diameter}[/b]\nTree Height: [b]{root.tree_height}[/b]"
+        font_name: 'Arimo'
+        #text: f"Crown Diameter"[::-1] + ": [b]{root.crown_diameter}[/b]\nTree Height: [b]{root.tree_height}[/b]"
+        text: f"רוחב נוף"[::-1] + f": [b]{root.crown_diameter}[/b]\n" + "גובה העץ"[::-1] + f": [b]{root.tree_height}[/b]"
 
     MDSeparator:
 
@@ -144,7 +164,9 @@
         id: health_condition
         size_hint: .9, 0.1
         font_size: "13sp"
-        text: f"Health condition: [b]{root.health_condition}[/b]\nTree location: [b]{root.tree_location}[/b]\nCrown Cone: [b]{root.crown_cone}[/b]\nCrown value: [b]{root.crown_value}[/b]"
+        #text: f"Health condition: [b]{root.health_condition}[/b]\nTree location: [b]{root.tree_location}[/b]\nCrown Cone: [b]{root.crown_cone}[/b]\nCrown value: [b]{root.crown_value}[/b]"
+        font_name: 'Arimo'
+        text: f"מצב בריאותי"[::-1] + f": [b]{root.health_condition}[/b]\n" + "מיקום העץ"[::-1] + f": [b]{root.tree_location}[/b]\n" + "עץ צריפי"[::-1] + f": [b]{root.crown_cone}[/b]\n" + "ערך הכתר"[::-1] + f": [b]{root.crown_value}[/b]"
 
 
 
