@@ -171,14 +171,14 @@ class AddDataScreenView(BaseScreenView):
     is_new = BooleanProperty(True)
 
     def on_enter(self, *args):
-        Logger.info(f'{__name__}: on enter Window.softinput_mode = ', Window.softinput_mode)
+        Logger.info(f'{__name__}: on enter Window.softinput_mode = {Window.softinput_mode}')
         Window.softinput_mode = ''
-        Logger.info(f'{__name__}: on enter after change Window.softinput_mode = ', Window.softinput_mode)
+        Logger.info(f'{__name__}: on enter after change Window.softinput_mode = {Window.softinput_mode}')
 
     def on_pre_leave(self, *args):
-        Logger.info(f'{__name__}: on preleave Window.softinput_mode = ', Window.softinput_mode)
+        Logger.info(f'{__name__}: on preleave Window.softinput_mode = {Window.softinput_mode}')
         Window.softinput_mode = ''
-        Logger.info(f'{__name__}: on preleave after change Window.softinput_mode = ', Window.softinput_mode)
+        Logger.info(f'{__name__}: on preleave after change Window.softinput_mode = {Window.softinput_mode}')
 
     def close_submit_dialog(self, event):
         Window.softinput_mode = ''
