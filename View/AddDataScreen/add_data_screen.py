@@ -170,6 +170,16 @@ class AddDataScreenView(BaseScreenView):
 
     is_new = BooleanProperty(True)
 
+    def on_enter(self, *args):
+        Logger.info(f'{__name__}: on enter Window.softinput_mode = ', Window.softinput_mode)
+        Window.softinput_mode = ''
+        Logger.info(f'{__name__}: on enter after change Window.softinput_mode = ', Window.softinput_mode)
+
+    def on_pre_leave(self, *args):
+        Logger.info(f'{__name__}: on preleave Window.softinput_mode = ', Window.softinput_mode)
+        Window.softinput_mode = ''
+        Logger.info(f'{__name__}: on preleave after change Window.softinput_mode = ', Window.softinput_mode)
+
     def close_submit_dialog(self, event):
         Window.softinput_mode = ''
         self.submit_dialog.dismiss()
@@ -208,6 +218,7 @@ class AddDataScreenView(BaseScreenView):
     def show_preview(self):
         self.ids.preview_dialog.update_values(self.controller.get_record())
         self.record_preview_dialog.open()
+
 
 
 
@@ -257,8 +268,6 @@ class AddDataScreenView(BaseScreenView):
         self.ids['submit_record_dialog'] = weakref.ref(self.submit_dialog.content_cls)
         self.ids.submit_record_dialog.add_data_view = self
 
-
-
     def cancel_record(self):
         self.controller.clear_record()
         self.app.go_prev_screen()
@@ -273,7 +282,6 @@ class AddDataScreenView(BaseScreenView):
             self.controller.write_record_to_json()
         self.controller.clear_record()
         self.app.go_prev_screen()
-
 
     def show_suggestions(self, list_of_suggestions: list[str]):
         self.suggestion_menu.items = []
@@ -293,12 +301,12 @@ class AddDataScreenView(BaseScreenView):
 
     def suggestion_menu_callback(self, text_item):
         self.dataCard.ids.input_field_id.text = text_item
-        print("text in field seted in menu callback")
+        #print("text in field seted in menu callback")
         # self.dataCard.ids.input_field_id.on_text_validate('Tree specie', text_item)
         self.get_input_feature_value('Tree specie', text_item)
         self.suggestion_is_selected = True
         self.suggestion_menu.dismiss()
-        print('menu dissmised in callback')
+        #print('menu dissmised in callback')
 
     def get_input_feature_value(self, feature_key, feature_value):
 
@@ -339,7 +347,7 @@ class AddDataScreenView(BaseScreenView):
                 self.suggestion_menu.dismiss()
             else:
                 if self.check_hebrew(feature_value):
-                    print('heb suggs :', feature_value)
+                    #print('heb suggs :', feature_value)
                     suggests = self.controller.find_heb_suggestions(feature_value[::-1])
                     suggests = list(map(self.transform_heb_sugg, suggests))
 
@@ -356,7 +364,7 @@ class AddDataScreenView(BaseScreenView):
         Logger.info(f"{__name__}: on_pre_enter, softmode: {Window.softinput_mode}")
         self.dataCard.ids.input_field_id.disabled = True
         self.feature_value_len = 0
-        Window.softinput_mode = ''
+        #Window.softinput_mode = ''
         self.dataCard.ids.input_field_id.text = ''
         self.dataCard.ids.input_field_id.hint_text = "Chose feature"
 
@@ -387,7 +395,7 @@ class AddDataScreenView(BaseScreenView):
 
         for new_feature in self.feature_segment_instance_map.keys():
             self.feature_segment_instance_map[new_feature].segment_color = self.app.theme_cls.accent_color
-            print(f"ACTIVE SEGMENT OF {new_feature} is {self.feature_segment_instance_map[new_feature].current_active_segment}")
+            #print(f"ACTIVE SEGMENT OF {new_feature} is {self.feature_segment_instance_map[new_feature].current_active_segment}")
 
         # color features
         # colors for buttons and segment positions for existed record
@@ -402,7 +410,6 @@ class AddDataScreenView(BaseScreenView):
                 if record_feature in self.feature_segment_instance_map.keys():
                     self.feature_segment_instance_map[record_feature].segment_color = self.app.theme_cls.primary_color
                     segment_val = self.controller.new_record_dict.get(record_feature)
-                    print('segment_val: ', segment_val)
                     self.feature_segment_instance_map[record_feature].preset_segment_panel_pos_from_val(segment_val)
         else:
             # reset color of feature buttons

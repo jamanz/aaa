@@ -183,6 +183,28 @@ class HomeScreenView(BaseScreenView):
         Logger.info(f"{__name__}: Inited")
         self.cred_path = pathlib.Path('config').resolve()
 
+
+        self.logout_dialog = MDDialog(title=f"[font=Arimo] Google {rtl('התנתקות')}[/font]",
+                                      type="alert",
+                                      buttons=[
+                                          MDFlatButton(
+                                              text=rtl("ביטול"), font_name='Arimo',
+                                              on_release=self.cancel_logout_dialog
+                                          ),
+                                          MDFlatButton(
+                                              text=rtl("אישור"), font_name='Arimo', on_release=self.confirm_logout_dialog
+                                          )
+                                      ]
+                                      )
+
+    def confirm_logout_dialog(self, *args):
+        self.model.logout_in_google()
+        self.display_nav_buttons()
+        self.logout_dialog.dismiss()
+
+    def cancel_logout_dialog(self, *args):
+        self.logout_dialog.dismiss()
+
     def on_pre_enter(self, *args):
         self.display_nav_buttons()
         print('Cache: ', Cache.print_usage())
@@ -277,8 +299,7 @@ class HomeScreenView(BaseScreenView):
         self.auth_dialog.open()
 
     def start_logout(self):
-        self.model.logout_in_google()
-        self.display_nav_buttons()
+        self.logout_dialog.open()
 
     def start_login(self):
         # self.app.gl_login()
